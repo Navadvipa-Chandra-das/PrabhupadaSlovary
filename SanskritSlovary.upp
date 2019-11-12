@@ -1,0 +1,15 @@
+description "Словарь санскрита Шрилы Прабхупады\377";
+
+uses
+	CtrlLib;
+
+file
+	main.cpp,
+	SanskritSlovary.lay,
+	SanskritSlovary.cpp,
+	SanskritSlovary.h,
+	SanskritSlovary.iml;
+
+mainconfig
+	"" = "GUI";
+
