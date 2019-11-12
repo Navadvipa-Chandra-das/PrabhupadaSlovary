@@ -17,6 +17,8 @@ public:
   EditString PerevodEdit;
   typedef SanskritSlovaryPanel CLASSNAME;
   SanskritSlovaryPanel();
+  void Dobavity();
+  void Udality();
 };
 
 class SanskritSlovaryWindow : public TopWindow {
