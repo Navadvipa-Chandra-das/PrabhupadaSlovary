@@ -37,6 +37,11 @@ SanskritSlovaryPanel::SanskritSlovaryPanel()
   ToolBarSanskrit.Add("Open..", SanskritSlovaryImg::Udality(), THISBACK( Udality ))
        .Key(K_CTRL_O)
        .Help("Open existing document");
+       
+	if( !sqlite3.Open( ConfigFile("Sanskrit.db") ) ) {
+		PromptOK( "Не удалось открыть базу данных санскитского словаря Шрилы Прабхупады!" );
+	} else
+		DLOG( "Всё в порядке с открытием базы данных санскитского словаря Шрилы Прабхупады!" );
 }
 
 void SanskritSlovaryPanel::Dobavity()

@@ -11,6 +11,18 @@ using namespace Upp;
 #define IMAGEFILE <SanskritSlovary/SanskritSlovary.iml>
 #include <Draw/iml_header.h>
 
+#include <plugin/sqlite3/Sqlite3.h>
+
+class SanskritPair : Moveable< SanskritPair > {
+public:
+	String Sanskrit;
+	String Perevod;
+	String ToString() const { return Sanskrit + " - " + Perevod; }
+};
+
+class SanscritVector : public Vector< SanskritPair > {
+};
+
 class SanskritSlovaryPanel : public WithSanskritSlovaryPanel< ParentCtrl > {
 public:
   EditString SansritEdit;
@@ -19,6 +31,9 @@ public:
   SanskritSlovaryPanel();
   void Dobavity();
   void Udality();
+  Sqlite3Session sqlite3;
+  SanscritVector VectorSanskrit;
+  
 };
 
 class SanskritSlovaryWindow : public TopWindow {

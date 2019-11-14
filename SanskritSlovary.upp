@@ -1,7 +1,10 @@
 description "Словарь санскрита Шрилы Прабхупады\377";
 
+charset "UTF-8";
+
 uses
-	CtrlLib;
+	CtrlLib,
+	plugin/sqlite3;
 
 file
 	main.cpp,
