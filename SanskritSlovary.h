@@ -13,11 +13,13 @@ using namespace Upp;
 
 #include <plugin/sqlite3/Sqlite3.h>
 
+static Font GetGauraFont();
+
 class SanskritPair : Moveable< SanskritPair > {
 public:
-	String Sanskrit;
-	String Perevod;
-	String ToString() const { return Sanskrit + " - " + Perevod; }
+  String Sanskrit;
+  String Perevod;
+  String ToString() const { return Sanskrit + " = " + Perevod; }
 };
 
 class SanscritVector : public Vector< SanskritPair > {
@@ -33,7 +35,10 @@ public:
   void Udality();
   Sqlite3Session sqlite3;
   SanscritVector VectorSanskrit;
-  
+  void PrepareBar( Bar& bar );
+  EditString EditSanskrit;
+  EditString EditPerevod;
+  void PrepareVectorSanskrit();
 };
 
 class SanskritSlovaryWindow : public TopWindow {
@@ -41,6 +46,8 @@ public:
   SanskritSlovaryPanel PanelSanskritSlovary;
   typedef SanskritSlovaryWindow CLASSNAME;
   SanskritSlovaryWindow();
+  // Вместо перекрыия виртуальной функции Serialize сделаем свою SerializeApp, так как Serialize сериализует все контролы окна. Это никчему. 
+  void SerializeApp( Stream& s );
 };
 
 #endif
