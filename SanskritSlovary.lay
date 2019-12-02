@@ -1,6 +1,6 @@
 LAYOUT(SanskritSlovaryPanel, 704, 588)
-	ITEM(ArrayCtrl, ArraySanskrit, HSizePosZ(0, 0).VSizePosZ(54, 44))
-	ITEM(ToolBar, ToolBarSanskrit, LeftPosZ(0, 704).TopPosZ(3, 47))
+	ITEM(ArrayCtrl, ArraySanskrit, SetFrame(FieldFrame()).HSizePosZ(0, 0).VSizePosZ(54, 44))
+	ITEM(ToolBar, ToolBarSanskrit, SetFrame(InsetFrame()).HSizePosZ(0, 0).TopPosZ(3, 47))
 	ITEM(Splitter, SplitterSearch, HSizePosZ(3, 0).BottomPosZ(0, 42))
 END_LAYOUT
 

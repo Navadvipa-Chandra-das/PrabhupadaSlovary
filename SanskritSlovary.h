@@ -25,7 +25,7 @@ public:
 class SanscritVector : public Vector< SanskritPair > {
 };
 
-class SanskritSlovaryPanel : public WithSanskritSlovaryPanel< ParentCtrl > {
+class SanskritSlovaryPanel : public WithSanskritSlovaryPanel< /*ParentCtrl*/TopWindow > {
 public:
   EditString SansritEdit;
   EditString PerevodEdit;
@@ -33,12 +33,15 @@ public:
   SanskritSlovaryPanel();
   void Dobavity();
   void Udality();
+  void Udality2();
+  void Udality3();
   Sqlite3Session sqlite3;
   SanscritVector VectorSanskrit;
   void PrepareBar( Bar& bar );
   EditString EditSanskrit;
   EditString EditPerevod;
   void PrepareVectorSanskrit();
+  DropList YazykDropList;
 };
 
 class SanskritSlovaryWindow : public TopWindow {

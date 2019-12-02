@@ -50,7 +50,8 @@ SanskritSlovaryPanel::SanskritSlovaryPanel()
   ToolBarSanskrit.ButtonMinSize( Size( 24, 24 ) );
   PrepareBar( ToolBarSanskrit );
        
-  if( !sqlite3.Open( ConfigFile( "Sanskrit.db" ) ) ) {
+  String db( ConfigFile( "Sanskrit.db" ) );
+  if( !sqlite3.Open( db ) ) {
     PromptOK( "Не удалось открыть базу данных санскитского словаря Шрилы Прабхупады!" );
   } else {
     sqlite3.LogErrors( true );
@@ -68,21 +69,18 @@ void SanskritSlovaryPanel::PrepareVectorSanskrit()
 	String IZNACHALYNO;
 	String PEREVOD;
 		
-	Ref rID( ID );
-	Ref rIZNACHALYNO( IZNACHALYNO );
-	Ref rPEREVOD( PEREVOD );
-  
 	sql.SetStatement( "select a.ID, a.IZNACHALYNO, a.PEREVOD from SANSKRIT a where a.YAZYK = ? limit 200" );
 	sql.SetParam( 0, "ru" );
-  DDUMP( sql );
-	sql.Run( "ru" );
+	sql.Run();
 
 	while ( sql.Fetch() ) {
-		sql.GetColumn( 0, rID );
-		sql.GetColumn( 1, rIZNACHALYNO );
-		sql.GetColumn( 2, rPEREVOD );
+    ID          = sql[ 0 ];
+    IZNACHALYNO = sql[ 1 ];
+    PEREVOD     = sql[ 2 ];
 
-		SanskritPair& PairSanskrit = VectorSanskrit.Add();
+    SanskritPair& PairSanskrit = VectorSanskrit.Add();
+    
+    
 	  PairSanskrit.Sanskrit = IZNACHALYNO;
 	  PairSanskrit.Perevod  = PEREVOD;
 	}
@@ -91,13 +89,23 @@ void SanskritSlovaryPanel::PrepareVectorSanskrit()
 
 void SanskritSlovaryPanel::PrepareBar( Bar& bar )
 {
-  Event<> dobavity, udality;
+  Event<> dobavity; // Gate<> для функторов, возвращающих логический тип
+  Function< void (void) > udality;
 
   dobavity =  [&] { Dobavity(); };
   udality  << [&] { Udality();  };
+  udality  << [&] { Udality2(); };
+  udality  << THISFN( Udality3 );
   
   bar.Add( "New", SanskritSlovaryImg::Dobavity(), dobavity ).Key( K_CTRL_N ).Help( "Open new window" );
   bar.Add( "Open..", SanskritSlovaryImg::Udality(), udality ).Key( K_CTRL_O ).Help( "Open existing document" );
+
+  YazykDropList.Add( "RU" );
+  YazykDropList.Add( "EN" );
+  YazykDropList.Tip( t_( "Язык" ) ).LeftPosZ(0, 64).TopPosZ(0, 19);
+  YazykDropList.SetIndex( 0 );
+  
+  bar.Add( YazykDropList, 68 );
 }
 
 void SanskritSlovaryPanel::Dobavity()
@@ -107,7 +115,15 @@ void SanskritSlovaryPanel::Dobavity()
 
 void SanskritSlovaryPanel::Udality()
 {
-
+  PromptOK( "Не удалось!" );
+}
+void SanskritSlovaryPanel::Udality2()
+{
+  PromptOK( "Не удалось, чеснісеньке піонерське!" );
+}
+void SanskritSlovaryPanel::Udality3()
+{
+  PromptOK( "Не удалось! Всё по чесноку!" );
 }
 
 SanskritSlovaryWindow::SanskritSlovaryWindow()
