@@ -8,8 +8,8 @@ GUI_APP_MAIN
 	
   SanskritSlovaryWindow WindowSanskritSlovary;
   
-  Event< Stream& > Serial;
-  Serial = [&] ( Stream& S ) { WindowSanskritSlovary.SerializeApp( S ); };
+  Function< void( Stream& ) > Serial;
+  Serial = [&] ( Stream& S ) { WindowSanskritSlovary.Serialize( S ); };
   
   LoadFromFile( Serial, SanskritSlovaryIniFile, 0 );
   WindowSanskritSlovary.Run();

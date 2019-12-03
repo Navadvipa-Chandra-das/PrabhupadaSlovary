@@ -51,39 +51,65 @@ SanskritSlovaryPanel::SanskritSlovaryPanel()
   PrepareBar( ToolBarSanskrit );
        
   String db( ConfigFile( "Sanskrit.db" ) );
-  if( !sqlite3.Open( db ) ) {
+  if( !Session.Open( db ) ) {
     PromptOK( "Не удалось открыть базу данных санскитского словаря Шрилы Прабхупады!" );
   } else {
-    sqlite3.LogErrors( true );
+    Session.LogErrors( true );
     DLOG( "Всё в порядке с открытием базы данных санскитского словаря Шрилы Прабхупады!" );
   }
+  PrepareVectorYazyk();
   PrepareVectorSanskrit();
+}
+
+void SanskritSlovaryPanel::PrepareVectorYazyk()
+{
+  Sql sql( Session );
+  int ID;
+  String YAZYK;
+  String YAZYK_SLOVO;
+    
+  sql.SetStatement( "select a.ID, a.YAZYK, a.YAZYK_SLOVO from YAZYK a" );
+  sql.Run();
+
+  while ( sql.Fetch() ) {
+    ID          = sql[ 0 ];
+    YAZYK       = sql[ 1 ];
+    YAZYK_SLOVO = sql[ 2 ];
+  
+    YazykInfo& InfoYazyk = VectorYazyk.Add();
+  
+    InfoYazyk.ID         = ID;
+    InfoYazyk.Yazyk      = YAZYK;
+    InfoYazyk.YazykSlovo = YAZYK_SLOVO;
+  }
+  for ( YazykVector::iterator i = VectorYazyk.begin(); i != VectorYazyk.end(); ++i ) {
+    YazykDropList.Add( (*i).YazykSlovo );
+  }
+  
+  DDUMPC( VectorYazyk );
 }
 
 void SanskritSlovaryPanel::PrepareVectorSanskrit()
 {
-  Sql sql( sqlite3 );
-  SanskritPair PairSanskrit;
-
-	int ID;
-	String IZNACHALYNO;
-	String PEREVOD;
-		
-	sql.SetStatement( "select a.ID, a.IZNACHALYNO, a.PEREVOD from SANSKRIT a where a.YAZYK = ? limit 200" );
-	sql.SetParam( 0, "ru" );
-	sql.Run();
-
-	while ( sql.Fetch() ) {
+  Sql sql( Session );
+  int ID;
+  String IZNACHALYNO;
+  String PEREVOD;
+    
+  sql.SetStatement( "select a.ID, a.IZNACHALYNO, a.PEREVOD from SANSKRIT a where a.YAZYK = ? limit 200" );
+  sql.SetParam( 0, "ru" );
+  sql.Run();
+  
+  while ( sql.Fetch() ) {
     ID          = sql[ 0 ];
     IZNACHALYNO = sql[ 1 ];
     PEREVOD     = sql[ 2 ];
-
+  
     SanskritPair& PairSanskrit = VectorSanskrit.Add();
-    
-    
-	  PairSanskrit.Sanskrit = IZNACHALYNO;
-	  PairSanskrit.Perevod  = PEREVOD;
-	}
+  
+    PairSanskrit.Sanskrit = IZNACHALYNO;
+    PairSanskrit.Perevod  = PEREVOD;
+  }
   DDUMPC( VectorSanskrit );
 }
 
@@ -100,12 +126,10 @@ void SanskritSlovaryPanel::PrepareBar( Bar& bar )
   bar.Add( "New", SanskritSlovaryImg::Dobavity(), dobavity ).Key( K_CTRL_N ).Help( "Open new window" );
   bar.Add( "Open..", SanskritSlovaryImg::Udality(), udality ).Key( K_CTRL_O ).Help( "Open existing document" );
 
-  YazykDropList.Add( "RU" );
-  YazykDropList.Add( "EN" );
-  YazykDropList.Tip( t_( "Язык" ) ).LeftPosZ(0, 64).TopPosZ(0, 19);
-  YazykDropList.SetIndex( 0 );
+  YazykDropList.Tip( t_( "Язык" ) );
+  YazykDropList.DropWidthZ( 128 );
   
-  bar.Add( YazykDropList, 68 );
+  bar.Add( YazykDropList, 108 );
 }
 
 void SanskritSlovaryPanel::Dobavity()
@@ -134,11 +158,29 @@ SanskritSlovaryWindow::SanskritSlovaryWindow()
   Title( t_( "Санскритский словарь Шрилы Прабхупады" ) ).Sizeable().Zoomable();
 }
 
-void SanskritSlovaryWindow::SerializeApp( Stream& s )
+void SanskritSlovaryWindow::Serialize( Stream& s )
 {
   int version = 0;
   s / version; // номер версии, что бы в будущем его поменять и не конфликтовать со старыми данными
   s.Magic( 346156 ); // запишите магическое число для проверки правильности данных
   //s % number % color;
   SerializePlacement( s );
+  PanelSanskritSlovary.Serialize( s );
+  TopWindow::Serialize( s );
+}
+
+void SanskritSlovaryPanel::Serialize( Stream& s )
+{
+  ArraySanskrit.SerializeHeader( s );
+  ArraySanskrit.SerializeSettings( s );
+  SanskritSlovaryPanelParent::Serialize( s );
+}
+
+void SanskritSlovaryPanel::SetYazyk( int y )
+{
+  if ( Yazyk != y ) {
+    Yazyk = y;
+    PrepareVectorSanskrit();
+    YazykDropList.SetIndex( y );
+  }
 }

@@ -22,10 +22,22 @@ public:
   String ToString() const { return Sanskrit + " = " + Perevod; }
 };
 
+struct YazykInfo : Moveable< YazykInfo > {
+  int ID;
+  String Yazyk;
+  String YazykSlovo;
+  String ToString() const { return AsString( ID ) + " - " + Yazyk + " - " + YazykSlovo; }
+};
+
+class YazykVector : public Vector< YazykInfo > {
+};
+
 class SanscritVector : public Vector< SanskritPair > {
 };
 
-class SanskritSlovaryPanel : public WithSanskritSlovaryPanel< /*ParentCtrl*/TopWindow > {
+using SanskritSlovaryPanelParent = WithSanskritSlovaryPanel< TopWindow >;
+
+class SanskritSlovaryPanel : public SanskritSlovaryPanelParent {
 public:
   EditString SansritEdit;
   EditString PerevodEdit;
@@ -35,13 +47,18 @@ public:
   void Udality();
   void Udality2();
   void Udality3();
-  Sqlite3Session sqlite3;
+  Sqlite3Session Session;
+  YazykVector VectorYazyk;
   SanscritVector VectorSanskrit;
   void PrepareBar( Bar& bar );
   EditString EditSanskrit;
   EditString EditPerevod;
   void PrepareVectorSanskrit();
+  void PrepareVectorYazyk();
   DropList YazykDropList;
+  virtual void Serialize( Stream& s );
+  int Yazyk = -1;
+  void SetYazyk( int y );
 };
 
 class SanskritSlovaryWindow : public TopWindow {
@@ -49,8 +66,7 @@ public:
   SanskritSlovaryPanel PanelSanskritSlovary;
   typedef SanskritSlovaryWindow CLASSNAME;
   SanskritSlovaryWindow();
-  // Вместо перекрыия виртуальной функции Serialize сделаем свою SerializeApp, так как Serialize сериализует все контролы окна. Это никчему. 
-  void SerializeApp( Stream& s );
+  virtual void Serialize( Stream& s );
 };
 
 #endif
