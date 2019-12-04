@@ -5,7 +5,7 @@
 //#include <Draw/iml_source.h>
 #include <Draw/iml.h>
 
-Font GetGauraFont()
+static Font GetGauraFont()
 {
   static Font AGauraFont;
   static bool AGauraFontInit = false;
@@ -13,39 +13,46 @@ Font GetGauraFont()
     AGauraFont.FaceName( "Gaura Times" );
     AGauraFont.Height( 14 );
     AGauraFontInit = true;
-    DUMP( AGauraFont );
   }
   return AGauraFont;
 }
 
-struct NumberToSanskrit : public Convert {
-  virtual Value  Format( const Value& q ) const {
-    int n = q;
-    AttrText at( FormatInt( n ) );
-    at.SetFont( GetGauraFont() );
-    return at;
-  }
-};
+Value NumberToSanskrit::Format( const Value& q ) const {
+  int n = q;
+  AttrText at;
+  if ( n < VectorSanskrit.GetCount() )
+    at = VectorSanskrit[ n ].Sanskrit;
+  else
+    at = FormatInt( n );
+  at.SetFont( GetGauraFont() );
+  return at;
+}
 
-struct NumberToPerevod : public Convert {
-  virtual Value  Format( const Value& q ) const {
-    int n = q;
-    AttrText at( FormatInt( n + 1 ) );
-    at.SetFont( GetGauraFont() );
-    return at;
-  }
-};
+Value NumberToPerevod::Format( const Value& q ) const {
+  int n = q;
+  AttrText at;
+  if ( n < VectorSanskrit.GetCount() )
+    at = VectorSanskrit[ n ].Perevod;
+  else
+    at = FormatInt( n );
+  at.SetFont( GetGauraFont() );
+  return at;
+}
 
 SanskritSlovaryPanel::SanskritSlovaryPanel()
 {
   CtrlLayout( *this );
-  SplitterSearch.Horz( SansritEdit, PerevodEdit );
+  SanskritPoiskEdit.Tip( t_( "Поиск санскрита" ) );
+  PerevodPoiskEdit.Tip(  t_( "Поиск перевода" ) );
+  SplitterSearch.Horz() << SanskritPoiskEdit << PerevodPoiskEdit;
   SplitterSearch.SetMin( 0, 1000 );
   SplitterSearch.SetMin( 1, 2000 );
 
-  ArraySanskrit.AddRowNumColumn( "Санскрит", 50 ).SetConvert( Single< NumberToSanskrit >() ).Edit( EditSanskrit );
-  ArraySanskrit.AddRowNumColumn( "Перевод" , 50 ).SetConvert( Single< NumberToPerevod  >() ).Edit( EditPerevod  );
+  ArraySanskrit.AddRowNumColumn( "Санскрит", 50 ).SetConvert( FNumberToSanskrit ).Edit( EditSanskrit );
+  ArraySanskrit.AddRowNumColumn( "Перевод" , 50 ).SetConvert( FNumberToPerevod  ).Edit( EditPerevod  );
   ArraySanskrit.SetVirtualCount( 900000 );
+  const Font& gf = GetGauraFont();
+  ArraySanskrit.SetLineCy( gf.GetCy() );
   
   ToolBarSanskrit.ButtonMinSize( Size( 24, 24 ) );
   PrepareBar( ToolBarSanskrit );
@@ -55,10 +62,8 @@ SanskritSlovaryPanel::SanskritSlovaryPanel()
     PromptOK( "Не удалось открыть базу данных санскитского словаря Шрилы Прабхупады!" );
   } else {
     Session.LogErrors( true );
-    DLOG( "Всё в порядке с открытием базы данных санскитского словаря Шрилы Прабхупады!" );
   }
   PrepareVectorYazyk();
-  PrepareVectorSanskrit();
 }
 
 void SanskritSlovaryPanel::PrepareVectorYazyk()
@@ -85,19 +90,18 @@ void SanskritSlovaryPanel::PrepareVectorYazyk()
   for ( YazykVector::iterator i = VectorYazyk.begin(); i != VectorYazyk.end(); ++i ) {
     YazykDropList.Add( (*i).YazykSlovo );
   }
-  
-  DDUMPC( VectorYazyk );
 }
 
 void SanskritSlovaryPanel::PrepareVectorSanskrit()
 {
+  if ( Yazyk == -1 ) return;
   Sql sql( Session );
   int ID;
   String IZNACHALYNO;
   String PEREVOD;
     
   sql.SetStatement( "select a.ID, a.IZNACHALYNO, a.PEREVOD from SANSKRIT a where a.YAZYK = ? limit 200" );
-  sql.SetParam( 0, "ru" );
+  sql.SetParam( 0, VectorYazyk[ Yazyk ].Yazyk );
   sql.Run();
   
   while ( sql.Fetch() ) {
@@ -110,13 +114,12 @@ void SanskritSlovaryPanel::PrepareVectorSanskrit()
     PairSanskrit.Sanskrit = IZNACHALYNO;
     PairSanskrit.Perevod  = PEREVOD;
   }
-  DDUMPC( VectorSanskrit );
 }
 
 void SanskritSlovaryPanel::PrepareBar( Bar& bar )
 {
   Event<> dobavity; // Gate<> для функторов, возвращающих логический тип
-  Function< void (void) > udality;
+  Function< void (void) > udality, smenaYazyka;
 
   dobavity =  [&] { Dobavity(); };
   udality  << [&] { Udality();  };
@@ -128,8 +131,19 @@ void SanskritSlovaryPanel::PrepareBar( Bar& bar )
 
   YazykDropList.Tip( t_( "Язык" ) );
   YazykDropList.DropWidthZ( 128 );
+  smenaYazyka  << [&] { SmenaYazyka(); };
+  // WhenPush в отличие от WhenAction даёт существенно другое поведение DropList!
+  // Когда WhenPush - похоже на кнопку и событие не возникает при выборе из выпадающего списка
+  // когда WhenAction - на кнопку не похоже, сразу выпадает список и событие возникает при
+  // выборе из списка
+  YazykDropList.WhenAction = smenaYazyka;
   
   bar.Add( YazykDropList, 108 );
+}
+
+void SanskritSlovaryPanel::SmenaYazyka()
+{
+  SetYazyk( YazykDropList.GetIndex() );
 }
 
 void SanskritSlovaryPanel::Dobavity()
@@ -167,6 +181,8 @@ void SanskritSlovaryWindow::Serialize( Stream& s )
   SerializePlacement( s );
   PanelSanskritSlovary.Serialize( s );
   TopWindow::Serialize( s );
+  if ( s.IsLoading() )
+    PanelSanskritSlovary.SetYazyk( PanelSanskritSlovary.YazykDropList.GetIndex() );
 }
 
 void SanskritSlovaryPanel::Serialize( Stream& s )
@@ -180,6 +196,7 @@ void SanskritSlovaryPanel::SetYazyk( int y )
 {
   if ( Yazyk != y ) {
     Yazyk = y;
+    PromptOK( "Язык установили в " + AsString( Yazyk ) );
     PrepareVectorSanskrit();
     YazykDropList.SetIndex( y );
   }

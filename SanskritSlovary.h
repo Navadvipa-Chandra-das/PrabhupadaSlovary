@@ -13,8 +13,6 @@ using namespace Upp;
 
 #include <plugin/sqlite3/Sqlite3.h>
 
-static Font GetGauraFont();
-
 class SanskritPair : Moveable< SanskritPair > {
 public:
   String Sanskrit;
@@ -32,24 +30,39 @@ struct YazykInfo : Moveable< YazykInfo > {
 class YazykVector : public Vector< YazykInfo > {
 };
 
-class SanscritVector : public Vector< SanskritPair > {
+class SanskritVector : public Vector< SanskritPair > {
+};
+
+static Font GetGauraFont();
+
+struct NumberToSanskrit : public Convert {
+  SanskritVector& VectorSanskrit;
+  NumberToSanskrit( SanskritVector& AVectorSanskrit ) : VectorSanskrit( AVectorSanskrit ) {};
+  virtual Value  Format( const Value& q ) const;
+};
+
+struct NumberToPerevod : public Convert {
+  SanskritVector& VectorSanskrit;
+  NumberToPerevod( SanskritVector& AVectorSanskrit ) : VectorSanskrit( AVectorSanskrit ) {};
+  virtual Value  Format( const Value& q ) const;
 };
 
 using SanskritSlovaryPanelParent = WithSanskritSlovaryPanel< TopWindow >;
 
 class SanskritSlovaryPanel : public SanskritSlovaryPanelParent {
 public:
-  EditString SansritEdit;
-  EditString PerevodEdit;
+  EditString SanskritPoiskEdit;
+  EditString PerevodPoiskEdit;
   typedef SanskritSlovaryPanel CLASSNAME;
   SanskritSlovaryPanel();
   void Dobavity();
   void Udality();
   void Udality2();
   void Udality3();
+  void SmenaYazyka();
   Sqlite3Session Session;
   YazykVector VectorYazyk;
-  SanscritVector VectorSanskrit;
+  SanskritVector VectorSanskrit;
   void PrepareBar( Bar& bar );
   EditString EditSanskrit;
   EditString EditPerevod;
@@ -59,6 +72,8 @@ public:
   virtual void Serialize( Stream& s );
   int Yazyk = -1;
   void SetYazyk( int y );
+  NumberToSanskrit FNumberToSanskrit { VectorSanskrit };
+  NumberToPerevod  FNumberToPerevod  { VectorSanskrit };
 };
 
 class SanskritSlovaryWindow : public TopWindow {
