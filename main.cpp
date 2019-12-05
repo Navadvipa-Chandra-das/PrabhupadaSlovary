@@ -11,7 +11,8 @@ GUI_APP_MAIN
   Function< void( Stream& ) > Serial;
   Serial = [&] ( Stream& S ) { WindowSanskritSlovary.Serialize( S ); };
   
-  LoadFromFile( Serial, SanskritSlovaryIniFile, 0 );
+  if ( !LoadFromFile( Serial, SanskritSlovaryIniFile, 0 ) )
+    WindowSanskritSlovary.PanelSanskritSlovary.SetYazyk( RussianYazyk );
   WindowSanskritSlovary.Run();
   StoreToFile(  Serial, SanskritSlovaryIniFile, 0 );
 }

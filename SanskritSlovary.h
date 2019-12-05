@@ -15,6 +15,7 @@ using namespace Upp;
 
 class SanskritPair : Moveable< SanskritPair > {
 public:
+  int Index; // для фильтрации поиска
   String Sanskrit;
   String Perevod;
   String ToString() const { return Sanskrit + " = " + Perevod; }
@@ -31,6 +32,8 @@ class YazykVector : public Vector< YazykInfo > {
 };
 
 class SanskritVector : public Vector< SanskritPair > {
+public:
+  int DlinaVector = 0;
 };
 
 static Font GetGauraFont();
@@ -74,6 +77,7 @@ public:
   void SetYazyk( int y );
   NumberToSanskrit FNumberToSanskrit { VectorSanskrit };
   NumberToPerevod  FNumberToPerevod  { VectorSanskrit };
+  void IndicatorRow();
 };
 
 class SanskritSlovaryWindow : public TopWindow {

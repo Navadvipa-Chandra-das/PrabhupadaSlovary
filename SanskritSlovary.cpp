@@ -1,4 +1,5 @@
 #include "SanskritSlovary.h"
+#include "SanskritSlovaryConsts.h"
 
 #define IMAGECLASS SanskritSlovaryImg
 #define IMAGEFILE <SanskritSlovary/SanskritSlovary.iml>
@@ -18,22 +19,24 @@ static Font GetGauraFont()
 }
 
 Value NumberToSanskrit::Format( const Value& q ) const {
-  int n = q;
+  int n = q, i;
   AttrText at;
-  if ( n < VectorSanskrit.GetCount() )
-    at = VectorSanskrit[ n ].Sanskrit;
-  else
+  if ( n < VectorSanskrit.DlinaVector ) {
+    i  = VectorSanskrit[ n ].Index;
+    at = VectorSanskrit[ i ].Sanskrit;
+  } else
     at = FormatInt( n );
   at.SetFont( GetGauraFont() );
   return at;
 }
 
 Value NumberToPerevod::Format( const Value& q ) const {
-  int n = q;
+  int n = q, i;
   AttrText at;
-  if ( n < VectorSanskrit.GetCount() )
-    at = VectorSanskrit[ n ].Perevod;
-  else
+  if ( n < VectorSanskrit.DlinaVector ) {
+    i  = VectorSanskrit[ n ].Index;
+    at = VectorSanskrit[ i ].Perevod;
+  } else
     at = FormatInt( n );
   at.SetFont( GetGauraFont() );
   return at;
@@ -50,9 +53,12 @@ SanskritSlovaryPanel::SanskritSlovaryPanel()
 
   ArraySanskrit.AddRowNumColumn( "Санскрит", 50 ).SetConvert( FNumberToSanskrit ).Edit( EditSanskrit );
   ArraySanskrit.AddRowNumColumn( "Перевод" , 50 ).SetConvert( FNumberToPerevod  ).Edit( EditPerevod  );
-  ArraySanskrit.SetVirtualCount( 900000 );
   const Font& gf = GetGauraFont();
   ArraySanskrit.SetLineCy( gf.GetCy() );
+
+  Function< void () > ur;
+  ur = [&] () { IndicatorRow(); };
+  ArraySanskrit.WhenSel << ur;
   
   ToolBarSanskrit.ButtonMinSize( Size( 24, 24 ) );
   PrepareBar( ToolBarSanskrit );
@@ -64,6 +70,12 @@ SanskritSlovaryPanel::SanskritSlovaryPanel()
     Session.LogErrors( true );
   }
   PrepareVectorYazyk();
+}
+
+void SanskritSlovaryPanel::IndicatorRow()
+{
+  int r = ArraySanskrit.GetCursor() + 1;
+  EditIndicatorRow.SetText( AsString( r ) + IndicatorSeparator + AsString( VectorSanskrit.DlinaVector ) );
 }
 
 void SanskritSlovaryPanel::PrepareVectorYazyk()
@@ -100,20 +112,28 @@ void SanskritSlovaryPanel::PrepareVectorSanskrit()
   String IZNACHALYNO;
   String PEREVOD;
     
-  sql.SetStatement( "select a.ID, a.IZNACHALYNO, a.PEREVOD from SANSKRIT a where a.YAZYK = ? limit 200" );
+  sql.SetStatement( "select a.ID, a.IZNACHALYNO, a.PEREVOD from SANSKRIT a where a.YAZYK = ?" );
   sql.SetParam( 0, VectorYazyk[ Yazyk ].Yazyk );
   sql.Run();
+  
+  VectorSanskrit.Clear();
+
+  int i = 0;
+  SanskritPair PairSanskrit;
   
   while ( sql.Fetch() ) {
     ID          = sql[ 0 ];
     IZNACHALYNO = sql[ 1 ];
     PEREVOD     = sql[ 2 ];
   
-    SanskritPair& PairSanskrit = VectorSanskrit.Add();
+    SanskritPair& RefPairSanskrit = VectorSanskrit.At( i, PairSanskrit );
   
-    PairSanskrit.Sanskrit = IZNACHALYNO;
-    PairSanskrit.Perevod  = PEREVOD;
+    RefPairSanskrit.Index    = i++;
+    RefPairSanskrit.Sanskrit = IZNACHALYNO;
+    RefPairSanskrit.Perevod  = PEREVOD;
   }
+  VectorSanskrit.DlinaVector = i;
+  ArraySanskrit.SetVirtualCount( VectorSanskrit.DlinaVector );
 }
 
 void SanskritSlovaryPanel::PrepareBar( Bar& bar )
@@ -183,6 +203,8 @@ void SanskritSlovaryWindow::Serialize( Stream& s )
   TopWindow::Serialize( s );
   if ( s.IsLoading() )
     PanelSanskritSlovary.SetYazyk( PanelSanskritSlovary.YazykDropList.GetIndex() );
+  if ( s.IsError() )
+    PanelSanskritSlovary.SetYazyk( 4 );
 }
 
 void SanskritSlovaryPanel::Serialize( Stream& s )
@@ -196,8 +218,9 @@ void SanskritSlovaryPanel::SetYazyk( int y )
 {
   if ( Yazyk != y ) {
     Yazyk = y;
-    PromptOK( "Язык установили в " + AsString( Yazyk ) );
     PrepareVectorSanskrit();
     YazykDropList.SetIndex( y );
+    ArraySanskrit.Refresh();
+    BeepInformation();
   }
 }
