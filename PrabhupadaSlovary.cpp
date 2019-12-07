@@ -1,8 +1,8 @@
-#include "SanskritSlovary.h"
-#include "SanskritSlovaryConsts.h"
+#include "PrabhupadaSlovary.h"
+#include "PrabhupadaSlovaryConsts.h"
 
-#define IMAGECLASS SanskritSlovaryImg
-#define IMAGEFILE <SanskritSlovary/SanskritSlovary.iml>
+#define IMAGECLASS PrabhupadaSlovaryImg
+#define IMAGEFILE <PrabhupadaSlovary/PrabhupadaSlovary.iml>
 //#include <Draw/iml_source.h>
 #include <Draw/iml.h>
 
@@ -42,14 +42,16 @@ Value NumberToPerevod::Format( const Value& q ) const {
   return at;
 }
 
-SanskritSlovaryPanel::SanskritSlovaryPanel()
+PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
 {
   CtrlLayout( *this );
   SanskritPoiskEdit.Tip( t_( "Поиск санскрита" ) );
   PerevodPoiskEdit.Tip(  t_( "Поиск перевода" ) );
   SplitterSearch.Horz() << SanskritPoiskEdit << PerevodPoiskEdit;
   SplitterSearch.SetMin( 0, 1000 );
-  SplitterSearch.SetMin( 1, 2000 );
+  SplitterSearch.SetMin( 1, 1000 );
+  EditIndicatorRow.NoWantFocus();
+  
 
   ArraySanskrit.AddRowNumColumn( "Санскрит", 50 ).SetConvert( FNumberToSanskrit ).Edit( EditSanskrit );
   ArraySanskrit.AddRowNumColumn( "Перевод" , 50 ).SetConvert( FNumberToPerevod  ).Edit( EditPerevod  );
@@ -72,13 +74,13 @@ SanskritSlovaryPanel::SanskritSlovaryPanel()
   PrepareVectorYazyk();
 }
 
-void SanskritSlovaryPanel::IndicatorRow()
+void PrabhupadaSlovaryPanel::IndicatorRow()
 {
   int r = ArraySanskrit.GetCursor() + 1;
   EditIndicatorRow.SetText( AsString( r ) + IndicatorSeparator + AsString( VectorSanskrit.DlinaVector ) );
 }
 
-void SanskritSlovaryPanel::PrepareVectorYazyk()
+void PrabhupadaSlovaryPanel::PrepareVectorYazyk()
 {
   Sql sql( Session );
   int ID;
@@ -104,7 +106,7 @@ void SanskritSlovaryPanel::PrepareVectorYazyk()
   }
 }
 
-void SanskritSlovaryPanel::PrepareVectorSanskrit()
+void PrabhupadaSlovaryPanel::PrepareVectorSanskrit()
 {
   if ( Yazyk == -1 ) return;
   Sql sql( Session );
@@ -136,7 +138,7 @@ void SanskritSlovaryPanel::PrepareVectorSanskrit()
   ArraySanskrit.SetVirtualCount( VectorSanskrit.DlinaVector );
 }
 
-void SanskritSlovaryPanel::PrepareBar( Bar& bar )
+void PrabhupadaSlovaryPanel::PrepareBar( Bar& bar )
 {
   Event<> dobavity; // Gate<> для функторов, возвращающих логический тип
   Function< void (void) > udality, smenaYazyka;
@@ -146,8 +148,8 @@ void SanskritSlovaryPanel::PrepareBar( Bar& bar )
   udality  << [&] { Udality2(); };
   udality  << THISFN( Udality3 );
   
-  bar.Add( "New", SanskritSlovaryImg::Dobavity(), dobavity ).Key( K_CTRL_N ).Help( "Open new window" );
-  bar.Add( "Open..", SanskritSlovaryImg::Udality(), udality ).Key( K_CTRL_O ).Help( "Open existing document" );
+  bar.Add( "New", PrabhupadaSlovaryImg::Dobavity(), dobavity ).Key( K_CTRL_N ).Help( "Open new window" );
+  bar.Add( "Open..", PrabhupadaSlovaryImg::Udality(), udality ).Key( K_CTRL_O ).Help( "Open existing document" );
 
   YazykDropList.Tip( t_( "Язык" ) );
   YazykDropList.DropWidthZ( 128 );
@@ -161,66 +163,83 @@ void SanskritSlovaryPanel::PrepareBar( Bar& bar )
   bar.Add( YazykDropList, 108 );
 }
 
-void SanskritSlovaryPanel::SmenaYazyka()
+void PrabhupadaSlovaryPanel::SmenaYazyka()
 {
   SetYazyk( YazykDropList.GetIndex() );
 }
 
-void SanskritSlovaryPanel::Dobavity()
+void PrabhupadaSlovaryPanel::Dobavity()
 {
 
 }
 
-void SanskritSlovaryPanel::Udality()
+void PrabhupadaSlovaryPanel::Udality()
 {
   PromptOK( "Не удалось!" );
 }
-void SanskritSlovaryPanel::Udality2()
+void PrabhupadaSlovaryPanel::Udality2()
 {
   PromptOK( "Не удалось, чеснісеньке піонерське!" );
 }
-void SanskritSlovaryPanel::Udality3()
+void PrabhupadaSlovaryPanel::Udality3()
 {
   PromptOK( "Не удалось! Всё по чесноку!" );
 }
 
-SanskritSlovaryWindow::SanskritSlovaryWindow()
+PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow()
 {
-  Add( PanelSanskritSlovary );
-  PanelSanskritSlovary.SizePos();
+  Add( PanelPrabhupadaSlovary );
+  PanelPrabhupadaSlovary.SizePos();
   Rect( 0, 0, 600, 600 );
   Title( t_( "Санскритский словарь Шрилы Прабхупады" ) ).Sizeable().Zoomable();
 }
 
-void SanskritSlovaryWindow::Serialize( Stream& s )
+void PrabhupadaSlovaryWindow::Serialize( Stream& s )
+{
+  GuiLock __;
+  int version = 0;
+  s / version; // номер версии, чтобы при чтении можно разветвиться на разные версии параметров
+  s.Magic( 346156 ); // запишите магическое число для проверки правильности данных
+  SerializePlacement( s );
+  PanelPrabhupadaSlovary.Serialize( s );
+}
+
+void PrabhupadaSlovaryPanel::Serialize( Stream& s )
 {
   int version = 0;
-  s / version; // номер версии, что бы в будущем его поменять и не конфликтовать со старыми данными
-  s.Magic( 346156 ); // запишите магическое число для проверки правильности данных
-  //s % number % color;
-  SerializePlacement( s );
-  PanelSanskritSlovary.Serialize( s );
-  TopWindow::Serialize( s );
-  if ( s.IsLoading() )
-    PanelSanskritSlovary.SetYazyk( PanelSanskritSlovary.YazykDropList.GetIndex() );
-  if ( s.IsError() )
-    PanelSanskritSlovary.SetYazyk( 4 );
-}
+  s / version;
+  s.Magic( 954756 );
 
-void SanskritSlovaryPanel::Serialize( Stream& s )
-{
   ArraySanskrit.SerializeHeader( s );
   ArraySanskrit.SerializeSettings( s );
-  SanskritSlovaryPanelParent::Serialize( s );
+  SplitterSearch.Serialize( s );
+
+  int LastYazyk, LastCursor;
+  if ( s.IsStoring() ) {
+    LastCursor = ArraySanskrit.GetCursor();
+    LastYazyk  = Yazyk;
+  }
+  s % LastCursor % LastYazyk;
+  if ( s.IsLoading() ) {
+    SetYazyk( LastYazyk );
+    ArraySanskrit.SetCursor( LastCursor );
+  }
 }
 
-void SanskritSlovaryPanel::SetYazyk( int y )
+void PrabhupadaSlovaryPanel::SetYazyk( int y )
 {
   if ( Yazyk != y ) {
+    int c = ArraySanskrit.GetCursor();
     Yazyk = y;
     PrepareVectorSanskrit();
     YazykDropList.SetIndex( y );
+    if ( c < 0 )
+      ArraySanskrit.GoBegin();
+    else
+      ArraySanskrit.SetCursor( c );
     ArraySanskrit.Refresh();
+    ArraySanskrit.WhenSel();
+    // Ура, победа!
     BeepInformation();
   }
 }

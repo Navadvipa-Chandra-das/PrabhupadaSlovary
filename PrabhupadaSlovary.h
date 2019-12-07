@@ -1,14 +1,14 @@
-#ifndef _SanskritSlovary_SanskritSlovary_h
-#define _SanskritSlovary_SanskritSlovary_h
+#ifndef _PrabhupadaSlovary_PrabhupadaSlovary_h
+#define _PrabhupadaSlovary_PrabhupadaSlovary_h
 
 #include <CtrlLib/CtrlLib.h>
 
 using namespace Upp;
 
-#define LAYOUTFILE <SanskritSlovary/SanskritSlovary.lay>
+#define LAYOUTFILE <PrabhupadaSlovary/PrabhupadaSlovary.lay>
 #include <CtrlCore/lay.h>
 
-#define IMAGEFILE <SanskritSlovary/SanskritSlovary.iml>
+#define IMAGEFILE <PrabhupadaSlovary/PrabhupadaSlovary.iml>
 #include <Draw/iml_header.h>
 
 #include <plugin/sqlite3/Sqlite3.h>
@@ -50,14 +50,14 @@ struct NumberToPerevod : public Convert {
   virtual Value  Format( const Value& q ) const;
 };
 
-using SanskritSlovaryPanelParent = WithSanskritSlovaryPanel< TopWindow >;
+using PrabhupadaSlovaryPanelParent = WithPrabhupadaSlovaryPanel< ParentCtrl/*TopWindow*/ >;
 
-class SanskritSlovaryPanel : public SanskritSlovaryPanelParent {
+class PrabhupadaSlovaryPanel : public PrabhupadaSlovaryPanelParent {
 public:
   EditString SanskritPoiskEdit;
   EditString PerevodPoiskEdit;
-  typedef SanskritSlovaryPanel CLASSNAME;
-  SanskritSlovaryPanel();
+  typedef PrabhupadaSlovaryPanel CLASSNAME;
+  PrabhupadaSlovaryPanel();
   void Dobavity();
   void Udality();
   void Udality2();
@@ -80,11 +80,11 @@ public:
   void IndicatorRow();
 };
 
-class SanskritSlovaryWindow : public TopWindow {
+class PrabhupadaSlovaryWindow : public TopWindow {
 public:
-  SanskritSlovaryPanel PanelSanskritSlovary;
-  typedef SanskritSlovaryWindow CLASSNAME;
-  SanskritSlovaryWindow();
+  PrabhupadaSlovaryPanel PanelPrabhupadaSlovary;
+  typedef PrabhupadaSlovaryWindow CLASSNAME;
+  PrabhupadaSlovaryWindow();
   virtual void Serialize( Stream& s );
 };
 

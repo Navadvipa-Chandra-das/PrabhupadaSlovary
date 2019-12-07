@@ -1,0 +1,7 @@
+LAYOUT(PrabhupadaSlovaryPanel, 704, 589)
+	ITEM(ArrayCtrl, ArraySanskrit, SetFrame(FieldFrame()).HSizePosZ(0, 0).VSizePosZ(28, 29))
+	ITEM(Splitter, SplitterSearch, HSizePosZ(0, 0).BottomPosZ(0, 28))
+	ITEM(ToolBar, ToolBarSanskrit, HSizePosZ(0, 98).TopPosZ(0, 28))
+	ITEM(EditString, EditIndicatorRow, AlignRight(true).SetEditable(false).Tip(t_("Строка / Всего")).RightPosZ(4, 93).TopPosZ(5, 19))
+END_LAYOUT
+

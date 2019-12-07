@@ -7,12 +7,12 @@ uses
 	plugin/sqlite3;
 
 file
-	SanskritSlovaryConsts.h,
-	main.cpp,
-	SanskritSlovary.lay,
-	SanskritSlovary.cpp,
-	SanskritSlovary.h,
-	SanskritSlovary.iml;
+	PrabhupadaSlovaryConsts.h,
+	PrabhupadaSlovaryMain.cpp,
+	PrabhupadaSlovary.lay,
+	PrabhupadaSlovary.cpp,
+	PrabhupadaSlovary.h,
+	PrabhupadaSlovary.iml;
 
 mainconfig
 	"" = "GUI";
