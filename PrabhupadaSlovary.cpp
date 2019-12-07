@@ -51,7 +51,6 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   SplitterSearch.SetMin( 0, 1000 );
   SplitterSearch.SetMin( 1, 1000 );
   EditIndicatorRow.NoWantFocus();
-  
 
   ArraySanskrit.AddRowNumColumn( "Санскрит", 50 ).SetConvert( FNumberToSanskrit ).Edit( EditSanskrit );
   ArraySanskrit.AddRowNumColumn( "Перевод" , 50 ).SetConvert( FNumberToPerevod  ).Edit( EditPerevod  );
@@ -152,7 +151,8 @@ void PrabhupadaSlovaryPanel::PrepareBar( Bar& bar )
   bar.Add( "Open..", PrabhupadaSlovaryImg::Udality(), udality ).Key( K_CTRL_O ).Help( "Open existing document" );
 
   YazykDropList.Tip( t_( "Язык" ) );
-  YazykDropList.DropWidthZ( 128 );
+  YazykDropList.DropWidthZ( 148 );
+  YazykDropList.NoWantFocus();
   smenaYazyka  << [&] { SmenaYazyka(); };
   // WhenPush в отличие от WhenAction даёт существенно другое поведение DropList!
   // Когда WhenPush - похоже на кнопку и событие не возникает при выборе из выпадающего списка
@@ -160,7 +160,7 @@ void PrabhupadaSlovaryPanel::PrepareBar( Bar& bar )
   // выборе из списка
   YazykDropList.WhenAction = smenaYazyka;
   
-  bar.Add( YazykDropList, 108 );
+  bar.Add( YazykDropList, 138 );
 }
 
 void PrabhupadaSlovaryPanel::SmenaYazyka()
@@ -221,9 +221,22 @@ void PrabhupadaSlovaryPanel::Serialize( Stream& s )
   }
   s % LastCursor % LastYazyk;
   if ( s.IsLoading() ) {
+    if ( StrongYazyk != -1 ) {
+      if ( StrongYazyk != LastYazyk )
+        LastCursor = 0;
+      LastYazyk = StrongYazyk;
+    }
     SetYazyk( LastYazyk );
     ArraySanskrit.SetCursor( LastCursor );
   }
+}
+
+int YazykVector::FindYazyk( const String& S )
+{
+	for( int i = 0; i < GetCount(); ++i )
+		if ( (*this)[i].Yazyk == S )
+		  return i;
+	return -1;
 }
 
 void PrabhupadaSlovaryPanel::SetYazyk( int y )

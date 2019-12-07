@@ -29,6 +29,8 @@ struct YazykInfo : Moveable< YazykInfo > {
 };
 
 class YazykVector : public Vector< YazykInfo > {
+public:
+  FindYazyk( const String& S );
 };
 
 class SanskritVector : public Vector< SanskritPair > {
@@ -78,6 +80,7 @@ public:
   NumberToSanskrit FNumberToSanskrit { VectorSanskrit };
   NumberToPerevod  FNumberToPerevod  { VectorSanskrit };
   void IndicatorRow();
+  int StrongYazyk = -1;
 };
 
 class PrabhupadaSlovaryWindow : public TopWindow {
