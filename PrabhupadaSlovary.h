@@ -3,7 +3,7 @@
 
 #include <CtrlLib/CtrlLib.h>
 
-using namespace Upp;
+namespace Upp {
 
 #define LAYOUTFILE <PrabhupadaSlovary/PrabhupadaSlovary.lay>
 #include <CtrlCore/lay.h>
@@ -11,70 +11,76 @@ using namespace Upp;
 #define IMAGEFILE <PrabhupadaSlovary/PrabhupadaSlovary.iml>
 #include <Draw/iml_header.h>
 
+}
+
 #include <plugin/sqlite3/Sqlite3.h>
 
-class SanskritPair : Moveable< SanskritPair > {
+namespace Prabhupada {
+
+class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
   int Index; // для фильтрации поиска
-  String Sanskrit;
-  String Perevod;
-  String ToString() const { return Sanskrit + " = " + Perevod; }
+  Upp::String Sanskrit;
+  Upp::String Perevod;
+  Upp::String ToString() const { return Sanskrit + " = " + Perevod; }
 };
 
-struct YazykInfo : Moveable< YazykInfo > {
+struct YazykInfo : Upp::Moveable< YazykInfo > {
   int ID;
-  String Yazyk;
-  String YazykSlovo;
-  String ToString() const { return AsString( ID ) + " - " + Yazyk + " - " + YazykSlovo; }
+  Upp::String Yazyk;
+  Upp::String YazykSlovo;
+  Upp::String ToString() const { return Upp::AsString( ID ) + " - " + Yazyk + " - " + YazykSlovo; }
 };
 
-class YazykVector : public Vector< YazykInfo > {
+class YazykVector : public Upp::Vector< YazykInfo > {
 public:
-  FindYazyk( const String& S );
+  FindYazyk( const Upp::String& S );
 };
 
-class SanskritVector : public Vector< SanskritPair > {
+class SanskritVector : public Upp::Vector< SanskritPair > {
 public:
   int DlinaVector = 0;
 };
 
-static Font GetGauraFont();
+static Upp::Font GetGauraFont();
 
-struct NumberToSanskrit : public Convert {
+struct NumberToSanskrit : public Upp::Convert {
   SanskritVector& VectorSanskrit;
   NumberToSanskrit( SanskritVector& AVectorSanskrit ) : VectorSanskrit( AVectorSanskrit ) {};
-  virtual Value  Format( const Value& q ) const;
+  virtual Upp::Value  Format( const Upp::Value& q ) const;
 };
 
-struct NumberToPerevod : public Convert {
+struct NumberToPerevod : public Upp::Convert {
   SanskritVector& VectorSanskrit;
   NumberToPerevod( SanskritVector& AVectorSanskrit ) : VectorSanskrit( AVectorSanskrit ) {};
-  virtual Value  Format( const Value& q ) const;
+  virtual Upp::Value  Format( const Upp::Value& q ) const;
 };
 
-using PrabhupadaSlovaryPanelParent = WithPrabhupadaSlovaryPanel< ParentCtrl/*TopWindow*/ >;
+using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::ParentCtrl/*TopWindow*/ >;
 
 class PrabhupadaSlovaryPanel : public PrabhupadaSlovaryPanelParent {
 public:
-  EditString SanskritPoiskEdit;
-  EditString PerevodPoiskEdit;
   typedef PrabhupadaSlovaryPanel CLASSNAME;
+  enum class VidSortirovka : int { SanskritVozrastanie = 0, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
+  Upp::EditString SanskritPoiskEdit;
+  Upp::EditString PerevodPoiskEdit;
   PrabhupadaSlovaryPanel();
   void Dobavity();
   void Udality();
-  void Udality2();
-  void Udality3();
+  void Edit();
   void SmenaYazyka();
-  Sqlite3Session Session;
+  Upp::Sqlite3Session Session;
   YazykVector VectorYazyk;
   SanskritVector VectorSanskrit;
-  void PrepareBar( Bar& bar );
-  EditString EditSanskrit;
-  EditString EditPerevod;
+  void PrepareBar( Upp::Bar& bar );
+  Upp::EditString EditSanskrit;
+  Upp::EditString EditPerevod;
   void PrepareVectorSanskrit();
   void PrepareVectorYazyk();
-  DropList YazykDropList;
-  virtual void Serialize( Stream& s );
+  Upp::DropList YazykDropList;
+  Upp::DropList SortDropList;
+  void Sortirovka();
+  virtual void Serialize( Upp::Stream& s );
   int Yazyk = -1;
   void SetYazyk( int y );
   NumberToSanskrit FNumberToSanskrit { VectorSanskrit };
@@ -83,12 +89,14 @@ public:
   int StrongYazyk = -1;
 };
 
-class PrabhupadaSlovaryWindow : public TopWindow {
+class PrabhupadaSlovaryWindow : public Upp::TopWindow {
 public:
   PrabhupadaSlovaryPanel PanelPrabhupadaSlovary;
   typedef PrabhupadaSlovaryWindow CLASSNAME;
   PrabhupadaSlovaryWindow();
-  virtual void Serialize( Stream& s );
+  virtual void Serialize( Upp::Stream& s );
 };
+
+} // namespace Prabhupada
 
 #endif

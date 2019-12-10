@@ -12,7 +12,9 @@ file
 	PrabhupadaSlovary.lay,
 	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovary.h,
-	PrabhupadaSlovary.iml;
+	PrabhupadaSlovary.iml,
+	PrabhupadaSlovaryAlgorithm.cpp,
+	PrabhupadaSlovaryAlgorithm.h;
 
 mainconfig
 	"" = "GUI";
