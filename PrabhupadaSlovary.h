@@ -17,9 +17,32 @@ namespace Upp {
 
 namespace Prabhupada {
 
+struct FilterSlovary : Upp::Moveable< FilterSlovary > {
+  Upp::String FilterSanskrit;
+  Upp::String FilterPerevod;
+  Upp::String ToString() const { return FilterSanskrit + " ; " + FilterPerevod; }
+  void Serialize( Upp::Stream& s )
+  {
+    int version = 0;
+    s / version;
+    s % FilterSanskrit % FilterPerevod;
+  };
+  bool operator == ( const FilterSlovary& F ) {
+    return ( FilterSanskrit == F.FilterSanskrit ) && ( FilterPerevod == F.FilterPerevod );
+  }
+  bool operator != ( const FilterSlovary& F ) {
+    return ( ( FilterSanskrit != F.FilterSanskrit ) || ( FilterPerevod != F.FilterPerevod ) );
+  }
+  bool IsEmpty() const {
+    return FilterSanskrit.IsEmpty() && FilterPerevod.IsEmpty();
+  }
+  void Clear() { FilterSanskrit.Clear(); FilterPerevod.Clear(); }
+};
+
 class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
   int Index; // для фильтрации поиска
+  int IndexReserv; // для сохранения после поиска
   Upp::String Sanskrit;
   Upp::String Perevod;
   Upp::String ToString() const { return Sanskrit + " = " + Perevod; }
@@ -40,6 +63,10 @@ public:
 class SanskritVector : public Upp::Vector< SanskritPair > {
 public:
   int DlinaVector = 0;
+  int LastID;
+  void SaveIndexToReserv();
+  void LoadIndexFromReserv();
+  void ResetIndex();
 };
 
 static Upp::Font GetGauraFont();
@@ -61,7 +88,7 @@ using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::Paren
 class PrabhupadaSlovaryPanel : public PrabhupadaSlovaryPanelParent {
 public:
   typedef PrabhupadaSlovaryPanel CLASSNAME;
-  enum class VidSortirovka : int { SanskritVozrastanie = 0, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
+  enum class VidSortirovka : int { NotSorted = 0, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
   Upp::EditString SanskritPoiskEdit;
   Upp::EditString PerevodPoiskEdit;
   PrabhupadaSlovaryPanel();
@@ -87,6 +114,10 @@ public:
   NumberToPerevod  FNumberToPerevod  { VectorSanskrit };
   void IndicatorRow();
   int StrongYazyk = -1;
+  FilterSlovary Filter;
+  void SetFilter( const FilterSlovary& F );
+  void FilterUstanovka();
+  void FilterVectorSanskrit();
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {
