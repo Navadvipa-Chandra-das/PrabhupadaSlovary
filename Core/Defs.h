@@ -1,4 +1,4 @@
-// #define MEMORY_SHRINK
+=------------ORY_SHRINK
 
 #if !defined(flagUSEMALLOC) && !defined(flagSO) && !defined(flagHEAPOVERRIDE)
 #define UPP_HEAP
@@ -39,7 +39,6 @@ void    PanicMessageBox(const char *title, const char *text);
 
 inline  void LOGNOP__() {}
 
-#define LOG_NOP          Upp::LOGNOP__()
 
 #define ASSERT_(x, msg)  LOG_NOP
 #define ASSERT(x)        LOG_NOP

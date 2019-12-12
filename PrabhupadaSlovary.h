@@ -21,6 +21,7 @@ struct FilterSlovary : Upp::Moveable< FilterSlovary > {
   Upp::String FilterSanskrit;
   Upp::String FilterPerevod;
   Upp::String ToString() const { return FilterSanskrit + " ; " + FilterPerevod; }
+  bool Reset = true;
   void Serialize( Upp::Stream& s )
   {
     int version = 0;
@@ -46,6 +47,12 @@ public:
   Upp::String Sanskrit;
   Upp::String Perevod;
   Upp::String ToString() const { return Sanskrit + " = " + Perevod; }
+  bool operator == ( const SanskritPair& sp ) {
+    return ( Sanskrit == sp.Sanskrit ) && ( Perevod == sp.Perevod );
+  }
+  bool operator != ( const SanskritPair& sp ) {
+    return ( Sanskrit != sp.Sanskrit ) || ( Perevod != sp.Perevod );
+  }
 };
 
 struct YazykInfo : Upp::Moveable< YazykInfo > {
@@ -88,7 +95,9 @@ using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::Paren
 class PrabhupadaSlovaryPanel : public PrabhupadaSlovaryPanelParent {
 public:
   typedef PrabhupadaSlovaryPanel CLASSNAME;
-  enum class VidSortirovka : int { NotSorted = 0, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
+  enum class VidSortirovka : int { Reset = -1, NotSorted = 0, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
+  VidSortirovka Sortirovka = VidSortirovka::Reset;
+  void SetSortirovka( VidSortirovka s );
   Upp::EditString SanskritPoiskEdit;
   Upp::EditString PerevodPoiskEdit;
   PrabhupadaSlovaryPanel();
@@ -96,6 +105,7 @@ public:
   void Udality();
   void Edit();
   void SmenaYazyka();
+  void UdalityDubli();
   Upp::Sqlite3Session Session;
   YazykVector VectorYazyk;
   SanskritVector VectorSanskrit;
@@ -106,18 +116,21 @@ public:
   void PrepareVectorYazyk();
   Upp::DropList YazykDropList;
   Upp::DropList SortDropList;
-  void Sortirovka();
+  void SortirovkaUstanovka();
   virtual void Serialize( Upp::Stream& s );
   int Yazyk = -1;
   void SetYazyk( int y );
   NumberToSanskrit FNumberToSanskrit { VectorSanskrit };
   NumberToPerevod  FNumberToPerevod  { VectorSanskrit };
   void IndicatorRow();
+  void SetVectorSanskritDlinaVector( int d );
   int StrongYazyk = -1;
   FilterSlovary Filter;
   void SetFilter( const FilterSlovary& F );
+  void CopyToClipboard();
   void FilterUstanovka();
   void FilterVectorSanskrit();
+  void ArraySanskritRefresh();
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {
