@@ -212,12 +212,12 @@ void PrabhupadaSlovaryPanel::FilterUstanovka()
 
 void PrabhupadaSlovaryPanel::SetSortirovka( VidSortirovka s )
 {
-  if ( Sortirovka != s ) {
+  if ( Sortirovka != s || Sortirovka == VidSortirovka::Reset ) {
     Sortirovka = s;
 
     switch ( Sortirovka ) {
     case VidSortirovka::Reset :
-			throw Upp::t_( "Сортировка VidSortirovka::Reset только для служебного пользования" );
+			throw Upp::t_( "Сортировка VidSortirovka::Reset невозможна" );
       break;
     case VidSortirovka::NotSorted :
       VectorSanskrit.ResetIndex();
@@ -252,6 +252,8 @@ void PrabhupadaSlovaryPanel::SetSortirovka( VidSortirovka s )
       break;
     }
     SortDropList.SetIndex( static_cast< int >( s ) );
+    DDUMP( SortDropList.GetIndex() );
+    DDUMP( SortDropList.GetCount() );
     ArraySanskritRefresh();
   }
 }
@@ -274,6 +276,16 @@ void PrabhupadaSlovaryPanel::SmenaYazyka()
   SetYazyk( YazykDropList.GetIndex() );
 }
 
+inline bool operator < ( const SanskritPair& a, const SanskritPair& b )
+{
+  return a.Sanskrit == b.Sanskrit ? a.Perevod  <  b.Perevod : a.Sanskrit <  b.Sanskrit;
+}
+
+inline bool operator > ( const SanskritPair& a, const SanskritPair& b )
+{
+  return a.Sanskrit == b.Sanskrit ? a.Perevod  >  b.Perevod : a.Sanskrit >  b.Sanskrit;
+}
+
 void PrabhupadaSlovaryPanel::UdalityDubli()
 {
   if ( VectorSanskrit.IsEmpty() )
@@ -283,29 +295,19 @@ void PrabhupadaSlovaryPanel::UdalityDubli()
   Filter.Reset = true;
 
   // Сортируем по простому без выкрутасов!
-  Upp::Sort( VectorSanskrit, [&] ( SanskritPair& a, SanskritPair& b ) { return a.Sanskrit == b.Sanskrit ? a.Perevod  <  b.Perevod : a.Sanskrit <  b.Sanskrit; } );
-  
-  SanskritPair& sp = VectorSanskrit[ 0 ];
-  int i = 1;
-  while ( i < VectorSanskrit.GetCount() ) {
-    do {
-      if ( i >= VectorSanskrit.GetCount() )
-        goto STOP_REMOVE_DUBLI;
-      if ( VectorSanskrit[ i ] == sp )
-        VectorSanskrit.Remove( i );
-      else
-        break;
-    } while ( true );
-    sp = VectorSanskrit[ i ];
-    ++i;
-  }
-  STOP_REMOVE_DUBLI:
+  Upp::Sort( VectorSanskrit, std::less< SanskritPair >() );
+  RemoveDubli< SanskritVector >( VectorSanskrit );
+
   VectorSanskrit.ResetIndex();
   SetFilter( SaveFilter_ );
 }
 
 void PrabhupadaSlovaryPanel::Dobavity()
 {
+  Upp::Vector< int > v = { 1, 1, 2, 3, 3, 3, 4, 5, 6, 6, 7, 8, 9, 10, 10 };
+  DDUMP( v );
+  RemoveDubli< Upp::Vector< int > >( v );
+  DDUMP( v );
   Upp::PromptOK( "Dobavity()!" );
 }
 

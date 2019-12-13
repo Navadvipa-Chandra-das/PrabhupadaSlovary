@@ -206,7 +206,7 @@ void Sort(Range&& c, const Less& less)
 }
 
 template <class Range, class Less, class Iter_Swap>
-void SortIterSwap(Range&& c, const Less& less, const Iter_Swap& iter_swap=[]( decltype(Range::begin) a, decltype(Range::begin) b){IterSwap(a,b);} )
+void SortIterSwap(Range&& c, const Less& less, const Iter_Swap& iter_swap)
 {
 	Sort__IterSwap(c.begin(), c.end(), less, iter_swap);
 }

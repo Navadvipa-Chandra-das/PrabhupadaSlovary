@@ -32,13 +32,15 @@ GUI_APP_MAIN
   
   ci = cm.GetPut( "NoLoadINI" );
 
-  if ( !ci.Present ) {
-    if ( !Upp::LoadFromFile( Serial, Prabhupada::PrabhupadaSlovaryIniFile, 0 ) && StrongYazyk == -1 ) {
+  bool LoadINI = false;
+  if ( !ci.Present )
+    LoadINI = Upp::LoadFromFile( Serial, Prabhupada::PrabhupadaSlovaryIniFile, 0 );
+
+  if ( !LoadINI ) {
+    if ( StrongYazyk == -1 )
       StrongYazyk = Prabhupada::RussianYazyk;
-      InitSortirovka = Prabhupada::PrabhupadaSlovaryPanel::VidSortirovka::SanskritVozrastanie;
-    }
-  } else
-      InitSortirovka = Prabhupada::PrabhupadaSlovaryPanel::VidSortirovka::SanskritVozrastanie;
+    InitSortirovka = Prabhupada::PrabhupadaSlovaryPanel::VidSortirovka::SanskritVozrastanie;
+  }
 
   if ( StrongYazyk != -1 )
     WindowPrabhupadaSlovary.PanelPrabhupadaSlovary.SetYazyk( StrongYazyk );

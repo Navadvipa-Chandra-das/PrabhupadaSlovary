@@ -37,13 +37,13 @@ struct FilterSlovary : Upp::Moveable< FilterSlovary > {
   bool IsEmpty() const {
     return FilterSanskrit.IsEmpty() && FilterPerevod.IsEmpty();
   }
-  void Clear() { FilterSanskrit.Clear(); FilterPerevod.Clear(); }
+  void Clear() { FilterSanskrit.Clear(); FilterPerevod.Clear(); Reset = true; }
 };
 
 class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
-  int Index; // для фильтрации поиска
-  int IndexReserv; // для сохранения после поиска
+  mutable int Index; // для фильтрации поиска
+  mutable int IndexReserv; // для сохранения после поиска
   Upp::String Sanskrit;
   Upp::String Perevod;
   Upp::String ToString() const { return Sanskrit + " = " + Perevod; }
@@ -54,6 +54,10 @@ public:
     return ( Sanskrit != sp.Sanskrit ) || ( Perevod != sp.Perevod );
   }
 };
+
+inline bool operator < ( const SanskritPair& a, const SanskritPair& b );
+
+inline bool operator > ( const SanskritPair& a, const SanskritPair& b );
 
 struct YazykInfo : Upp::Moveable< YazykInfo > {
   int ID;
@@ -88,6 +92,24 @@ struct NumberToPerevod : public Upp::Convert {
   SanskritVector& VectorSanskrit;
   NumberToPerevod( SanskritVector& AVectorSanskrit ) : VectorSanskrit( AVectorSanskrit ) {};
   virtual Upp::Value  Format( const Upp::Value& q ) const;
+};
+
+template < class SortRange >
+void RemoveDubli( SortRange& v )
+{
+	int n = 0, i = 1;
+  while ( i < v.GetCount() ) {
+    do {
+      if ( i >= v.GetCount() )
+        return;
+      if ( v[ i ] == v[ n ] )
+        v.Remove( i );
+      else
+        break;
+    } while ( true );
+    ++n;
+    ++i;
+  }
 };
 
 using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::ParentCtrl/*TopWindow*/ >;
