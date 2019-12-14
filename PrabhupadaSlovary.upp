@@ -8,9 +8,9 @@ uses
 
 file
 	PrabhupadaSlovaryConsts.h,
+	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovaryMain.cpp,
 	PrabhupadaSlovary.lay,
-	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovary.h,
 	PrabhupadaSlovary.iml,
 	PrabhupadaSlovaryAlgorithm.cpp,

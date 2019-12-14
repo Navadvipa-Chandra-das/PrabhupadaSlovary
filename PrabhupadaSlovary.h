@@ -14,6 +14,7 @@ namespace Upp {
 }
 
 #include <plugin/sqlite3/Sqlite3.h>
+#include "PrabhupadaSlovaryAlgorithm.h"
 
 namespace Prabhupada {
 
@@ -44,9 +45,10 @@ class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
   mutable int Index; // для фильтрации поиска
   mutable int IndexReserv; // для сохранения после поиска
+  int         ID;
   Upp::String Sanskrit;
   Upp::String Perevod;
-  Upp::String ToString() const { return Sanskrit + " = " + Perevod; }
+  Upp::String ToString() const { return Upp::AsString( ID ) + " : " + Sanskrit + " = " + Perevod; }
   bool operator == ( const SanskritPair& sp ) {
     return ( Sanskrit == sp.Sanskrit ) && ( Perevod == sp.Perevod );
   }
@@ -58,6 +60,8 @@ public:
 inline bool operator < ( const SanskritPair& a, const SanskritPair& b );
 
 inline bool operator > ( const SanskritPair& a, const SanskritPair& b );
+
+void ArrayCtrlGetSelIndexes( Upp::ArrayCtrl& A, Upp::Vector< int >& R );
 
 struct YazykInfo : Upp::Moveable< YazykInfo > {
   int ID;
@@ -84,32 +88,16 @@ static Upp::Font GetGauraFont();
 
 struct NumberToSanskrit : public Upp::Convert {
   SanskritVector& VectorSanskrit;
-  NumberToSanskrit( SanskritVector& AVectorSanskrit ) : VectorSanskrit( AVectorSanskrit ) {};
+  Upp::Font& GauraFont;
+  NumberToSanskrit( SanskritVector& AVectorSanskrit, Upp::Font& AGauraFont ) : VectorSanskrit( AVectorSanskrit ), GauraFont( AGauraFont ) {};
   virtual Upp::Value  Format( const Upp::Value& q ) const;
 };
 
 struct NumberToPerevod : public Upp::Convert {
   SanskritVector& VectorSanskrit;
-  NumberToPerevod( SanskritVector& AVectorSanskrit ) : VectorSanskrit( AVectorSanskrit ) {};
+  Upp::Font& GauraFont;
+  NumberToPerevod( SanskritVector& AVectorSanskrit, Upp::Font& AGauraFont ) : VectorSanskrit( AVectorSanskrit ), GauraFont( AGauraFont ) {};
   virtual Upp::Value  Format( const Upp::Value& q ) const;
-};
-
-template < class SortRange >
-void RemoveDubli( SortRange& v )
-{
-	int n = 0, i = 1;
-  while ( i < v.GetCount() ) {
-    do {
-      if ( i >= v.GetCount() )
-        return;
-      if ( v[ i ] == v[ n ] )
-        v.Remove( i );
-      else
-        break;
-    } while ( true );
-    ++n;
-    ++i;
-  }
 };
 
 using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::ParentCtrl/*TopWindow*/ >;
@@ -120,15 +108,17 @@ public:
   enum class VidSortirovka : int { Reset = -1, NotSorted = 0, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
   VidSortirovka Sortirovka = VidSortirovka::Reset;
   void SetSortirovka( VidSortirovka s );
+  void ReSortirovka();
   Upp::EditString SanskritPoiskEdit;
   Upp::EditString PerevodPoiskEdit;
   PrabhupadaSlovaryPanel();
-  void Dobavity();
-  void Udality();
+  void AddSlovo();
+  void RemoveSlovo();
   void Edit();
   void SmenaYazyka();
-  void UdalityDubli();
+  void RemoveDubli();
   Upp::Sqlite3Session Session;
+  //Upp::Sql sql { Session };
   YazykVector VectorYazyk;
   SanskritVector VectorSanskrit;
   void PrepareBar( Upp::Bar& bar );
@@ -142,8 +132,9 @@ public:
   virtual void Serialize( Upp::Stream& s );
   int Yazyk = -1;
   void SetYazyk( int y );
-  NumberToSanskrit FNumberToSanskrit { VectorSanskrit };
-  NumberToPerevod  FNumberToPerevod  { VectorSanskrit };
+  Upp::Font GauraFont;
+  NumberToSanskrit FNumberToSanskrit { VectorSanskrit, GauraFont };
+  NumberToPerevod  FNumberToPerevod  { VectorSanskrit, GauraFont };
   void IndicatorRow();
   void SetVectorSanskritDlinaVector( int d );
   int StrongYazyk = -1;
@@ -153,14 +144,17 @@ public:
   void FilterUstanovka();
   void FilterVectorSanskrit();
   void ArraySanskritRefresh();
+  void DeleteSlovo( int i );
+  void DeleteSlovoCorrectIndex( int i );
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {
 public:
   PrabhupadaSlovaryPanel PanelPrabhupadaSlovary;
   typedef PrabhupadaSlovaryWindow CLASSNAME;
-  PrabhupadaSlovaryWindow();
+  PrabhupadaSlovaryWindow( CommandMap& cm );
   virtual void Serialize( Upp::Stream& s );
+  virtual ~PrabhupadaSlovaryWindow();
 };
 
 } // namespace Prabhupada

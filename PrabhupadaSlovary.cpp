@@ -28,7 +28,7 @@ Upp::Value NumberToSanskrit::Format( const Upp::Value& q ) const {
     at = VectorSanskrit[ i ].Sanskrit;
   } else
     at = Upp::FormatInt( n );
-  at.SetFont( GetGauraFont() );
+  at.SetFont( GauraFont );
   return at;
 }
 
@@ -40,7 +40,7 @@ Upp::Value NumberToPerevod::Format( const Upp::Value& q ) const {
     at = VectorSanskrit[ i ].Perevod;
   } else
     at = Upp::FormatInt( n );
-  at.SetFont( GetGauraFont() );
+  at.SetFont( GauraFont );
   return at;
 }
 
@@ -57,6 +57,7 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   ArraySanskrit.AddRowNumColumn( Upp::t_( "Санскрит" ), 50 ).SetConvert( FNumberToSanskrit ).Edit( EditSanskrit );
   ArraySanskrit.AddRowNumColumn( Upp::t_( "Перевод" ) , 50 ).SetConvert( FNumberToPerevod  ).Edit( EditPerevod  );
   const Upp::Font& gf = GetGauraFont();
+  GauraFont = gf;
   ArraySanskrit.SetLineCy( gf.GetCy() );
   ArraySanskrit.MultiSelect();
 
@@ -84,11 +85,11 @@ void PrabhupadaSlovaryPanel::IndicatorRow()
 
 void PrabhupadaSlovaryPanel::PrepareVectorYazyk()
 {
-  Upp::Sql sql( Session );
   int ID;
   Upp::String YAZYK;
   Upp::String YAZYK_SLOVO;
     
+  Upp::Sql sql( Session );
   sql.SetStatement( "select a.ID, a.YAZYK, a.YAZYK_SLOVO from YAZYK a" );
   sql.Run();
 
@@ -103,6 +104,7 @@ void PrabhupadaSlovaryPanel::PrepareVectorYazyk()
     InfoYazyk.Yazyk      = YAZYK;
     InfoYazyk.YazykSlovo = YAZYK_SLOVO;
   }
+  sql.Clear();
   for ( YazykVector::iterator i = VectorYazyk.begin(); i != VectorYazyk.end(); ++i ) {
     YazykDropList.Add( (*i).YazykSlovo );
   }
@@ -111,11 +113,11 @@ void PrabhupadaSlovaryPanel::PrepareVectorYazyk()
 void PrabhupadaSlovaryPanel::PrepareVectorSanskrit()
 {
   if ( Yazyk == -1 ) return;
-  Upp::Sql sql( Session );
   int ID;
   Upp::String IZNACHALYNO;
   Upp::String PEREVOD;
-    
+  
+  Upp::Sql sql( Session );
   sql.SetStatement( "select a.ID, a.IZNACHALYNO, a.PEREVOD from SANSKRIT a where a.YAZYK = ?" );
   sql.SetParam( 0, VectorYazyk[ Yazyk ].Yazyk );
   sql.Run();
@@ -135,12 +137,14 @@ void PrabhupadaSlovaryPanel::PrepareVectorSanskrit()
   
     RefPairSanskrit.Index       = i++;
     RefPairSanskrit.IndexReserv = RefPairSanskrit.Index;
+    RefPairSanskrit.ID          = ID;
     RefPairSanskrit.Sanskrit    = IZNACHALYNO;
     RefPairSanskrit.Perevod     = PEREVOD;
     
     if ( VectorSanskrit.LastID < ID )
       VectorSanskrit.LastID = ID;
   }
+  sql.Clear();
   SetVectorSanskritDlinaVector( i );
 }
 
@@ -153,22 +157,22 @@ void PrabhupadaSlovaryPanel::SetVectorSanskritDlinaVector( int d )
 
 void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
 {
-  Upp::Event<> Dobavity_; // Gate<> для функторов, возвращающих логический тип
-  Upp::Function< void( void ) > Udality_, Edit_, SmenaYazyka_, SortirovkaUstanovka_, Filter_, UdalityDubli_, CopyToClipboard_;
+  Upp::Event<> AddSlovo_; // Gate<> для функторов, возвращающих логический тип
+  Upp::Function< void( void ) > RemoveSlovo_, Edit_, SmenaYazyka_, SortirovkaUstanovka_, Filter_, RemoveDubli_, CopyToClipboard_;
 
-  Dobavity_        =  [&] { Dobavity(); };
-  Udality_         << [&] { Udality();  };
+  AddSlovo_        =  [&] { AddSlovo(); };
+  RemoveSlovo_     << [&] { RemoveSlovo(); };
   Edit_            << [&] { Edit(); };
   Filter_          << [&] { FilterUstanovka(); };
-  UdalityDubli_    << [&] { UdalityDubli(); };
+  RemoveDubli_     << [&] { RemoveDubli(); };
   CopyToClipboard_ << [&] { CopyToClipboard(); };
   
-  bar.Add( Upp::t_( "Добавить" ),      PrabhupadaSlovaryImg::Dobavity(), Dobavity_ ).Key( Upp::K_CTRL_INSERT ).Help( Upp::t_( "Добавить новое слово и перевод" ) );
-  bar.Add( Upp::t_( "Удалить" ),       PrabhupadaSlovaryImg::Udality(),  Udality_  ).Key( Upp::K_CTRL_DELETE ).Help( Upp::t_( "Удалить слово" ) );
+  bar.Add( Upp::t_( "Добавить" ),      PrabhupadaSlovaryImg::AddSlovo(), AddSlovo_ ).Key( Upp::K_CTRL_INSERT ).Help( Upp::t_( "Добавить новое слово и перевод" ) );
+  bar.Add( Upp::t_( "Удалить" ),       PrabhupadaSlovaryImg::RemoveSlovo(),  RemoveSlovo_  ).Key( Upp::K_CTRL_DELETE ).Help( Upp::t_( "Удалить слово" ) );
   bar.Add( Upp::t_( "Редактировать" ), PrabhupadaSlovaryImg::Edit(),     Edit_     ).Key( Upp::K_CTRL_E      ).Help( Upp::t_( "Редактировать" ) );
   bar.Add( Upp::t_( "Поиск" ),         PrabhupadaSlovaryImg::Filter(),   Filter_   ).Key( Upp::K_ENTER       ).Help( Upp::t_( "Применить введенные слова для поиска" ) );
-  bar.Add( Upp::t_( "Удалить дубли" ), PrabhupadaSlovaryImg::UdalityDubli(),
-           UdalityDubli_ ).Key( Upp::K_ALT | Upp::K_CTRL_D  ).Help( Upp::t_( "Удалить дубли" ) );
+  bar.Add( Upp::t_( "Удалить дубли" ), PrabhupadaSlovaryImg::RemoveDubli(),
+           RemoveDubli_ ).Key( Upp::K_ALT | Upp::K_CTRL_D  ).Help( Upp::t_( "Удалить дубли" ) );
   bar.Add( Upp::t_( "Копировать в буфер обмена" ), PrabhupadaSlovaryImg::CopyToClipboard(), CopyToClipboard_ ).Key( Upp::K_CTRL_C ).Help( Upp::t_( "Копировать в буфер обмена" ) );
 
   YazykDropList.Tip( Upp::t_( "Язык" ) );
@@ -217,8 +221,7 @@ void PrabhupadaSlovaryPanel::SetSortirovka( VidSortirovka s )
 
     switch ( Sortirovka ) {
     case VidSortirovka::Reset :
-			throw Upp::t_( "Сортировка VidSortirovka::Reset невозможна" );
-      break;
+			return;
     case VidSortirovka::NotSorted :
       VectorSanskrit.ResetIndex();
       break;
@@ -252,8 +255,6 @@ void PrabhupadaSlovaryPanel::SetSortirovka( VidSortirovka s )
       break;
     }
     SortDropList.SetIndex( static_cast< int >( s ) );
-    DDUMP( SortDropList.GetIndex() );
-    DDUMP( SortDropList.GetCount() );
     ArraySanskritRefresh();
   }
 }
@@ -268,7 +269,6 @@ void PrabhupadaSlovaryPanel::ArraySanskritRefresh()
 {
   ArraySanskrit.Refresh();
   ArraySanskrit.WhenSel();
-  Upp::BeepInformation();
 }
 
 void PrabhupadaSlovaryPanel::SmenaYazyka()
@@ -286,34 +286,70 @@ inline bool operator > ( const SanskritPair& a, const SanskritPair& b )
   return a.Sanskrit == b.Sanskrit ? a.Perevod  >  b.Perevod : a.Sanskrit >  b.Sanskrit;
 }
 
-void PrabhupadaSlovaryPanel::UdalityDubli()
+void PrabhupadaSlovaryPanel::RemoveDubli()
 {
-  if ( VectorSanskrit.IsEmpty() )
-    return;
-
   FilterSlovary SaveFilter_ = Filter;
   Filter.Reset = true;
 
   // Сортируем по простому без выкрутасов!
   Upp::Sort( VectorSanskrit, std::less< SanskritPair >() );
-  RemoveDubli< SanskritVector >( VectorSanskrit );
+  Upp::RemoveDubli< SanskritVector >( VectorSanskrit, [&] ( int i ) { DeleteSlovo( i ); } );
 
   VectorSanskrit.ResetIndex();
   SetFilter( SaveFilter_ );
 }
 
-void PrabhupadaSlovaryPanel::Dobavity()
+void PrabhupadaSlovaryPanel::DeleteSlovo( int i )
+{
+  Upp::Sql sql( Session );
+  sql.SetStatement( "delete from SANSKRIT where ID = ?" );
+  sql.SetParam( 0, VectorSanskrit[ VectorSanskrit[ i ].Index ].ID );
+  DLOG( Upp::AsString( i ) + " : " + Upp::AsString( VectorSanskrit[ i ].Index ) + " : " + VectorSanskrit[ VectorSanskrit[ i ].Index ].Sanskrit + " : " + VectorSanskrit[ VectorSanskrit[ i ].Index ].Perevod );
+  sql.Run();
+  sql.Clear();
+}
+
+void PrabhupadaSlovaryPanel::DeleteSlovoCorrectIndex( int i )
+{
+  DeleteSlovo( i );
+  VectorSanskrit.Remove( VectorSanskrit[ i ].Index );
+  --VectorSanskrit.DlinaVector;
+  //
+}
+
+void PrabhupadaSlovaryPanel::AddSlovo()
 {
   Upp::Vector< int > v = { 1, 1, 2, 3, 3, 3, 4, 5, 6, 6, 7, 8, 9, 10, 10 };
   DDUMP( v );
-  RemoveDubli< Upp::Vector< int > >( v );
+  Upp::RemoveDubli< Upp::Vector< int > >( v );
   DDUMP( v );
-  Upp::PromptOK( "Dobavity()!" );
+  Upp::PromptOK( "AddSlovo()!" );
 }
 
-void PrabhupadaSlovaryPanel::Udality()
+//void ArrayCtrlGetSelIndexes( Upp::ArrayCtrl& A, Upp::Vector< int >& R )
+//{
+//	for( int i = 0; i < A.GetCount(); ++i )
+//		if( A.IsSel( i ) )
+//			R.Add( i );
+//}
+
+void PrabhupadaSlovaryPanel::RemoveSlovo()
 {
-  Upp::PromptOK( "Udality()!" );
+  if ( Upp::PromptOKCancel( Upp::t_( "Удалять слово?" ) ) ) {
+    Upp::Vector< int > rs;
+    ArraySanskrit.GetSelIndexes( rs );
+    for ( int i = 0; i < rs.GetCount(); ++i )
+      DeleteSlovoCorrectIndex( rs[ i ] );
+    //ReSortirovka();
+  }
+}
+
+void PrabhupadaSlovaryPanel::ReSortirovka()
+{
+  VectorSanskrit.ResetIndex();
+  VidSortirovka Sortirovka_ = Sortirovka;
+  Sortirovka = VidSortirovka::Reset;
+  SetSortirovka( Sortirovka_ );
 }
 
 void PrabhupadaSlovaryPanel::Edit()
@@ -321,12 +357,51 @@ void PrabhupadaSlovaryPanel::Edit()
   Upp::PromptOK( "Редактирование!" );
 }
 
-PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow()
+PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow( CommandMap& cm )
 {
   Add( PanelPrabhupadaSlovary );
   PanelPrabhupadaSlovary.SizePos();
   Upp::Rect( 0, 0, 600, 600 );
   Title( Upp::t_( "Санскритский словарь Шрилы Прабхупады" ) ).Sizeable().Zoomable();
+
+  Upp::Function< void( Upp::Stream& ) > Serial;
+  Serial = [&] ( Upp::Stream& S ) { Serialize( S ); };
+  
+  int i, &StrongYazyk = PanelPrabhupadaSlovary.StrongYazyk;
+  PrabhupadaSlovaryPanel::VidSortirovka InitSortirovka = PrabhupadaSlovaryPanel::VidSortirovka::Reset;
+  
+  CommandInfo& ci = cm.GetPut( "Lang" );
+  if ( ci.Present ) {
+    i = PanelPrabhupadaSlovary.VectorYazyk.FindYazyk( ci.Value );
+    StrongYazyk = i > 0 ? PanelPrabhupadaSlovary.VectorYazyk[ i ].ID : RussianYazyk;
+  }
+  
+  ci = cm.GetPut( "NoLoadINI" );
+  bool LoadINI = false;
+  if ( !ci.Present )
+    LoadINI = Upp::LoadFromFile( Serial, PrabhupadaSlovaryIniFile, 0 );
+
+  if ( !LoadINI ) {
+    if ( StrongYazyk == -1 )
+      StrongYazyk = RussianYazyk;
+    InitSortirovka = PrabhupadaSlovaryPanel::VidSortirovka::SanskritVozrastanie;
+  }
+
+  if ( StrongYazyk != -1 )
+    PanelPrabhupadaSlovary.SetYazyk( StrongYazyk );
+  if ( InitSortirovka != PrabhupadaSlovaryPanel::VidSortirovka::Reset )
+    PanelPrabhupadaSlovary.SetSortirovka( InitSortirovka );
+  
+  FilterSlovary F = PanelPrabhupadaSlovary.Filter;
+  PanelPrabhupadaSlovary.Filter.Clear();
+  PanelPrabhupadaSlovary.SetFilter( F );
+}
+
+PrabhupadaSlovaryWindow::~PrabhupadaSlovaryWindow()
+{
+  Upp::Function< void( Upp::Stream& ) > Serial;
+  Serial = [&] ( Upp::Stream& S ) { Serialize( S ); };
+  Upp::StoreToFile(  Serial, Prabhupada::PrabhupadaSlovaryIniFile, 0 );
 }
 
 void PrabhupadaSlovaryWindow::Serialize( Upp::Stream& s )
@@ -429,15 +504,22 @@ int YazykVector::FindYazyk( const Upp::String& S )
 void PrabhupadaSlovaryPanel::SetYazyk( int y )
 {
   if ( Yazyk != y ) {
+    Filter.Reset = true;
+    VidSortirovka Sortirovka_ = Sortirovka;
+    Sortirovka = VidSortirovka::Reset;
+    
     int c = ArraySanskrit.GetCursor();
     Yazyk = y;
     PrepareVectorSanskrit();
     YazykDropList.SetIndex( y );
+
+    SetSortirovka( Sortirovka_ );
+    SetFilter( Filter );
+
     if ( c < 0 )
       ArraySanskrit.GoBegin();
     else
       ArraySanskrit.SetCursor( c );
-    ArraySanskritRefresh();
   }
 }
 
