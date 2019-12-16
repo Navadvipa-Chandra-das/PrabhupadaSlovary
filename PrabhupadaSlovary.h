@@ -44,8 +44,9 @@ struct FilterSlovary : Upp::Moveable< FilterSlovary > {
 class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
   mutable int Index; // для фильтрации поиска
-  mutable int IndexReserv; // для сохранения после поиска
+  mutable int ReservIndex; // для сохранения после поиска
   int         ID;
+  bool        DeleteCandidat = false;
   Upp::String Sanskrit;
   Upp::String Perevod;
   Upp::String ToString() const { return Upp::AsString( ID ) + " : " + Sanskrit + " = " + Perevod; }
@@ -89,14 +90,22 @@ static Upp::Font GetGauraFont();
 struct NumberToSanskrit : public Upp::Convert {
   SanskritVector& VectorSanskrit;
   Upp::Font& GauraFont;
-  NumberToSanskrit( SanskritVector& AVectorSanskrit, Upp::Font& AGauraFont ) : VectorSanskrit( AVectorSanskrit ), GauraFont( AGauraFont ) {};
+  Upp::Color ColorInkDelete { Upp::Red() };
+  Upp::Color ColorPaperDelete { Upp::White() };
+  Upp::ArrayCtrl& ArraySanskrit;
+  NumberToSanskrit( SanskritVector& AVectorSanskrit, Upp::Font& AGauraFont, Upp::ArrayCtrl& AArraySanskrit ) :
+    VectorSanskrit( AVectorSanskrit ), GauraFont( AGauraFont ), ArraySanskrit( AArraySanskrit ) {};
   virtual Upp::Value  Format( const Upp::Value& q ) const;
 };
 
 struct NumberToPerevod : public Upp::Convert {
   SanskritVector& VectorSanskrit;
   Upp::Font& GauraFont;
-  NumberToPerevod( SanskritVector& AVectorSanskrit, Upp::Font& AGauraFont ) : VectorSanskrit( AVectorSanskrit ), GauraFont( AGauraFont ) {};
+  Upp::Color ColorInkDelete { Upp::Red() };
+  Upp::Color ColorPaperDelete { Upp::White() };
+  Upp::ArrayCtrl& ArraySanskrit;
+  NumberToPerevod( SanskritVector& AVectorSanskrit, Upp::Font& AGauraFont, Upp::ArrayCtrl& AArraySanskrit ) :
+    VectorSanskrit( AVectorSanskrit ), GauraFont( AGauraFont ), ArraySanskrit( AArraySanskrit ) {};
   virtual Upp::Value  Format( const Upp::Value& q ) const;
 };
 
@@ -108,17 +117,18 @@ public:
   enum class VidSortirovka : int { Reset = -1, NotSorted = 0, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
   VidSortirovka Sortirovka = VidSortirovka::Reset;
   void SetSortirovka( VidSortirovka s );
-  void ReSortirovka();
+  void BigRefresh();
   Upp::EditString SanskritPoiskEdit;
   Upp::EditString PerevodPoiskEdit;
   PrabhupadaSlovaryPanel();
   void AddSlovo();
   void RemoveSlovo();
+  void DeleteSlovo( int i );
+  void DeleteSlova();
   void Edit();
   void SmenaYazyka();
   void RemoveDubli();
   Upp::Sqlite3Session Session;
-  //Upp::Sql sql { Session };
   YazykVector VectorYazyk;
   SanskritVector VectorSanskrit;
   void PrepareBar( Upp::Bar& bar );
@@ -133,8 +143,8 @@ public:
   int Yazyk = -1;
   void SetYazyk( int y );
   Upp::Font GauraFont;
-  NumberToSanskrit FNumberToSanskrit { VectorSanskrit, GauraFont };
-  NumberToPerevod  FNumberToPerevod  { VectorSanskrit, GauraFont };
+  NumberToSanskrit FNumberToSanskrit { VectorSanskrit, GauraFont, ArraySanskrit };
+  NumberToPerevod  FNumberToPerevod  { VectorSanskrit, GauraFont, ArraySanskrit };
   void IndicatorRow();
   void SetVectorSanskritDlinaVector( int d );
   int StrongYazyk = -1;
@@ -144,8 +154,6 @@ public:
   void FilterUstanovka();
   void FilterVectorSanskrit();
   void ArraySanskritRefresh();
-  void DeleteSlovo( int i );
-  void DeleteSlovoCorrectIndex( int i );
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {
