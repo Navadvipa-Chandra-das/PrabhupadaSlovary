@@ -20,8 +20,9 @@ static Upp::Font GetGauraFont()
   return AGauraFont;
 }
 
-Upp::Value NumberToSanskrit::Format( const Upp::Value& q ) const {
-  int n = q, i;
+Upp::Value PrabhupadaSlovaryPanel::GetSanskrit(const Upp::Value& V )
+{
+  int n = V, i;
   Upp::AttrText at;
   if ( n < VectorSanskrit.DlinaVector ) {
     i  = VectorSanskrit[ n ].Index;
@@ -37,8 +38,9 @@ Upp::Value NumberToSanskrit::Format( const Upp::Value& q ) const {
   return at;
 }
 
-Upp::Value NumberToPerevod::Format( const Upp::Value& q ) const {
-  int n = q, i;
+Upp::Value PrabhupadaSlovaryPanel::GetPerevod(const Upp::Value& V )
+{
+  int n = V, i;
   Upp::AttrText at;
   if ( n < VectorSanskrit.DlinaVector ) {
     i  = VectorSanskrit[ n ].Index;
@@ -54,6 +56,32 @@ Upp::Value NumberToPerevod::Format( const Upp::Value& q ) const {
   return at;
 }
 
+void PrabhupadaSlovaryPanel::SetSanskrit(const Upp::Value& V, int i )
+{
+  Upp::String s = V;
+  int n = VectorSanskrit[ i ].Index;
+  VectorSanskrit[ n ].Sanskrit = s;
+  Upp::Sql sql( Session );
+  sql.SetStatement( "update SANSKRIT set IZNACHALYNO = ? where ID = ?" );
+  sql.SetParam( 0, s );
+  sql.SetParam( 1, VectorSanskrit[ n ].ID );
+  sql.Run();
+  sql.Clear();
+}
+
+void PrabhupadaSlovaryPanel::SetPerevod(const Upp::Value& V, int i )
+{
+  Upp::String s = V;
+  int n = VectorSanskrit[ i ].Index;
+  VectorSanskrit[ n ].Perevod = s;
+  Upp::Sql sql( Session );
+  sql.SetStatement( "update SANSKRIT set PEREVOD = ? where ID = ?" );
+  sql.SetParam( 0, s );
+  sql.SetParam( 1, VectorSanskrit[ n ].ID );
+  sql.Run();
+  sql.Clear();
+}
+
 PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
 {
   CtrlLayout( *this );
@@ -64,8 +92,12 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   SplitterSearch.SetMin( 1, 1000 );
   EditIndicatorRow.NoWantFocus();
 
-  ArraySanskrit.AddRowNumColumn( Upp::t_( "Санскрит" ), 50 ).SetConvert( FNumberToSanskrit ).Edit( EditSanskrit );
-  ArraySanskrit.AddRowNumColumn( Upp::t_( "Перевод" ) , 50 ).SetConvert( FNumberToPerevod  ).Edit( EditPerevod  );
+  //ColumnGetter GetSanskrit_, GetPerevod_;
+  //GetSanskrit_ = [&] Upp::Value ( const Upp::Value& V ) { return GetSanskrit( V ); };
+  //GetPerevod_  = [&] Upp::Value ( const Upp::Value& V ) { return GetPerevod( V ); };
+  
+  ArraySanskrit.AddRowNumColumn( Upp::t_( "Санскрит" ), 50 ).ConvertBy( [&] ( const Upp::Value& V ) { return GetSanskrit( V ); } ).Edit( EditSanskrit ).Setter = [&] ( const Upp::Value& V, int i ) { SetSanskrit( V, i ); };
+  ArraySanskrit.AddRowNumColumn( Upp::t_( "Перевод" ) , 50 ).ConvertBy( [&] ( const Upp::Value& V ) { return GetPerevod( V ); }  ).Edit( EditPerevod  ).Setter = [&] ( const Upp::Value& V, int i ) { SetPerevod( V, i ); };
   const Upp::Font& gf = GetGauraFont();
   GauraFont = gf;
   ArraySanskrit.SetLineCy( gf.GetCy() );
@@ -168,22 +200,21 @@ void PrabhupadaSlovaryPanel::SetVectorSanskritDlinaVector( int d )
 void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
 {
   Upp::Event<> AddSlovo_; // Gate<> для функторов, возвращающих логический тип
-  Upp::Function< void( void ) > RemoveSlovo_, Edit_, SmenaYazyka_, SortirovkaUstanovka_, Filter_, RemoveDubli_, CopyToClipboard_, DeleteSlova_;
+  Upp::Function< void( void ) > MarkDeleteSlovo_, Edit_, SmenaYazyka_, SortirovkaUstanovka_, Filter_, RemoveDubli_, CopyToClipboard_, DeleteSlova_;
 
   AddSlovo_        =  [&] { AddSlovo(); };
-  RemoveSlovo_     << [&] { RemoveSlovo(); };
+  MarkDeleteSlovo_ << [&] { MarkDeleteSlovo(); };
   Edit_            << [&] { Edit(); };
   Filter_          << [&] { FilterUstanovka(); };
   RemoveDubli_     << [&] { RemoveDubli(); };
   CopyToClipboard_ << [&] { CopyToClipboard(); };
   DeleteSlova_     << [&] { DeleteSlova(); };
   
-  bar.Add( Upp::t_( "Добавить" ),      PrabhupadaSlovaryImg::AddSlovo(), AddSlovo_ ).Key( Upp::K_CTRL_INSERT ).Help( Upp::t_( "Добавить новое слово и перевод" ) );
-  bar.Add( Upp::t_( "Пометить для удаления" ), PrabhupadaSlovaryImg::RemoveSlovo(),  RemoveSlovo_  ).Key( Upp::K_CTRL_DELETE ).Help( Upp::t_( "Пометить слова для удаления" ) );
-  bar.Add( Upp::t_( "Редактировать" ), PrabhupadaSlovaryImg::Edit(),     Edit_     ).Key( Upp::K_CTRL_E      ).Help( Upp::t_( "Редактировать" ) );
-  bar.Add( Upp::t_( "Поиск" ),         PrabhupadaSlovaryImg::Filter(),   Filter_   ).Key( Upp::K_ENTER       ).Help( Upp::t_( "Применить введенные слова для поиска" ) );
-  bar.Add( Upp::t_( "Удалить дубли" ), PrabhupadaSlovaryImg::RemoveDubli(),
-           RemoveDubli_ ).Key( Upp::K_ALT | Upp::K_CTRL_D  ).Help( Upp::t_( "Удалить дубли" ) );
+  bar.Add( Upp::t_( "Добавить" ), PrabhupadaSlovaryImg::AddSlovo(), AddSlovo_ ).Key( Upp::K_CTRL_INSERT ).Help( Upp::t_( "Добавить новое слово и перевод" ) );
+  bar.Add( Upp::t_( "Пометить для удаления" ), PrabhupadaSlovaryImg::MarkDeleteSlovo(), MarkDeleteSlovo_ ).Key( Upp::K_CTRL_DELETE ).Help( Upp::t_( "Пометить слова для удаления" ) );
+  bar.Add( Upp::t_( "Редактировать" ), PrabhupadaSlovaryImg::Edit(), Edit_ ).Key( Upp::K_CTRL_E ).Help( Upp::t_( "Редактировать" ) );
+  bar.Add( Upp::t_( "Поиск" ), PrabhupadaSlovaryImg::Filter(), Filter_ ).Key( Upp::K_ENTER ).Help( Upp::t_( "Применить введенные слова для поиска" ) );
+  bar.Add( Upp::t_( "Удалить дубли" ), PrabhupadaSlovaryImg::RemoveDubli(), RemoveDubli_ ).Key( Upp::K_ALT | Upp::K_CTRL_D  ).Help( Upp::t_( "Удалить дубли" ) );
   bar.Add( Upp::t_( "Копировать в буфер обмена" ), PrabhupadaSlovaryImg::CopyToClipboard(), CopyToClipboard_ ).Key( Upp::K_CTRL_C ).Help( Upp::t_( "Копировать в буфер обмена" ) );
   bar.Add( Upp::t_( "Удалить помеченные слова" ), PrabhupadaSlovaryImg::DeleteSlova(), DeleteSlova_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_DELETE ).Help( Upp::t_( "Удалить помеченные слова" ) );
 
@@ -333,7 +364,7 @@ void PrabhupadaSlovaryPanel::AddSlovo()
 //			R.Add( i );
 //}
 
-void PrabhupadaSlovaryPanel::RemoveSlovo()
+void PrabhupadaSlovaryPanel::MarkDeleteSlovo()
 {
   if ( Upp::PromptOKCancel( Upp::t_( "Удалять слово?" ) ) ) {
     Upp::Vector< int > rs;

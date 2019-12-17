@@ -371,7 +371,6 @@ Value ArrayCtrl::Get(int ii) const {
 			for(int j = 0; j < m.pos.GetCount(); j++)
 				if(Pos(m.pos[j]) == ii) {
 					Value v = m.edit->GetData();
-					//!!!if (  )
 					return m.pos.GetCount() > 1 && IsValueArray(v) ? ValueArray(v)[j] : v;
 				}
 	}
@@ -433,7 +432,11 @@ void ArrayCtrl::ColEditSetData(int j) {
   	if ( m.pos.GetCount() > 0 )
 	  	m.edit->SetData(GetColumn(cursor, j));
   	else
-	  	m.edit->SetData( m.convert->Format( cursor ) );
+	    if ( m.convertby )
+	      m.edit->SetData( m.convertby( cursor ) );
+	    else
+	      if ( m.convert )
+          m.edit->SetData( m.convert->Format( cursor ) );
 }
 
 void ArrayCtrl::CtrlSetData(int j) {
@@ -1264,7 +1267,10 @@ bool ArrayCtrl::UpdateRow() {
 		Column& m = column[i];
 		if(m.edit && m.edit->IsModified()) {
 			Value v = m.edit->GetData();
-			if(m.pos.GetCount() == 1) {
+			int mp = m.pos.GetCount();
+			if( mp == 0 ) {
+        m.Setter( v, cursor );
+			} if( mp == 1) {
 				Value& vv = array.At(cursor).line.At(Pos(m.pos[0]));
 				if(vv != v) {
 					iv = true;
@@ -1272,7 +1278,7 @@ bool ArrayCtrl::UpdateRow() {
 				}
 			}
 			else
-			if(m.pos.GetCount() > 1) {
+			if( mp > 1 ) {
 				ValueArray va = v;
 				for(int j = 0; j < m.pos.GetCount(); j++) {
 					Value& vv = array.At(cursor).line.At(Pos(m.pos[j]));

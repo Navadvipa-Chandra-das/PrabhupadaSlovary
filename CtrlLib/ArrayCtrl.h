@@ -119,6 +119,8 @@ public:
 
 		Column();
 
+		Function< void ( const Value&, int i ) > Setter;
+
 // deprecated (due to overloading issues)
 		Column& Ctrls(Callback1<One<Ctrl>&> factory);
 		Column& Ctrls(void (*factory)(One<Ctrl>&)) { return Ctrls(Event<int, One<Ctrl>&>([=](int, One<Ctrl>& h) { factory(h); })); }

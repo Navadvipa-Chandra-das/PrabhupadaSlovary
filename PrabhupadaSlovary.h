@@ -87,27 +87,8 @@ public:
 
 static Upp::Font GetGauraFont();
 
-struct NumberToSanskrit : public Upp::Convert {
-  SanskritVector& VectorSanskrit;
-  Upp::Font& GauraFont;
-  Upp::Color ColorInkDelete { Upp::Red() };
-  Upp::Color ColorPaperDelete { Upp::White() };
-  Upp::ArrayCtrl& ArraySanskrit;
-  NumberToSanskrit( SanskritVector& AVectorSanskrit, Upp::Font& AGauraFont, Upp::ArrayCtrl& AArraySanskrit ) :
-    VectorSanskrit( AVectorSanskrit ), GauraFont( AGauraFont ), ArraySanskrit( AArraySanskrit ) {};
-  virtual Upp::Value  Format( const Upp::Value& q ) const;
-};
-
-struct NumberToPerevod : public Upp::Convert {
-  SanskritVector& VectorSanskrit;
-  Upp::Font& GauraFont;
-  Upp::Color ColorInkDelete { Upp::Red() };
-  Upp::Color ColorPaperDelete { Upp::White() };
-  Upp::ArrayCtrl& ArraySanskrit;
-  NumberToPerevod( SanskritVector& AVectorSanskrit, Upp::Font& AGauraFont, Upp::ArrayCtrl& AArraySanskrit ) :
-    VectorSanskrit( AVectorSanskrit ), GauraFont( AGauraFont ), ArraySanskrit( AArraySanskrit ) {};
-  virtual Upp::Value  Format( const Upp::Value& q ) const;
-};
+using ColumnGetter = Upp::Function< void ( const Upp::Value&, int ) >;
+using ColumnSetter = Upp::Function< Upp::Value ( const Upp::Value& ) >;
 
 using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::ParentCtrl/*TopWindow*/ >;
 
@@ -121,8 +102,10 @@ public:
   Upp::EditString SanskritPoiskEdit;
   Upp::EditString PerevodPoiskEdit;
   PrabhupadaSlovaryPanel();
+  Upp::Color ColorInkDelete { Upp::Red() };
+  Upp::Color ColorPaperDelete { Upp::White() };
   void AddSlovo();
-  void RemoveSlovo();
+  void MarkDeleteSlovo();
   void DeleteSlovo( int i );
   void DeleteSlova();
   void Edit();
@@ -143,8 +126,6 @@ public:
   int Yazyk = -1;
   void SetYazyk( int y );
   Upp::Font GauraFont;
-  NumberToSanskrit FNumberToSanskrit { VectorSanskrit, GauraFont, ArraySanskrit };
-  NumberToPerevod  FNumberToPerevod  { VectorSanskrit, GauraFont, ArraySanskrit };
   void IndicatorRow();
   void SetVectorSanskritDlinaVector( int d );
   int StrongYazyk = -1;
@@ -154,6 +135,10 @@ public:
   void FilterUstanovka();
   void FilterVectorSanskrit();
   void ArraySanskritRefresh();
+  Upp::Value GetSanskrit( const Upp::Value& V );
+  Upp::Value GetPerevod( const Upp::Value& V );
+  void SetSanskrit( const Upp::Value& V, int i );
+  void SetPerevod( const Upp::Value& V, int i );
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {
