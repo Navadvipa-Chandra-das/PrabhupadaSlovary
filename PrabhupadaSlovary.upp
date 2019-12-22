@@ -8,6 +8,7 @@ uses
 
 file
 	PrabhupadaSlovaryConsts.h,
+	AboutPrabhupadaSlovary.qtf,
 	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovaryMain.cpp,
 	PrabhupadaSlovary.lay,

@@ -91,6 +91,14 @@ using ColumnGetter = Upp::Function< void ( const Upp::Value&, int ) >;
 using ColumnSetter = Upp::Function< Upp::Value ( const Upp::Value& ) >;
 
 using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::ParentCtrl/*TopWindow*/ >;
+using AboutPrabhupadaSlovaryParent = Upp::WithAboutPrabhupadaSlovary< Upp::TopWindow >;
+
+class AboutPrabhupadaSlovaryWindow : public AboutPrabhupadaSlovaryParent {
+public:
+  typedef AboutPrabhupadaSlovaryWindow CLASSNAME;
+  AboutPrabhupadaSlovaryWindow();
+	virtual void Paint( Upp::Draw& draw );
+};
 
 class PrabhupadaSlovaryPanel : public PrabhupadaSlovaryPanelParent {
 public:
@@ -139,6 +147,7 @@ public:
   Upp::Value GetPerevod( const Upp::Value& V );
   void SetSanskrit( const Upp::Value& V, int i );
   void SetPerevod( const Upp::Value& V, int i );
+  void AboutPrabhupadaSlovary();
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {

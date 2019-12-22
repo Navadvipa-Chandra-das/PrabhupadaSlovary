@@ -5,3 +5,10 @@ LAYOUT(PrabhupadaSlovaryPanel, 704, 589)
 	ITEM(EditString, EditIndicatorRow, AlignRight(true).SetEditable(false).Tip(t_("Строка / Всего")).RightPosZ(4, 93).TopPosZ(5, 19))
 END_LAYOUT
 
+LAYOUT(AboutPrabhupadaSlovary, 676, 663)
+	ITEM(Label, LabelPrabhupadaSlovary, SetLabel(t_("Санскритский словарь Шрилы Прабхупады")).SetFont(StdFontZ(14).Bold()).LeftPosZ(9, 340).TopPosZ(451, 19))
+	ITEM(Label, LabelVersion, SetLabel(t_("Версия 1.0")).LeftPosZ(10, 298).TopPosZ(475, 19))
+	ITEM(Label, LabelDonation, SetLabel(t_("Пожертвования можно отправлять сюда")).LeftPosZ(12, 217).TopPosZ(502, 19))
+	ITEM(RichTextView, RichTextAbout, HSizePosZ(5, 11).VSizePosZ(529, 6))
+END_LAYOUT
+
