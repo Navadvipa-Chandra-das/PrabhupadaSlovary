@@ -148,6 +148,7 @@ public:
   void SetSanskrit( const Upp::Value& V, int i );
   void SetPerevod( const Upp::Value& V, int i );
   void AboutPrabhupadaSlovary();
+  void IfEditOKCancel();
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {

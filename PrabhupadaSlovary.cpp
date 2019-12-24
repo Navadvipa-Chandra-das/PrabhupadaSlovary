@@ -98,6 +98,12 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   GauraFont = gf;
   ArraySanskrit.SetLineCy( gf.GetCy() );
   ArraySanskrit.MultiSelect();
+  
+  SanskritPoiskEdit.SetFont( GauraFont );
+  PerevodPoiskEdit.SetFont( GauraFont );
+
+  EditSanskrit.SetFont( GauraFont );
+  EditPerevod.SetFont( GauraFont );
 
   Upp::Function< void () > ur;
   ur = [&] () { IndicatorRow(); };
@@ -435,7 +441,7 @@ PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow( CommandMap& cm )
   Add( PanelPrabhupadaSlovary );
   PanelPrabhupadaSlovary.SizePos();
   Upp::Rect( 0, 0, 600, 600 );
-  Title( Upp::t_( "Санскритский словарь Шрилы Прабхупады" ) ).Sizeable().Zoomable();
+  Title( Upp::t_( "Санскритский словарь Шрилы Прабхупады!" ) ).Sizeable().Zoomable();
 
   Upp::Function< void( Upp::Stream& ) > Serial;
   Serial = [&] ( Upp::Stream& S ) { Serialize( S ); };
@@ -563,6 +569,8 @@ void PrabhupadaSlovaryPanel::SetFilter( const FilterSlovary& F )
     if ( Filter.IsEmpty() )
       VectorSanskrit.SaveIndexToReserv();
 
+    IfEditOKCancel();
+
     Filter = F;
     if ( Filter.IsEmpty() ) {
       VectorSanskrit.LoadIndexFromReserv();
@@ -583,6 +591,20 @@ int YazykVector::FindYazyk( const Upp::String& S )
 	return -1;
 }
 
+void PrabhupadaSlovaryPanel::IfEditOKCancel()
+{
+  if ( ArraySanskrit.IsEdit() || ArraySanskrit.IsInsert() || ArraySanskrit.IsAppendLine() ) {
+    bool Post_ = false;
+    if( EditSanskrit.IsModified() || EditPerevod.IsModified() )
+      if ( Upp::PromptYesNo( Upp::t_( "Сохранить изменения?" ) ) ) {
+        ArraySanskrit.IfEditPost();
+        Post_ = true;
+      }
+    if ( !Post_ )
+      ArraySanskrit.IfEditCancel();
+  }
+}
+
 void PrabhupadaSlovaryPanel::SetYazyk( int y )
 {
   if ( Yazyk != y ) {
@@ -590,11 +612,8 @@ void PrabhupadaSlovaryPanel::SetYazyk( int y )
     VidSortirovka Sortirovka_ = Sortirovka;
     Sortirovka = VidSortirovka::Reset;
     
+    IfEditOKCancel();
     int c = ArraySanskrit.GetCursor();
-		if( ArraySanskrit.IsEdit() ) {
-			ArraySanskrit.CancelCursor();
-			ArraySanskrit.SetCursor( c );
-		}
     
     Yazyk = y;
     PrepareVectorSanskrit();
@@ -603,6 +622,7 @@ void PrabhupadaSlovaryPanel::SetYazyk( int y )
     SetSortirovka( Sortirovka_ );
     SetFilter( Filter );
 
+    
     if ( c < 0 )
       ArraySanskrit.GoBegin();
     else

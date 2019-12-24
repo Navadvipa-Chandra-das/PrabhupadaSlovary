@@ -16,5 +16,6 @@ GUI_APP_MAIN
   cm.Prepare( cl );
 
   Prabhupada::PrabhupadaSlovaryWindow WindowPrabhupadaSlovary( cm );
+  Upp::Ctrl::SetAppName( Upp::t_( "Словарь Шрилы Прабхупады!" ) );
   WindowPrabhupadaSlovary.Run();
 }
