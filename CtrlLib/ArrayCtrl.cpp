@@ -46,9 +46,18 @@ ArrayCtrl::Column& ArrayCtrl::Column::SetConvert(const Convert& c) {
 	return *this;
 }
 
-ArrayCtrl::Column& ArrayCtrl::Column::ConvertBy(Function<Value(const Value&)> cv)
+ArrayCtrl::Column& ArrayCtrl::Column::ConvertBy( const Function< Value ( const Value& ) >& cv )
 {
 	convertby = cv;
+	ClearCache();
+	arrayctrl->Refresh();
+	arrayctrl->SyncInfo();
+	return *this;
+}
+
+ArrayCtrl::Column& ArrayCtrl::Column::SetSetter( const Function< void ( const Value&, int i ) >& st )
+{
+	Setter = st;
 	ClearCache();
 	arrayctrl->Refresh();
 	arrayctrl->SyncInfo();
@@ -1979,31 +1988,43 @@ bool ArrayCtrl::Key(dword key, int) {
 			sb.NextLine();
 		return true;
 	case K_ENTER:
-		if(!IsCursor() && (IsInserting() || IsAppending()) && IsAppendLine()) {
-			DoAppend();
-			return true;
-		}
-		if(editmode) {
-			bool ins = IsInsert() && autoappend;
-			if(AcceptEnter() && ins)
-				DoAppend();
-			return true;
-		}
-		if(WhenEnterKey && IsCursor()) {
-			WhenEnterKey();
-			return true;
-		}
+		if ( IfEditPost() )
+		  return true;
 		break;
 	case K_ESCAPE:
-		if(IsEdit()) {
-			int c = cursor;
-			CancelCursor();
-			SetCursor(c);
-			return true;
-		}
+	  if ( IfEditCancel() )
+	    return true;
 		break;
 	}
 	return MenuBar::Scan(WhenBar, key);
+}
+
+bool ArrayCtrl::IfEditPost() {
+	if(!IsCursor() && (IsInserting() || IsAppending()) && IsAppendLine()) {
+		DoAppend();
+		return true;
+	}
+	if(editmode) {
+		bool ins = IsInsert() && autoappend;
+		if(AcceptEnter() && ins)
+			DoAppend();
+		return true;
+	}
+	if(WhenEnterKey && IsCursor()) {
+		WhenEnterKey();
+		return true;
+	}
+	return false;
+}
+
+bool ArrayCtrl::IfEditCancel() {
+	if(IsEdit()) {
+		int c = cursor;
+		CancelCursor();
+		SetCursor(c);
+		return true;
+	}
+	return false;
 }
 
 bool ArrayCtrl::AcceptEnter() {

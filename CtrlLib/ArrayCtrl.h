@@ -35,6 +35,8 @@ public:
 	virtual void  ChildGotFocus();
 	virtual void  ChildLostFocus();
 	virtual void  Serialize(Stream& s);
+  bool IfEditPost();
+  bool IfEditCancel();
 
 public:
 	struct IdInfo {
@@ -57,7 +59,6 @@ public:
 		int                   index;
 		Mitor<int>            pos;
 		const Convert        *convert;
-		Function<Value(const Value&)> convertby;
 		Ptr<Ctrl>             edit;
 		const Display        *display;
 		Event<int, One<Ctrl>&> factory;
@@ -83,13 +84,17 @@ public:
 		friend class ArrayCtrl;
 
 	public:
+		Function< Value( const Value& ) > convertby;
+		Function< void ( const Value&, int i ) > Setter;
+
 		Column& Add(int _pos)                      { pos.Add(_pos); return *this; }
 		Column& Add(const Id& id)                  { pos.Add(-arrayctrl->AsNdx(id)); return *this; }
 		Column& AddIndex(const Id& id)             { arrayctrl->AddIndex(id); return Add(id); }
 		Column& AddIndex()                         { Add(arrayctrl->GetIndexCount()); arrayctrl->AddIndex(); return *this; }
 
 		Column& SetConvert(const Convert& c);
-		Column& ConvertBy(Function<Value(const Value&)> cv);
+		Column& ConvertBy( const Function< Value( const Value& ) >& cv);
+		Column& SetSetter( const Function< void ( const Value&, int i ) >& st );
 		Column& SetFormat(const char *fmt);
 		Column& SetDisplay(const Display& d);
 		Column& NoEdit();
@@ -118,8 +123,6 @@ public:
 		Column& Tip(const char *tip)               { HeaderTab().Tip(tip); return *this; }
 
 		Column();
-
-		Function< void ( const Value&, int i ) > Setter;
 
 // deprecated (due to overloading issues)
 		Column& Ctrls(Callback1<One<Ctrl>&> factory);

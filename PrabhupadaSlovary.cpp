@@ -5,6 +5,7 @@
 #define IMAGEFILE <PrabhupadaSlovary/PrabhupadaSlovary.iml>
 //#include <Draw/iml_source.h>
 #include <Draw/iml.h>
+#include <plugin/pcre/Pcre.h>
 
 namespace Prabhupada {
 
@@ -195,7 +196,7 @@ void PrabhupadaSlovaryPanel::PrepareVectorSanskrit()
 void PrabhupadaSlovaryPanel::SetVectorSanskritDlinaVector( int d )
 {
   VectorSanskrit.DlinaVector = d;
-  ArraySanskrit.ClearCache();
+  ArraySanskrit.Clear();
   ArraySanskrit.SetVirtualCount( VectorSanskrit.DlinaVector );
   ArraySanskrit.WhenSel();
 }
@@ -546,20 +547,31 @@ void SanskritVector::ResetIndex()
 
 void PrabhupadaSlovaryPanel::FilterVectorSanskrit()
 {
-  int uspeh = -1, n;
-/*
-  Upp::RegExp res( ~SanskritPoiskEdit, RegExp::UNICODE )
-              rep( ~PerevodPoiskEdit,  RegExp::UNICODE );
-/*
+  int ActualIndex = -1, n;
+
+  Upp::String Sanskrit = ~SanskritPoiskEdit,
+              Perevod  = ~PerevodPoiskEdit;
+  bool CheckSanskrit = !Sanskrit.IsEmpty(),
+       CheckPerevod  = !Perevod.IsEmpty();
+
+  Upp::RegExp RegSanskrit( Sanskrit, Upp::RegExp::UNICODE ),
+              RegPerevod(  Perevod,  Upp::RegExp::UNICODE );
+
+  bool NeedSanskrit, NeedPerevod;
+  
+  VectorSanskrit.LoadIndexFromReserv();
+
   for ( int i = 0; i < VectorSanskrit.GetCount(); ++i ) {
     n = VectorSanskrit[ i ].Index;
-    if ( res.Match( VectorSanskrit[ n ].Sanskrit ) )
-    	if( res. Match(line)) {
-				AddFoundFile(fn, ln, line, regexp->GetOffset(), regexp->GetLength());
-				sync = true;
+    NeedPerevod = false;
+    NeedSanskrit = CheckSanskrit ? RegSanskrit.Match( VectorSanskrit[ n ].Sanskrit ) : true;
+    if ( NeedSanskrit )
+      NeedPerevod  = CheckPerevod  ? RegPerevod.Match(  VectorSanskrit[ n ].Perevod )  : true;
+    if ( NeedSanskrit && NeedPerevod )
+      VectorSanskrit[ ++ActualIndex ].Index = n;
   }
-*/
-  SetVectorSanskritDlinaVector( VectorSanskrit.GetCount() );
+
+  SetVectorSanskritDlinaVector( ++ActualIndex );
 }
 
 void PrabhupadaSlovaryPanel::SetFilter( const FilterSlovary& F )

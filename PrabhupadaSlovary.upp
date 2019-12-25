@@ -4,7 +4,8 @@ charset "UTF-8";
 
 uses
 	CtrlLib,
-	plugin/sqlite3;
+	plugin/sqlite3,
+	plugin/pcre;
 
 file
 	PrabhupadaSlovaryConsts.h,
