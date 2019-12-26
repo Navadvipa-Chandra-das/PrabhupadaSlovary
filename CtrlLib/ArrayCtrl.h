@@ -37,6 +37,7 @@ public:
 	virtual void  Serialize(Stream& s);
   bool IfEditPost();
   bool IfEditCancel();
+  Function< void ( int ) > Inserter;
 
 public:
 	struct IdInfo {

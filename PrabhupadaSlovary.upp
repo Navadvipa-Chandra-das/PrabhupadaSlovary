@@ -10,6 +10,7 @@ uses
 file
 	PrabhupadaSlovaryConsts.h,
 	AboutPrabhupadaSlovary.qtf,
+	test.txt,
 	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovaryMain.cpp,
 	PrabhupadaSlovary.lay,

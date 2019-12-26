@@ -62,8 +62,6 @@ inline bool operator < ( const SanskritPair& a, const SanskritPair& b );
 
 inline bool operator > ( const SanskritPair& a, const SanskritPair& b );
 
-void ArrayCtrlGetSelIndexes( Upp::ArrayCtrl& A, Upp::Vector< int >& R );
-
 struct YazykInfo : Upp::Moveable< YazykInfo > {
   int ID;
   Upp::String Yazyk;
@@ -149,6 +147,9 @@ public:
   void SetPerevod( const Upp::Value& V, int i );
   void AboutPrabhupadaSlovary();
   void IfEditOKCancel();
+  void ArraySanskritInserter( int I );
+  int GetVectorSanskritLastID();
+  void Test();
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {
