@@ -110,9 +110,9 @@ void PrabhupadaSlovaryPanel::ArraySanskritInserter( int I )
   
   for ( int i = 0; i < VectorSanskrit.GetCount(); ++i ) {
     if ( i != I ) {
-      if ( VectorSanskrit[ i ].Index <= I )
+      if ( VectorSanskrit[ i ].Index >= I )
         VectorSanskrit[ i ].Index = VectorSanskrit[ i ].Index + 1;
-      if ( VectorSanskrit[ i ].ReservIndex <= I )
+      if ( VectorSanskrit[ i ].ReservIndex >= I )
         VectorSanskrit[ i ].ReservIndex = VectorSanskrit[ i ].ReservIndex + 1;
     }
   }
@@ -134,7 +134,7 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   const Upp::Font& gf = GetGauraFont();
   GauraFont = gf;
   ArraySanskrit.SetLineCy( gf.GetCy() );
-  ArraySanskrit.MultiSelect().Appending().Inserting();
+  ArraySanskrit.MultiSelect().Inserting();
 
   Upp::Function< void ( int i ) > ins;
   ins = [&] ( int i ) { ArraySanskritInserter( i ); };
@@ -237,7 +237,6 @@ int PrabhupadaSlovaryPanel::GetVectorSanskritLastID()
   sql.Run();
   sql.Fetch();
   int R = sql[ 0 ];
-  DUMP( R );
   return R;
 }
 
@@ -485,8 +484,8 @@ void PrabhupadaSlovaryPanel::BigRefresh()
 
   VectorSanskrit.ResetIndex();
 
-  SetFilter( Filter );
   SetSortirovka( Sortirovka_ );
+  SetFilter( Filter );
 }
 
 void PrabhupadaSlovaryPanel::Edit()
