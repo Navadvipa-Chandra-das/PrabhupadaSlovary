@@ -6,6 +6,7 @@
 //#include <Draw/iml_source.h>
 #include <Draw/iml.h>
 #include <plugin/pcre/Pcre.h>
+#include <set>
 
 namespace Prabhupada {
 
@@ -266,21 +267,42 @@ void PrabhupadaSlovaryPanel::AboutPrabhupadaSlovary()
   WindowAboutPrabhupadaSlovary.Run();
 }
 
-void PrabhupadaSlovaryPanel::Test()
+void PrabhupadaSlovaryPanel::PrabhupadaBukvary()
 {
-  Upp::Vector< int > V { 0, 1, 2, 3, 4, 5 };
-  DDUMPC( V );
-  V.Insert( 0, 10 );
-  DDUMPC( V );
+  Upp::String S;
+  Upp::WString W;
+  
+  
+  std::set< int > Set;
+  int L = VectorSanskrit.GetCount();
+  if ( Upp::PromptOKCancel( Upp::t_( "Собрать полный набор букв?" ) ) ) {
+    int SL;
+    for ( int i = 0; i < L; ++i ) {
+      SanskritPair& sp = VectorSanskrit[ i ];
+      S = sp.Sanskrit + sp.Perevod;
+      W = S.ToWString();
+      SL = W.GetCount();
+      for ( int j = 0; j < SL; ++j ) {
+        Set.insert( W[ j ] );
+      }
+    }
+  }
+  //DDUMPC( Index );
+  W.Clear();
+  for ( std::set< int >::iterator i = Set.begin(); i != Set.end(); ++i ) {
+    W.Cat( (*i) );
+    W += "\n";
+  }
+  Upp::BeepInformation();
+  Upp::AppendClipboardText( W.ToString() );
+  DLOG( W );
 }
 
 void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
 {
   Upp::Event<> AddSlovo_; // Gate<> для функторов, возвращающих логический тип
   Upp::Function< void( void ) > MarkDeleteSlovo_, Edit_, SmenaYazyka_, SortirovkaUstanovka_, Filter_, RemoveDubli_, CopyToClipboard_, DeleteSlova_, AboutPrabhupadaSlovary_,
-                                Test_;
-                                
-  Test_            =  [&] { Test(); };
+                                PrabhupadaBukvary_;
 
   AddSlovo_        =  [&] { AddSlovo(); };
   MarkDeleteSlovo_ << [&] { MarkDeleteSlovo(); };
@@ -290,6 +312,7 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   CopyToClipboard_ << [&] { CopyToClipboard(); };
   DeleteSlova_     << [&] { DeleteSlova(); };
   AboutPrabhupadaSlovary_ << [&] { AboutPrabhupadaSlovary(); };
+  PrabhupadaBukvary_ =  [&] { PrabhupadaBukvary(); };
   
   bar.Add( Upp::t_( "Добавить" ), PrabhupadaSlovaryImg::AddSlovo(), AddSlovo_ ).Key( Upp::K_CTRL_INSERT ).Help( Upp::t_( "Добавить новое слово и перевод" ) );
   bar.Add( Upp::t_( "Пометить для удаления" ), PrabhupadaSlovaryImg::MarkDeleteSlovo(), MarkDeleteSlovo_ ).Key( Upp::K_CTRL_DELETE ).Help( Upp::t_( "Пометить слова для удаления" ) );
@@ -299,8 +322,7 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   bar.Add( Upp::t_( "Копировать в буфер обмена" ), PrabhupadaSlovaryImg::CopyToClipboard(), CopyToClipboard_ ).Key( Upp::K_CTRL_C ).Help( Upp::t_( "Копировать в буфер обмена" ) );
   bar.Add( Upp::t_( "Удалить помеченные слова" ), PrabhupadaSlovaryImg::DeleteSlova(), DeleteSlova_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_DELETE ).Help( Upp::t_( "Удалить помеченные слова" ) );
   bar.Add( Upp::t_( "О программе" ), PrabhupadaSlovaryImg::Tilaka(), AboutPrabhupadaSlovary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_A ).Help( Upp::t_( "О программе \"Словарь Шрилы Прабхупады\"" ) );
-
-  bar.Add( Upp::t_( "Test" ), PrabhupadaSlovaryImg::Tilaka(), Test_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_B ).Help( Upp::t_( "Тест" ) );
+  bar.Add( Upp::t_( "Собрать набор букв в/nбуфер обмена" ), PrabhupadaSlovaryImg::PrabhupadaBukvary(), PrabhupadaBukvary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_B ).Help( Upp::t_( "Собрать набор букв в буфер обмена" ) );
 
   YazykDropList.Tip( Upp::t_( "Язык" ) );
   YazykDropList.DropWidthZ( 148 );
@@ -461,18 +483,15 @@ void PrabhupadaSlovaryPanel::DeleteSlova()
   sql.SetStatement( "delete from SANSKRIT where ID = ?" );
   if ( Upp::PromptOKCancel( Upp::t_( "Удалять помеченные слова?" ) ) ) {
     bool UdalenieBylo = false;
-    for ( int i = 0; i < VectorSanskrit.GetCount(); ++i ) {
-      SanskritPair& sp = VectorSanskrit[ i ];
-      if ( sp.DeleteCandidat ) {
-        sql.SetParam( 0, sp.ID );
-        sql.Run();
-        UdalenieBylo = true;
-      }
-    }
-    if ( UdalenieBylo ) {
-      VectorSanskrit.RemoveIf( [&] ( int i ) { return VectorSanskrit[ i ].DeleteCandidat; } );
+    VectorSanskrit.RemoveIf( [&] ( int i ) { return VectorSanskrit[ i ].DeleteCandidat; },
+                             [&] ( int i ) {
+                                             SanskritPair& sp = VectorSanskrit[ i ];
+                                             sql.SetParam( 0, sp.ID );
+                                             sql.Run();
+                                             UdalenieBylo = true;
+                                           } );
+    if ( UdalenieBylo )
       BigRefresh();
-    }
   }
 }
 

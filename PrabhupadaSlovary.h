@@ -18,6 +18,12 @@ namespace Upp {
 
 namespace Prabhupada {
 
+using PrabhupadaString = Upp::String;
+/*class PrabhupadaString : public Upp::String
+{
+};
+*/
+
 struct FilterSlovary : Upp::Moveable< FilterSlovary > {
   Upp::String FilterSanskrit;
   Upp::String FilterPerevod;
@@ -47,9 +53,9 @@ public:
   mutable int ReservIndex; // для сохранения после поиска
   int         ID;
   bool        DeleteCandidat = false;
-  Upp::String Sanskrit;
-  Upp::String Perevod;
-  Upp::String ToString() const { return Upp::AsString( ID ) + " : " + Sanskrit + " = " + Perevod; }
+  PrabhupadaString Sanskrit;
+  PrabhupadaString Perevod;
+  Upp::String ToString() const { return Upp::AsString( ID ) + " : " + Sanskrit.ToString() + " = " + Perevod.ToString(); }
   bool operator == ( const SanskritPair& sp ) {
     return ( Sanskrit == sp.Sanskrit ) && ( Perevod == sp.Perevod );
   }
@@ -149,7 +155,7 @@ public:
   void IfEditOKCancel();
   void ArraySanskritInserter( int I );
   int GetVectorSanskritLastID();
-  void Test();
+  void PrabhupadaBukvary();
 };
 
 class PrabhupadaSlovaryWindow : public Upp::TopWindow {
