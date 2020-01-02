@@ -15,6 +15,7 @@ namespace Upp {
 
 #include <plugin/sqlite3/Sqlite3.h>
 #include "PrabhupadaSlovaryAlgorithm.h"
+#include <map>
 
 namespace Prabhupada {
 
@@ -53,8 +54,11 @@ public:
   mutable int ReservIndex; // для сохранения после поиска
   int         ID;
   bool        DeleteCandidat = false;
-  PrabhupadaString Sanskrit;
-  PrabhupadaString Perevod;
+  Upp::String Sanskrit;
+  Upp::String Perevod;
+  // WD meens itout diakritiks symbhol
+  Upp::String SanskritWD;
+  Upp::String PerevodWD;
   Upp::String ToString() const { return Upp::AsString( ID ) + " : " + Sanskrit.ToString() + " = " + Perevod.ToString(); }
   bool operator == ( const SanskritPair& sp ) {
     return ( Sanskrit == sp.Sanskrit ) && ( Perevod == sp.Perevod );
@@ -116,9 +120,11 @@ public:
   PrabhupadaSlovaryPanel();
   Upp::Color ColorInkDelete { Upp::Red() };
   Upp::Color ColorPaperDelete { Upp::White() };
+  std::map< int, int > BukvaryPrabhupada;
+  void PrepareBukvaryPrabhupada();
+  void RemoveDiacritics( Upp::String& R, const Upp::String& S );
   void AddSlovo();
   void MarkDeleteSlovo();
-  void DeleteSlovo( int i );
   void DeleteSlova();
   void Edit();
   void SmenaYazyka();

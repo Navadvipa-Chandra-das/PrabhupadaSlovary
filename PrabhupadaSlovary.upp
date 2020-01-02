@@ -10,8 +10,9 @@ uses
 file
 	PrabhupadaSlovaryConsts.h,
 	AboutPrabhupadaSlovary.qtf,
-	test.txt,
+	PrabhupadaBukvary.txt,
 	PrabhupadaSlovary.cpp,
+	test.txt,
 	PrabhupadaSlovaryMain.cpp,
 	PrabhupadaSlovary.lay,
 	PrabhupadaSlovary.h,

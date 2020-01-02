@@ -129,6 +129,8 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   SplitterSearch.SetMin( 0, 1000 );
   SplitterSearch.SetMin( 1, 1000 );
   EditIndicatorRow.NoWantFocus();
+  
+  PrepareBukvaryPrabhupada();
 
   ArraySanskrit.AddRowNumColumn( Upp::t_( "Санскрит" ), 50 ).ConvertBy( [&] ( const Upp::Value& V ) { return GetSanskrit( V ); } ).SetSetter( [&] ( const Upp::Value& V, int i ) { SetSanskrit( V, i ); } ).Edit( EditSanskrit );
   ArraySanskrit.AddRowNumColumn( Upp::t_( "Перевод"  ), 50 ).ConvertBy( [&] ( const Upp::Value& V ) { return GetPerevod(  V ); } ).SetSetter( [&] ( const Upp::Value& V, int i ) { SetPerevod(  V, i ); } ).Edit( EditPerevod  );
@@ -162,6 +164,20 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   }
   PrepareVectorYazyk();
   VectorSanskrit.LastID = GetVectorSanskritLastID();
+}
+
+void PrabhupadaSlovaryPanel::PrepareBukvaryPrabhupada()
+{
+	Upp::FileIn F( Upp::ConfigFile( "PrabhupadaBukvary.txt" ) );
+	Upp::WString W;
+	while ( true ) {
+		Upp::String S = F.GetLine();
+		if ( S.IsVoid() )
+		  break;
+	  
+	  W = S.ToWString();
+	  BukvaryPrabhupada[ W[ 0 ] ] = W.GetCount() == 3 ? W[ 2 ] : W[ 0 ];
+	}
 }
 
 void PrabhupadaSlovaryPanel::IndicatorRow()
@@ -226,9 +242,22 @@ void PrabhupadaSlovaryPanel::PrepareVectorSanskrit()
     RefPairSanskrit.ID          = ID;
     RefPairSanskrit.Sanskrit    = IZNACHALYNO;
     RefPairSanskrit.Perevod     = PEREVOD;
+    
+    RemoveDiacritics( RefPairSanskrit.SanskritWD, RefPairSanskrit.Sanskrit );
+    RemoveDiacritics( RefPairSanskrit.PerevodWD,  RefPairSanskrit.Perevod );
   }
   sql.Clear();
   SetVectorSanskritDlinaVector( i );
+}
+
+void PrabhupadaSlovaryPanel::RemoveDiacritics( Upp::String& R, const Upp::String& S )
+{
+  Upp::WString W = S.ToWString(), WR;
+  
+  int L = W.GetCount();
+  for ( int i = 0; i < L; ++i )
+    WR.Cat( BukvaryPrabhupada[ W[ i ] ] );
+  R = WR.ToString();
 }
 
 int PrabhupadaSlovaryPanel::GetVectorSanskritLastID()
@@ -273,7 +302,7 @@ void PrabhupadaSlovaryPanel::PrabhupadaBukvary()
   Upp::WString W;
   
   
-  std::set< int > Set;
+  static std::set< int > Set;
   int L = VectorSanskrit.GetCount();
   if ( Upp::PromptOKCancel( Upp::t_( "Собрать полный набор букв?" ) ) ) {
     int SL;
@@ -287,7 +316,6 @@ void PrabhupadaSlovaryPanel::PrabhupadaBukvary()
       }
     }
   }
-  //DDUMPC( Index );
   W.Clear();
   for ( std::set< int >::iterator i = Set.begin(); i != Set.end(); ++i ) {
     W.Cat( (*i) );
@@ -295,7 +323,6 @@ void PrabhupadaSlovaryPanel::PrabhupadaBukvary()
   }
   Upp::BeepInformation();
   Upp::AppendClipboardText( W.ToString() );
-  DLOG( W );
 }
 
 void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
@@ -445,21 +472,20 @@ inline bool operator > ( const SanskritPair& a, const SanskritPair& b )
 
 void PrabhupadaSlovaryPanel::RemoveDubli()
 {
-  // Сортируем по простому без выкрутасов!
-  Upp::Sort( VectorSanskrit, std::less< SanskritPair >() );
-  Upp::RemoveDubli< SanskritVector >( VectorSanskrit, [&] ( int i ) { DeleteSlovo( i ); } );
-
-  BigRefresh();
-}
-
-void PrabhupadaSlovaryPanel::DeleteSlovo( int i )
-{
   Upp::Sql sql( Session );
   sql.SetStatement( "delete from SANSKRIT where ID = ?" );
-  sql.SetParam( 0, VectorSanskrit[ VectorSanskrit[ i ].Index ].ID );
-  DLOG( Upp::AsString( i ) + " : " + Upp::AsString( VectorSanskrit[ i ].Index ) + " : " + VectorSanskrit[ VectorSanskrit[ i ].Index ].Sanskrit + " : " + VectorSanskrit[ VectorSanskrit[ i ].Index ].Perevod );
-  sql.Run();
-  sql.Clear();
+  // Сортируем по простому без выкрутасов!
+  Upp::Sort( VectorSanskrit, std::less< SanskritPair >() );
+  bool UdalenieBylo = false;
+  Upp::RemoveDubli< SanskritVector >( VectorSanskrit,
+    [&] ( int i ) {
+                    sql.SetParam( 0, VectorSanskrit[ VectorSanskrit[ i ].Index ].ID );
+                    sql.Run();
+                    UdalenieBylo = true;
+                  } );
+
+  if ( UdalenieBylo )
+    BigRefresh();
 }
 
 void PrabhupadaSlovaryPanel::AddSlovo()
@@ -637,10 +663,10 @@ void PrabhupadaSlovaryPanel::FilterVectorSanskrit()
   for ( int i = 0; i < VectorSanskrit.GetCount(); ++i ) {
     n = VectorSanskrit[ i ].ReservIndex;
     NeedPerevod = false;
-    NeedSanskrit = CheckSanskrit ? RegSanskrit.Match( VectorSanskrit[ n ].Sanskrit ) : true;
+    NeedSanskrit = CheckSanskrit ? RegSanskrit.Match( VectorSanskrit[ n ].SanskritWD ) : true;
     if ( NeedSanskrit )
-      NeedPerevod  = CheckPerevod  ? RegPerevod.Match(  VectorSanskrit[ n ].Perevod )  : true;
-    if ( NeedSanskrit && NeedPerevod )
+      NeedPerevod  = CheckPerevod  ? RegPerevod.Match(  VectorSanskrit[ n ].PerevodWD )  : true;
+    if ( NeedPerevod )
       VectorSanskrit[ ++ActualIndex ].Index = n;
   }
 
@@ -651,8 +677,6 @@ void PrabhupadaSlovaryPanel::SetFilter( const FilterSlovary& F )
 {
   if ( Filter != F || Filter.Reset == true  ) {
     Filter.Reset = false;
-    //if ( Filter.IsEmpty() )
-    //  VectorSanskrit.SaveIndexToReserv();
 
     IfEditOKCancel();
 
