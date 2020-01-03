@@ -128,7 +128,7 @@ public:
   void DeleteSlova();
   void Edit();
   void SmenaYazyka();
-  void RemoveDubli();
+  void RemoveDuplicates();
   Upp::Sqlite3Session Session;
   YazykVector VectorYazyk;
   SanskritVector VectorSanskrit;

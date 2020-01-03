@@ -273,7 +273,7 @@ C MakeIota(V end, V start = 0, V step = 1)
 }
 
 template < class SortRange >
-void RemoveDubli( SortRange& V )
+void RemoveDuplicates( SortRange& V )
 {
   if ( V.IsEmpty() )
     return;
@@ -294,7 +294,7 @@ void RemoveDubli( SortRange& V )
 };
 
 template < class SortRange, class OnRemove >
-void RemoveDubli( SortRange& V, const OnRemove& On_Remove )
+void RemoveDuplicates( SortRange& V, const OnRemove& On_Remove )
 {
   if ( V.IsEmpty() )
     return;
@@ -305,8 +305,8 @@ void RemoveDubli( SortRange& V, const OnRemove& On_Remove )
       if ( i >= V.GetCount() )
         return;
       if ( V[ i ] == V[ n ] ) {
-        V.Remove( i );
         On_Remove( i );
+        V.Remove( i );
       } else
         break;
     } while ( true );
