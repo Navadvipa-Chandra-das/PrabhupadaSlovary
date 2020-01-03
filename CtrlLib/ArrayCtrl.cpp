@@ -2310,7 +2310,8 @@ void ArrayCtrl::DoInsert(int c) {
 	if(!IsEdit())
 		insertmode = false;
 	WhenArrayAction();
-	Inserter( c );
+	if ( Inserter )
+	  Inserter( c );
 }
 
 void ArrayCtrl::DoInsertBefore() {
