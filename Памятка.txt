@@ -1,0 +1,6 @@
+cd $(uppdir)
+rm -r uppsrc
+svn checkout svn://www.ultimatepp.org/upp/trunk/uppsrc
+# Apply your changes to source code
+cd uppsrc
+svn diff > ../MyFix.diff
