@@ -2303,6 +2303,8 @@ void ArrayCtrl::DoEdit() {
 
 void ArrayCtrl::DoInsert(int c) {
 	if(IsReadOnly()) return;
+	if ( Inserter )
+	  Inserter( c );
 	Insert(c);
 	SetCursor(c);
 	insertmode = true;
@@ -2310,8 +2312,6 @@ void ArrayCtrl::DoInsert(int c) {
 	if(!IsEdit())
 		insertmode = false;
 	WhenArrayAction();
-	if ( Inserter )
-	  Inserter( c );
 }
 
 void ArrayCtrl::DoInsertBefore() {

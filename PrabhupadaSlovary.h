@@ -19,11 +19,21 @@ namespace Upp {
 
 namespace Prabhupada {
 
-using PrabhupadaString = Upp::String;
-/*class PrabhupadaString : public Upp::String
-{
+struct IndexPair : Upp::Moveable< IndexPair > {
+  int Index;
+  int ReservIndex;
+  Upp::String ToString() const { return Upp::AsString( ReservIndex ) + " : " + Upp::AsString( Index ); }
+  void Serialize( Upp::Stream& s )
+  {
+    s % Index % ReservIndex;
+  };
 };
-*/
+
+struct IndexVector : Upp::Vector< IndexPair > {
+  void SaveIndexToReserv();
+  void LoadIndexFromReserv();
+  void ResetIndex();
+};
 
 struct FilterSlovary : Upp::Moveable< FilterSlovary > {
   Upp::String FilterSanskrit;
@@ -50,8 +60,6 @@ struct FilterSlovary : Upp::Moveable< FilterSlovary > {
 
 class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
-  mutable int Index; // для фильтрации поиска
-  mutable int ReservIndex; // для сохранения после поиска
   int         ID;
   bool        DeleteCandidat = false;
   Upp::String Sanskrit;
@@ -86,11 +94,8 @@ public:
 
 class SanskritVector : public Upp::Vector< SanskritPair > {
 public:
-  int DlinaVector = 0;
+  int FilterGetCount = 0;
   int LastID;
-  void SaveIndexToReserv();
-  void LoadIndexFromReserv();
-  void ResetIndex();
 };
 
 static Upp::Font GetGauraFont();
@@ -115,8 +120,8 @@ public:
   VidSortirovka Sortirovka = VidSortirovka::Reset;
   void SetSortirovka( VidSortirovka s );
   void BigRefresh();
-  Upp::EditString SanskritPoiskEdit;
-  Upp::EditString PerevodPoiskEdit;
+  Upp::EditString SanskritFilterEdit;
+  Upp::EditString PerevodFilterEdit;
   PrabhupadaSlovaryPanel();
   Upp::Color ColorInkDelete { Upp::Red() };
   Upp::Color ColorPaperDelete { Upp::White() };
@@ -132,6 +137,7 @@ public:
   Upp::Sqlite3Session Session;
   YazykVector VectorYazyk;
   SanskritVector VectorSanskrit;
+  IndexVector VectorIndex;
   void PrepareBar( Upp::Bar& bar );
   Upp::EditString EditSanskrit;
   Upp::EditString EditPerevod;
@@ -145,7 +151,7 @@ public:
   void SetYazyk( int y );
   Upp::Font GauraFont;
   void IndicatorRow();
-  void SetVectorSanskritDlinaVector( int d );
+  void SetVectorSanskritFilterGetCount( int d );
   int StrongYazyk = -1;
   FilterSlovary Filter;
   void SetFilter( const FilterSlovary& F );
