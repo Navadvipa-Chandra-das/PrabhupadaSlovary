@@ -37,6 +37,18 @@ csCZ("Nelze otev\305\231\303\255t datab\303\241zi sanskitsk\303\251ho slovn\303\
 esES("\302\241No se pudo abrir la base de datos del diccionario s\303\241nscrito de Srila Prabhupada!")
 ptBR("N\303\243o \303\251 poss\303\255vel abrir o banco de dados de dicion\303\241rio de s\303\242nscrito Srila Prabhupada!")
 
+T_("About the program")
+ruRU("\320\236 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\265")
+csCZ("O programu")
+esES("Acerca del programa y ayuda!")
+ptBR("Sobre o programa")
+
+T_("Letter")
+ruRU("\320\237\320\270\321\201\321\214\320\274\320\276")
+csCZ("Dopis")
+esES("Carta")
+ptBR("Letra")
+
 T_("About the program and help!")
 ruRU("\320\236 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\265 "
      "\320\270 \320\277\320\276\320\274\320\276\321\211\321\214!")
@@ -174,14 +186,14 @@ csCZ("Sanskrt sestupn\304\233")
 esES("S\303\241nscrito descendente")
 ptBR("O s\303\242nscrito desc")
 
-T_("Translation of ascending")
+T_("Translation ascending")
 ruRU("\320\237\320\265\321\200\320\265\320\262\320\276\320\264 \320\277\320\276 "
      "\320\262\320\276\320\267\321\200\320\260\321\201\321\202\320\260\320\275\320\270\321\216")
 csCZ("P\305\231eklad vzestupn\304\233")
 esES("Traducci\303\263n ascendente")
 ptBR("A tradu\303\247\303\243o em ordem crescente")
 
-T_("Translation in descending order")
+T_("Translation descending")
 ruRU("\320\237\320\265\321\200\320\265\320\262\320\276\320\264 \320\277\320\276 "
      "\321\203\320\261\321\213\320\262\320\260\320\275\320\270\321\216")
 csCZ("P\305\231eklad sestupn\304\233")
@@ -222,11 +234,11 @@ csCZ("Ulo\305\276it zm\304\233ny?")
 esES("\302\277Guardar cambios?")
 ptBR("Salvar as altera\303\247\303\265es?")
 
-T_("Gaura font height")
-ruRU("\320\222\321\213\321\201\320\276\321\202\320\260 \321\210\321\200\320\270\321\204\321\202\320\260 Gaura")
-csCZ("V\303\275\305\241ka p\303\255sma Gaura")
-esES("Altura de fuente Gaura")
-ptBR("A altura da fonte, Gaura")
+T_("Gaura Times font height")
+ruRU("\320\222\321\213\321\201\320\276\321\202\320\260 \321\210\321\200\320\270\321\204\321\202\320\260 Gaura Times")
+csCZ("V\303\275\305\241ka p\303\255sma Gaura Times")
+esES("Altura de fuente Gaura Times")
+ptBR("A altura da fonte, Gaura Times")
 
 
 // PrabhupadaSlovaryMain.cpp
@@ -236,7 +248,7 @@ ruRU("\320\241\320\273\320\276\320\262\320\260\321\200\321\214 \320\250\321\200\
      "\320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\321\213!")
 csCZ("Slovn\303\255k Srily Prabhupady!")
 esES("Diccionario De \305\232r\304\253la Prabhup\304\201da!")
-ptBR("Dicion\303\241rio De \305\232r\304\253la Prabhup\304\201da!!")
+ptBR("Dicion\303\241rio De \305\232r\304\253la Prabhup\304\201da!")
 
 
 // PrabhupadaSlovary.lay
@@ -252,8 +264,8 @@ ruRU("\320\241\320\260\320\275\321\201\320\272\321\200\320\270\321\202\321\201\3
      "\321\201\320\273\320\276\320\262\320\260\321\200\321\214 \320\250\321\200\320\270\320\273\321\213 "
      "\320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\321\213")
 csCZ("Sanskrtsk\303\275 slovn\303\255k Srily Prabhupady")
-esES("Diccionario s\303\241nscrito de Srila Prabhupada")
-ptBR("Dicion\303\241rio de s\303\242nscrito de Srila Prabhupada")
+esES("Diccionario s\303\241nscrito de \305\232r\304\253la Prabhup\304\201da")
+ptBR("Dicion\303\241rio de s\303\242nscrito de \305\232r\304\253la Prabhup\304\201da")
 
 T_("Version 3.0")
 ruRU("\320\222\320\265\321\200\321\201\320\270\321\217 3.0")
@@ -261,10 +273,14 @@ csCZ("Verze 3.0")
 esES("Versi\303\263n 3.0")
 ptBR("Vers\303\243o 3.0")
 
-T_("Donations can be sent here")
-ruRU("\320\237\320\276\320\266\320\265\321\200\321\202\320\262\320\276\320\262\320\260\320\275\320\270\321\217 "
-     "\320\274\320\276\320\266\320\275\320\276 \320\276\321\202\320\277\321\200\320\260\320\262\320\273\321\217\321\202\321\214 "
-     "\321\201\321\216\320\264\320\260")
-csCZ("Dary m\305\257\305\276ete pos\303\255lat zde")
-esES("Las donaciones se pueden enviar aqu\303\255")
-ptBR("As doa\303\247\303\265es podem ser de enviar para c\303\241")
+T_("Chant\nHare Krishna Hare Krishna Krishna Krishna Hare Hare\nHare Rama Hare Rama Rama Rama Hare Hare\nand be happy\nAbhay Charanaravinda Bhaktivedanta Swami Shrila Prabhupada")
+ruRU("\320\237\320\276\320\262\321\202\320\276\321\200\321\217\320\271\321\202\320\265\n\320\245\320\260\321\200\320\265 \320\232\321\200\320\270\321\210\320\275\320\260 \320\245\320\260\321\200\320\265 \320\232\321\200\320\270\321\210\320\275\320\260 \320\232\321\200\320\270\321\210\320\275\320\260 \320\232\321\200\320\270\321\210\320\275\320\260 \320\245\320\260\321\200\320\265 \320\245\320\260\321\200\320\265\n\320\245\320\260\321\200\320\265 \320\240\320\260\320\274\320\260 \320\245\320\260\321\200\320\265 \320\240\320\260\320\274\320\260 \320\240\320\260\320\274\320\260 \320\240\320\260\320\274\320\260 \320\245\320\260\321\200\320\265 \320\245\320\260\321\200\320\265\n\320\270 \320\261\321\203\320\264\321\214\321\202\320\265 \321\201\321\207\320\260\321\201\321\202\320\273\320\270\320\262\321\213\n\320\220\320\261\321\205\320\260\320\271 \320\247\320\260\321\200\320\260\320\275\320\260\321\200\320\260\320\262\320\270\320\275\320\264\320\260 \320\221\321\205\320\260\320\272\321\202\320\270\320\262\320\265\320\264\320\260\320\275\321\202\320\260 \320\241\320\262\320\260\320\274\320\270 \320\250\321\200\320\270\320\273\320\260 \320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\320\260")
+csCZ("Opakujte\nHare Kri\305\241na Hare Kri\305\241na Kri\305\241na Kri\305\241na Hare Hare\nHare Rama Hare Rama Rama Rama Hare Hare\na bu\304\217te \305\241\305\245astn\303\255\nAbhay Charanaravinda Bhaktivedanta Swami \305\232r\304\253la Prabhup\303\241da")
+esES("Repite\nHare Krishna Hare Krishna Krishna Krishna Hare Hare\nHare Rama Hare Rama Rama Rama Hare Hare\ny s\303\251 feliz\nAbhai Charanaravinda Bhaktivedanta Swami \305\232r\304\253la Prabhup\304\201da")
+ptBR("Repita\nHare Krishna Hare Krishna Krishna Krishna Hare Hare\nHare Rama Hare Rama Rama Rama Hare Hare\ne seja feliz\nAbhay Charanaravinda Bhaktivedanta Swami \305\232r\304\253la Prabhup\304\201da")
+
+T_("His Divine Grace Abhay Charanaravinda Bhaktivedanta Swami Prabhupada -\nthe Founder-Acharya of the International Society for Krishna consiousness")
+ruRU("\320\225\320\263\320\276 \320\221\320\276\320\266\320\265\321\201\321\202\320\262\320\265\320\275\320\275\320\260\321\217 \320\234\320\270\320\273\320\276\321\201\321\202\321\214 \320\220\320\261\321\205\320\260\320\271 \320\247\320\260\321\200\320\260\320\275\320\260\321\200\320\260\320\262\320\270\320\275\320\264\320\260 \320\221\321\205\320\260\320\272\321\202\320\270\320\262\320\265\320\264\320\260\320\275\321\202\320\260 \320\241\320\262\320\260\320\274\320\270 \320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\320\260 -\n\320\276\321\201\320\275\320\276\320\262\320\260\321\202\320\265\320\273\321\214-\320\260\321\207\320\260\321\200\321\214\321\217 \320\234\320\265\320\266\320\264\321\203\320\275\320\260\321\200\320\276\320\264\320\275\320\276\320\263\320\276 \320\236\320\261\321\211\320\265\321\201\321\202\320\262\320\260 \320\241\320\276\320\267\320\275\320\260\320\275\320\270\321\217 \320\232\321\200\320\270\321\210\320\275\321\213")
+csCZ("Jeho Bo\305\276sk\303\241 Milost Abhai Charanaravinda Bhaktivedanta Swami Prabhupada -\nje zakladatelem Acharya Mezin\303\241rodn\303\255 spole\304\215nosti pro v\304\233dom\303\255 K\341\271\233\341\271\243\341\271\207y")
+esES("Su Divina Misericordia Abhay Charanaravinda Bhaktivedanta Swami Prabhupada -\nfundador-Acharya De la sociedad internacional de Conciencia de Krishna")
+ptBR("Sua Divina Gra\303\247a Abhay Charanaravinda Bhaktivedanta Swami Gaudiya -\nfundador-acharya da Sociedade Internacional para a Consci\303\252ncia de Krishna")

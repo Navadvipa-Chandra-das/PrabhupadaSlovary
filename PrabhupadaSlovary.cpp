@@ -10,7 +10,7 @@
 
 namespace Prabhupada {
 
-template <class Condition, class OnRemove>
+/*template <class Condition, class OnRemove>
 void SanskritVector::RemoveIf( Condition c, const OnRemove& On_Remove )
 {
   int L = GetCount();
@@ -19,7 +19,7 @@ void SanskritVector::RemoveIf( Condition c, const OnRemove& On_Remove )
       On_Remove( i );
       Remove( i );
     }
-}
+}*/
 
 Upp::Value PrabhupadaSlovaryPanel::GetSanskrit(const Upp::Value& V )
 {
@@ -92,8 +92,6 @@ void PrabhupadaSlovaryPanel::ArraySanskritInserter( int I )
   
   SanskritPair& RefPairSanskrit = VectorSanskrit.Insert( I, PairSanskrit );
   IndexPair& RefPairIndex       = VectorIndex.Insert( I, PairIndex );
-  
-  DDUMP( I );
   
   RefPairIndex.Index          = I;
   RefPairIndex.ReservIndex    = RefPairIndex.Index;
@@ -281,20 +279,40 @@ void PrabhupadaSlovaryPanel::SetVectorSanskritFilterGetCount( int d )
   ArraySanskrit.WhenSel();
 }
 
-AboutPrabhupadaSlovaryWindow::AboutPrabhupadaSlovaryWindow()
+PrabhupadaTabAboutPanel::PrabhupadaTabAboutPanel()
 {
   Upp::CtrlLayout( *this );
-  Title( Upp::t_( "About the program and help!" ) );
+}
+
+void PrabhupadaTabAboutPanel::Paint( Upp::Draw& draw )
+{
+  draw.DrawRect( GetSize(), Upp::SColorFace() );
+  draw.DrawImage( 0, 0, PrabhupadaSlovaryImg::ShrilaPrabhupada() );
+  draw.DrawImage( 488, 644, PrabhupadaSlovaryImg::GerbNizhneyNavadvipy() );
+}
+
+PrabhupadaTabLetterPanel::PrabhupadaTabLetterPanel()
+{
+  Upp::CtrlLayout( *this );
+
   Upp::String Lang = Upp::GetCurrentLanguageString();
   Lang = Lang.Left( 5 );
   Upp::String F = Upp::ConfigFile( "AboutPrabhupadaSlovary" + Lang + ".qtf" );
   RichTextAbout.Pick( Upp::ParseQTF( Upp::LoadFile( F ) ) );
 }
 
-void AboutPrabhupadaSlovaryWindow::Paint( Upp::Draw& draw )
+AboutPrabhupadaSlovaryWindow::AboutPrabhupadaSlovaryWindow()
 {
-  draw.DrawRect( GetSize(), Upp::SColorFace() );
-  draw.DrawImage( 0, 0, PrabhupadaSlovaryImg::GerbNizhneyNavadvipy() );
+  Upp::CtrlLayout( *this );
+  
+  PrabhupadaTabCtrl.SizePos();
+  
+  PrabhupadaTabCtrl.Add( PanelPrabhupadaTabAbout,  Upp::t_( "About the program" ) ).Image( PrabhupadaSlovaryImg::Tilaka() );
+  PanelPrabhupadaTabAbout.SizePos();
+  PrabhupadaTabCtrl.Add( PanelPrabhupadaTabLetter, Upp::t_( "Letter" ) ).Image( PrabhupadaSlovaryImg::Edit() );
+  PanelPrabhupadaTabLetter.SizePos();
+
+  Title( Upp::t_( "About the program and help!" ) );
 }
 
 void PrabhupadaSlovaryPanel::AboutPrabhupadaSlovary()
@@ -372,15 +390,18 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   SortDropList.Add( Upp::t_( "Without sorting" ) );
   SortDropList.Add( Upp::t_( "Sanskrit ascending" ) );
   SortDropList.Add( Upp::t_( "Sanskrit descending" ) );
-  SortDropList.Add( Upp::t_( "Translation of ascending" ) );
-  SortDropList.Add( Upp::t_( "Translation in descending order" ) );
+  SortDropList.Add( Upp::t_( "Translation ascending" ) );
+  SortDropList.Add( Upp::t_( "Translation descending" ) );
   SortDropList.Tip( Upp::t_( "Sort" ) );
-  SortDropList.DropWidthZ( 180 );
+  SortDropList.DropWidthZ( 200 );
   SortDropList.NoWantFocus();
   SortDropList.WhenPush = SortirovkaUstanovka_;
   
+  bar.Separator();
   bar.Add( YazykDropList, 138 );
+  bar.Separator();
   bar.Add( SortDropList, 170 );
+  bar.Separator();
   
   GauraFontHeightEdit.MinMax( GauraFontHeightMin, GauraFontHeightMax );
   GauraFontHeight_ << [&] { SetGauraFontHeight( ~GauraFontHeightEdit ); };
@@ -388,8 +409,8 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   GauraFontHeightEdit.NoWantFocus();
   GauraFontHeightEdit.SetData( GauraFontHeightMin );
   GauraFontHeightEdit.WhenAction();
-  GauraFontHeightEdit.Tip( Upp::t_( "Gaura font height" ) );
-  bar.Add( GauraFontHeightEdit, 50 );
+  GauraFontHeightEdit.Tip( Upp::t_( "Gaura Times font height" ) );
+  bar.Add( GauraFontHeightEdit, 46 );
 }
 
 void PrabhupadaSlovaryPanel::SetGauraFontHeight( int H )
@@ -406,6 +427,9 @@ void PrabhupadaSlovaryPanel::SetGauraFontHeight( int H )
   
     EditSanskrit.SetFont( GauraFont );
     EditPerevod.SetFont( GauraFont );
+    
+    if ( GauraFontHeightEdit.GetData() != GauraFontHeight )
+      GauraFontHeightEdit.SetData( GauraFontHeight );
   }
 }
 
@@ -507,7 +531,7 @@ void PrabhupadaSlovaryPanel::RemoveDuplicatesSanskrit()
   // Сортируем по простому без выкрутасов! Но сортировка обязательна для єтого алгоритма!
   Upp::Sort( VectorSanskrit, std::less< SanskritPair >() );
   bool NeedBigRefresh = false;
-  RemoveDuplicates< SanskritVector >( VectorSanskrit,
+  Upp::RemoveDuplicates< SanskritVector >( VectorSanskrit,
     [&] ( int i ) {
                     sql.SetParam( 0, VectorSanskrit[ VectorIndex[ i ].Index ].ID );
                     sql.Run();
@@ -640,13 +664,14 @@ void PrabhupadaSlovaryPanel::Serialize( Upp::Stream& s )
   SplitterSearch.Serialize( s );
   Filter.Serialize( s );
 
-  int LastYazyk, LastCursor, LastSortirovka;
+  int LastYazyk, LastCursor, LastSortirovka, LastGauraFontHeight;
   if ( s.IsStoring() ) {
-    LastCursor     = ArraySanskrit.GetCursor();
-    LastYazyk      = Yazyk;
-    LastSortirovka = static_cast< int >( Sortirovka );
+    LastCursor          = ArraySanskrit.GetCursor();
+    LastYazyk           = Yazyk;
+    LastSortirovka      = static_cast< int >( Sortirovka );
+    LastGauraFontHeight = GauraFontHeight;
   }
-  s % LastCursor % LastYazyk % LastSortirovka;
+  s % LastCursor % LastYazyk % LastSortirovka % LastGauraFontHeight;
   if ( s.IsLoading() ) {
     if ( StrongYazyk != -1 ) {
       if ( StrongYazyk != LastYazyk )
@@ -657,6 +682,7 @@ void PrabhupadaSlovaryPanel::Serialize( Upp::Stream& s )
     SetSortirovka( static_cast< VidSortirovka >( LastSortirovka ) );
     ArraySanskrit.SetCursor( LastCursor );
     SetFilter( Filter );
+    SetGauraFontHeight( LastGauraFontHeight );
   }
 }
 
@@ -768,7 +794,6 @@ void PrabhupadaSlovaryPanel::SetYazyk( int y )
 
     SetSortirovka( Sortirovka_ );
     SetFilter( Filter );
-
 
     if ( c < 0 )
       ArraySanskrit.GoBegin();

@@ -15,7 +15,7 @@ GUI_APP_MAIN
   cm.Add( "INI_Place", Prabhupada::CommandInfo() );
   cm.Prepare( cl );
 
-  Prabhupada::CommandInfo& ci = cm.GetPut( "LangGUI" );
+  Prabhupada::CommandInfo& ci = cm.Get( "LangGUI" );
   if ( ci.Present )
     Upp::SetLanguage( Upp::SetLNGCharset( Upp::LNGFromText( ci.Value ), CHARSET_UTF8 ) );
   else

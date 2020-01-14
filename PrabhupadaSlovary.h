@@ -89,25 +89,39 @@ struct YazykInfo : Upp::Moveable< YazykInfo > {
 
 class YazykVector : public Upp::Vector< YazykInfo > {
 public:
-  FindYazyk( const Upp::String& S );
+  int FindYazyk( const Upp::String& S );
 };
 
 class SanskritVector : public Upp::Vector< SanskritPair > {
 public:
   int FilterGetCount = 0;
   int LastID;
-  template < class Condition, class OnRemove >
-  void RemoveIf( Condition c, const OnRemove& On_Remove );
+  //template < class Condition, class OnRemove >
+  //void RemoveIf( Condition c, const OnRemove& On_Remove );
 };
 
 using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::ParentCtrl/*TopWindow*/ >;
 using AboutPrabhupadaSlovaryParent = Upp::WithAboutPrabhupadaSlovary< Upp::TopWindow >;
 
+using PrabhupadaTabAboutParent  = Upp::WithPrabhupadaTabAbout< Upp::ParentCtrl >;
+using PrabhupadaTabLetterParent = Upp::WithPrabhupadaTabLetter< Upp::ParentCtrl >;
+
+struct PrabhupadaTabAboutPanel : PrabhupadaTabAboutParent {
+  typedef PrabhupadaTabAboutPanel CLASSNAME;
+  PrabhupadaTabAboutPanel();
+  virtual void Paint( Upp::Draw& draw );
+};
+struct PrabhupadaTabLetterPanel : PrabhupadaTabLetterParent {
+  typedef PrabhupadaTabLetterPanel CLASSNAME;
+  PrabhupadaTabLetterPanel();
+};
+
 class AboutPrabhupadaSlovaryWindow : public AboutPrabhupadaSlovaryParent {
 public:
   typedef AboutPrabhupadaSlovaryWindow CLASSNAME;
   AboutPrabhupadaSlovaryWindow();
-	virtual void Paint( Upp::Draw& draw );
+  PrabhupadaTabAboutPanel PanelPrabhupadaTabAbout;
+  PrabhupadaTabLetterPanel PanelPrabhupadaTabLetter;
 };
 
 class PrabhupadaSlovaryPanel : public PrabhupadaSlovaryPanelParent {
