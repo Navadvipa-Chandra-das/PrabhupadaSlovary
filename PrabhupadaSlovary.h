@@ -39,7 +39,7 @@ struct FilterSlovary : Upp::Moveable< FilterSlovary > {
   Upp::String FilterSanskrit;
   Upp::String FilterPerevod;
   Upp::String ToString() const { return FilterSanskrit + " ; " + FilterPerevod; }
-  bool Reset = true;
+  bool Reset = false;
   void Serialize( Upp::Stream& s )
   {
     int version = 0;
@@ -96,12 +96,9 @@ class SanskritVector : public Upp::Vector< SanskritPair > {
 public:
   int FilterGetCount = 0;
   int LastID;
+  template < class Condition, class OnRemove >
+  void RemoveIf( Condition c, const OnRemove& On_Remove );
 };
-
-static Upp::Font GetGauraFont();
-
-using ColumnGetter = Upp::Function< void ( const Upp::Value&, int ) >;
-using ColumnSetter = Upp::Function< Upp::Value ( const Upp::Value& ) >;
 
 using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::ParentCtrl/*TopWindow*/ >;
 using AboutPrabhupadaSlovaryParent = Upp::WithAboutPrabhupadaSlovary< Upp::TopWindow >;
@@ -122,6 +119,8 @@ public:
   void BigRefresh();
   Upp::EditString SanskritFilterEdit;
   Upp::EditString PerevodFilterEdit;
+  Upp::EditIntSpin GauraFontHeightEdit;
+  void SetGauraFontHeight( int H );
   PrabhupadaSlovaryPanel();
   Upp::Color ColorInkDelete { Upp::Red() };
   Upp::Color ColorPaperDelete { Upp::White() };
@@ -133,7 +132,7 @@ public:
   void DeleteSlova();
   void Edit();
   void SmenaYazyka();
-  void RemoveDuplicates();
+  void RemoveDuplicatesSanskrit();
   Upp::Sqlite3Session Session;
   YazykVector VectorYazyk;
   SanskritVector VectorSanskrit;
@@ -145,6 +144,7 @@ public:
   void PrepareVectorYazyk();
   Upp::DropList YazykDropList;
   Upp::DropList SortDropList;
+  int GauraFontHeight { 12 };
   void SortirovkaUstanovka();
   virtual void Serialize( Upp::Stream& s );
   int Yazyk = -1;

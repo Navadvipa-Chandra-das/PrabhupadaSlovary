@@ -1,0 +1,9 @@
+#include "PrabhupadaSlovary.h"
+#include "PrabhupadaSlovary.cpp"
+
+namespace Upp {
+
+#define  TFILE <PrabhupadaSlovary/PrabhupadaSlovary.t>
+#include <Core/t.h>
+
+}

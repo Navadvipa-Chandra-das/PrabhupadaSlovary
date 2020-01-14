@@ -17,6 +17,51 @@ public:
   void Prepare( const Upp::Vector< Upp::String >& cl );
 };
 
+template < class SortRange >
+void RemoveDuplicates( SortRange& V )
+{
+  if ( V.IsEmpty() )
+    return;
+
+	int n = 0, i = 1;
+  while ( i < V.GetCount() ) {
+    do {
+      if ( i >= V.GetCount() )
+        return;
+      if ( V[ i ] == V[ n ] )
+        V.Remove( i );
+      else
+        break;
+    } while ( true );
+    ++n;
+    ++i;
+  }
+};
+
+template < class SortRange, class OnRemove >
+void RemoveDuplicates( SortRange& V, const OnRemove& On_Remove )
+{
+  if ( V.IsEmpty() )
+    return;
+
+  int n = 0, i = 1;
+  while ( i < V.GetCount() ) {
+    do {
+      if ( i >= V.GetCount() )
+        return;
+      if ( V[ i ] == V[ n ] ) {
+        DLOG( "i == " + Upp::AsString( i ) + " n == " + Upp::AsString( n ) );
+        DDUMP( V[i] );
+        On_Remove( i );
+        V.Remove( i );
+      } else
+        break;
+    } while ( true );
+    ++n;
+    ++i;
+  }
+};
+
 } // namespace Prabhupada
 
 #endif

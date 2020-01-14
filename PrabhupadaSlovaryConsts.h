@@ -6,6 +6,8 @@ namespace Prabhupada {
 const Upp::String PrabhupadaSlovaryIniFile( "WindowPrabhupadaSlovary.ini" );
 const int RussianYazyk = 4;
 const Upp::String IndicatorSeparator( " / " );
+const int GauraFontHeightMin = 14;
+const int GauraFontHeightMax = 24;
 
 } // namespace Prabhupada
 

@@ -9,10 +9,10 @@ uses
 
 file
 	PrabhupadaSlovaryConsts.h,
-	AboutPrabhupadaSlovary.qtf,
-	PrabhupadaBukvary.txt,
-	PrabhupadaSlovary.cpp,
+	PrabhupadaSlovary.t charset "UTF-8",
+	PrabhupadaSlovary.icpp,
 	PrabhupadaSlovaryMain.cpp,
+	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovary.lay,
 	PrabhupadaSlovary.h,
 	PrabhupadaSlovary.iml,
