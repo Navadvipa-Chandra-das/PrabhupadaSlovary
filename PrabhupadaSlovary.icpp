@@ -1,6 +1,6 @@
 // мутный файл
 #include "PrabhupadaSlovary.h"
-//#include "PrabhupadaSlovary.cpp"
+#include "PrabhupadaSlovary.cpp"
 
 namespace Upp {
 
