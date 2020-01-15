@@ -296,8 +296,10 @@ PrabhupadaTabLetterPanel::PrabhupadaTabLetterPanel()
   Upp::CtrlLayout( *this );
 
   Upp::String Lang = Upp::GetCurrentLanguageString();
-  Lang = Lang.Left( 5 );
-  Upp::String F = Upp::ConfigFile( "AboutPrabhupadaSlovary" + Lang + ".qtf" );
+  int L = Lang.Find( ' ' );
+  L = L == -1 ? Lang.GetCount() : L;
+  Lang = Lang.Left( L );
+  Upp::String F = Upp::ConfigFile( "Text/AboutPrabhupadaSlovary" + Lang + ".qtf" );
   RichTextAbout.Pick( Upp::ParseQTF( Upp::LoadFile( F ) ) );
 }
 
