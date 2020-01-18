@@ -22,6 +22,6 @@ GUI_APP_MAIN
     Upp::SetLanguage( Upp::SetLNGCharset( Upp::GetSystemLNG(), CHARSET_UTF8 ) );
 
   Prabhupada::PrabhupadaSlovaryWindow WindowPrabhupadaSlovary( cm );
-  Upp::Ctrl::SetAppName( Upp::t_( "Srila Prabhupada's Dictionary!" ) );
+  Upp::Ctrl::SetAppName( Upp::t_( "Shrila Prabhupada's Dictionary!" ) );
   WindowPrabhupadaSlovary.Run();
 }

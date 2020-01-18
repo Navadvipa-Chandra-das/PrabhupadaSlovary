@@ -27,15 +27,15 @@ csCZ("P\305\231eklad")
 esES("Traducci\303\263n")
 ptBR("Tradu\303\247\303\243o")
 
-T_("Srila Prabhupada's Sanskrit dictionary database could not be opened!")
+T_("Shrila Prabhupada's Sanskrit dictionary database could not be opened!")
 ruRU("\320\235\320\265 \321\203\320\264\320\260\320\273\320\276\321\201\321\214 "
      "\320\276\321\202\320\272\321\200\321\213\321\202\321\214 \320\261\320\260\320\267\321\203 "
      "\320\264\320\260\320\275\320\275\321\213\321\205 \321\201\320\260\320\275\321\201\320\272\320\270\321\202\321\201\320\272\320\276\320\263\320\276 "
      "\321\201\320\273\320\276\320\262\320\260\321\200\321\217 \320\250\321\200\320\270\320\273\321\213 "
      "\320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\321\213!")
-csCZ("Nelze otev\305\231\303\255t datab\303\241zi sanskitsk\303\251ho slovn\303\255ku Srily Prabhupady!")
-esES("\302\241No se pudo abrir la base de datos del diccionario s\303\241nscrito de Srila Prabhupada!")
-ptBR("N\303\243o \303\251 poss\303\255vel abrir o banco de dados de dicion\303\241rio de s\303\242nscrito Srila Prabhupada!")
+csCZ("Nelze otev\305\231\303\255t datab\303\241zi sanskitsk\303\251ho slovn\303\255ku Shrily Prabhupady!")
+esES("\302\241No se pudo abrir la base de datos del diccionario s\303\241nscrito de Shrila Prabhupada!")
+ptBR("N\303\243o \303\251 poss\303\255vel abrir o banco de dados de dicion\303\241rio de s\303\242nscrito Shrila Prabhupada!")
 
 T_("About the program")
 ruRU("\320\236 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\265")
@@ -136,13 +136,13 @@ csCZ("O programu")
 esES("Acerca del programa")
 ptBR("Sobre o programa")
 
-T_("About the program \"Srila Prabhupada Dictionary\"")
+T_("About the program \"Shrila Prabhupada Dictionary\"")
 ruRU("\320\236 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\265 "
      "\"\320\241\320\273\320\276\320\262\320\260\321\200\321\214 \320\250\321\200\320\270\320\273\321\213 "
      "\320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\321\213\"")
-csCZ("O programu \"Slovn\303\255k Srily Prabhupady\"")
-esES("Acerca de \"Diccionario de Srila Prabhupada\"")
-ptBR("Sobre o programa \"Dicion\303\241rio de Srila Prabhupada\"")
+csCZ("O programu \"Slovn\303\255k Shrily Prabhupady\"")
+esES("Acerca de \"Diccionario de Shrila Prabhupada\"")
+ptBR("Sobre o programa \"Dicion\303\241rio de Shrila Prabhupada\"")
 
 T_("Collect a set of letters\nto the clipboard")
 ruRU("\320\241\320\276\320\261\321\200\320\260\321\202\321\214 \320\275\320\260\320\261\320\276\321\200 "
@@ -219,13 +219,13 @@ csCZ("Odstranit ozna\304\215en\303\241 slova?")
 esES("\302\277Eliminar palabras etiquetadas?")
 ptBR("Excluir marcados palavras?")
 
-T_("Srila Prabhupada's Sanskrit dictionary!")
+T_("Shrila Prabhupada's Sanskrit dictionary!")
 ruRU("\320\241\320\260\320\275\321\201\320\272\321\200\320\270\321\202\321\201\320\272\320\270\320\271 "
      "\321\201\320\273\320\276\320\262\320\260\321\200\321\214 \320\250\321\200\320\270\320\273\321\213 "
      "\320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\321\213!")
-csCZ("Sanskrtsk\303\275 slovn\303\255k Srily Prabhupady!")
-esES("Diccionario s\303\241nscrito de Srila Prabhupada!")
-ptBR("Dicion\303\241rio de s\303\242nscrito de Srila Prabhupada!")
+csCZ("Sanskrtsk\303\275 slovn\303\255k Shrily Prabhupady!")
+esES("Diccionario s\303\241nscrito de Shrila Prabhupada!")
+ptBR("Dicion\303\241rio de s\303\242nscrito de Shrila Prabhupada!")
 
 T_("Save changes?")
 ruRU("\320\241\320\276\321\205\321\200\320\260\320\275\320\270\321\202\321\214 "
@@ -243,10 +243,10 @@ ptBR("A altura da fonte, Gaura Times")
 
 // PrabhupadaSlovaryMain.cpp
 
-T_("Srila Prabhupada's Dictionary!")
+T_("Shrila Prabhupada's Dictionary!")
 ruRU("\320\241\320\273\320\276\320\262\320\260\321\200\321\214 \320\250\321\200\320\270\320\273\321\213 "
      "\320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\321\213!")
-csCZ("Slovn\303\255k Srily Prabhupady!")
+csCZ("Slovn\303\255k Shrily Prabhupady!")
 esES("Diccionario De \305\232r\304\253la Prabhup\304\201da!")
 ptBR("Dicion\303\241rio De \305\232r\304\253la Prabhup\304\201da!")
 
@@ -259,11 +259,11 @@ csCZ("\305\230\303\241dek / Celkem")
 esES("Cadena / Total")
 ptBR("Linha / Total De")
 
-T_("Srila Prabhupada's Sanskrit dictionary")
+T_("Shrila Prabhupada's Sanskrit dictionary")
 ruRU("\320\241\320\260\320\275\321\201\320\272\321\200\320\270\321\202\321\201\320\272\320\270\320\271 "
      "\321\201\320\273\320\276\320\262\320\260\321\200\321\214 \320\250\321\200\320\270\320\273\321\213 "
      "\320\237\321\200\320\260\320\261\321\205\321\203\320\277\320\260\320\264\321\213")
-csCZ("Sanskrtsk\303\275 slovn\303\255k Srily Prabhupady")
+csCZ("Sanskrtsk\303\275 slovn\303\255k Shrily Prabhupady")
 esES("Diccionario s\303\241nscrito de \305\232r\304\253la Prabhup\304\201da")
 ptBR("Dicion\303\241rio de s\303\242nscrito de \305\232r\304\253la Prabhup\304\201da")
 

@@ -154,7 +154,7 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
        
   Upp::String db( Upp::ConfigFile( "Sanskrit.db" ) );
   if( !Session.Open( db ) ) {
-    Upp::PromptOK( Upp::t_( "Srila Prabhupada's Sanskrit dictionary database could not be opened!" ) );
+    Upp::PromptOK( Upp::t_( "Shrila Prabhupada's Sanskrit dictionary database could not be opened!" ) );
   } else {
     Session.LogErrors( true );
   }
@@ -374,7 +374,7 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   bar.Add( Upp::t_( "To remove duplicates" ), PrabhupadaSlovaryImg::RemoveDuplicatesSanskrit(), RemoveDuplicates_ ).Key( Upp::K_ALT | Upp::K_CTRL_D  ).Help( Upp::t_( "To remove duplicates" ) );
   bar.Add( Upp::t_( "Copy to clipboard" ), PrabhupadaSlovaryImg::CopyToClipboard(), CopyToClipboard_ ).Key( Upp::K_CTRL_C ).Help( Upp::t_( "Copy to clipboard" ) );
   bar.Add( Upp::t_( "Delete marked words" ), PrabhupadaSlovaryImg::DeleteSlova(), DeleteSlova_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_DELETE ).Help( Upp::t_( "Delete marked words" ) );
-  bar.Add( Upp::t_( "About the program" ), PrabhupadaSlovaryImg::Tilaka(), AboutPrabhupadaSlovary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_A ).Help( Upp::t_( "Sobre o programa \"Dicionário de Srila Prabhupada\"" ) );
+  bar.Add( Upp::t_( "About the program" ), PrabhupadaSlovaryImg::Tilaka(), AboutPrabhupadaSlovary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_A ).Help( Upp::t_( "Sobre o programa \"Dicionário de Shrila Prabhupada\"" ) );
   bar.Add( Upp::t_( "Collect a set of letters\nto the clipboard" ), PrabhupadaSlovaryImg::PrabhupadaBukvary(), PrabhupadaBukvary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_B ).Help( Upp::t_( "Collect a set of letters to the clipboard" ) );
 
   YazykDropList.Tip( Upp::t_( "Language" ) );
@@ -605,7 +605,7 @@ PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow( CommandMap& cm )
   Add( PanelPrabhupadaSlovary );
   PanelPrabhupadaSlovary.SizePos();
   Upp::Rect( 0, 0, 600, 600 );
-  Title( Upp::t_( "Srila Prabhupada's Sanskrit dictionary!" ) ).Sizeable().Zoomable();
+  Title( Upp::t_( "Shrila Prabhupada's Sanskrit dictionary!" ) ).Sizeable().Zoomable();
 
   int i, &StrongYazyk = PanelPrabhupadaSlovary.StrongYazyk;
   PrabhupadaSlovaryPanel::VidSortirovka InitSortirovka = PrabhupadaSlovaryPanel::VidSortirovka::Reset;

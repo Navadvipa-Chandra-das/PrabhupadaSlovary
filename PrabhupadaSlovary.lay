@@ -10,7 +10,7 @@ LAYOUT(AboutPrabhupadaSlovary, 700, 800)
 END_LAYOUT
 
 LAYOUT(PrabhupadaTabAbout, 640, 700)
-	ITEM(Label, LabelPrabhupadaSlovary, SetLabel(t_("Srila Prabhupada's Sanskrit dictionary")).SetFont(StdFontZ(14).Bold()).LeftPosZ(4, 400).TopPosZ(604, 20))
+	ITEM(Label, LabelPrabhupadaSlovary, SetLabel(t_("Shrila Prabhupada's Sanskrit dictionary")).SetFont(StdFontZ(14).Bold()).LeftPosZ(4, 400).TopPosZ(604, 20))
 	ITEM(Label, ShrilaPrabhupada, SetLabel(t_("His Divine Grace Abhay Charanaravinda Bhaktivedanta Swami Prabhupada -\nthe Founder-Acharya of the International Society for Krishna consiousness")).SetFont(StdFontZ(13)).LeftPosZ(4, 624).TopPosZ(555, 44))
 	ITEM(Label, LabelHareKrishna, SetLabel(t_("Chant\nHare Krishna Hare Krishna Krishna Krishna Hare Hare\nHare Rama Hare Rama Rama Rama Hare Hare\nand be happy\nAbhay Charanaravinda Bhaktivedanta Swami Shrila Prabhupada")).LeftPosZ(4, 400).TopPosZ(622, 72))
 	ITEM(Label, LabelVersion, SetLabel(t_("Version 3.0")).SetFont(StdFont().Bold()).LeftPosZ(408, 104).TopPosZ(604, 19))

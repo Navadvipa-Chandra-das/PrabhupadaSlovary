@@ -1,91 +1,105 @@
 [ $$0,0#00000000000000000000000000000000:Default]
 [{_}%EN-US 
-[s0; Харе Кришна, всем! Примите, пожалуйста, 
-мои поклоны! Слава Шриле прабхупаде! 
-Джая Шри гуру и Шри Гауранга!&]
-[s0;   Благодарим Вас за интерес к словарю 
-основателя`-ачарьи Международного 
-общества сознания Кришны Шри Шримад 
-Абхая Чаранаравинды Бхактиведанты 
-Свами Прабхупады, который составлен 
-на основе его книг, изданных на разных 
-языках планеты! Этот словарик не вышел 
-бы в свет, если бы меня не вдохновил 
-его сделать мой друг Абхинанда Прабху, 
-в свое время бывший у нас региональным 
-секретарем ИСККОН, также хочу выразить 
-признательность преданному `- администратор
-у сайта https://vedabase.io, имя которого я 
-к сожалению не помню сейчас и который 
-несколько лет назад предоставил мне 
-базу данных слов Шрилы Прабхупады 
-с переводом на пять языков мира (португальск
-ий, английский, испанский, чешский 
-и русский), а также замечательный 
-шрифт Гаура Таймс, который позволял 
-работать с этой базой. Сейчас на сайте 
-намного больше языков. Сам сайт уже 
-пережил крупную перестройку своего 
-`"движка`" и переехал на новое доменное 
-имя. Ну что же. Не всё сразу. Также 
-хочется поблагодарить всю команду 
-проекта Ultimate`+`+ и всех тех программистов, 
-которые пишут замечательные бесплатные 
-программы, такие как компиляторы 
-С`+`+, линковщики, стандартные библиотеки 
-С`+`+, без которых вне всякого сомнения 
-данная программа не увидела бы свет! 
-Большое спасибо! Харе Кришна!&]
-[s0; По поиску: диакритика при поиске игнорируетс
-я, используется формат `"регулярных 
-выражений!`". Например `"`", например, 
-ищем `"кот`" `- ущутся все слова, в которых 
-попадается `"кот`", ищем `"`^кот`$`" `- ищется 
-строгое соответсвие слову кот целиком, 
-так как в регулярных выражениях `^ 
-означает начало строки, а `$ `- конец 
-строки. Другой пример `- `"м`[уа`]н`[иа`]`" 
-найдет и `"муни`" и `"мана`", так как все, 
-что в квадратных скобках считается 
-за одну букву `"навыбор`". .`* (точка 
-и звездочка) означает любой пропуск 
-любых букв, включая пустой, .`+ (точка 
-и плюсик) означает любой пропуск, 
-но минимум в одну букву длиной. `" `*`" 
-и `" `+`" (пробел и звездочка, а также 
-пробел и плюсик) тот же самый пропуск, 
-но пропуск только из пробелов, `"`\s`*`" 
-и `"s`\`+`" тоже самое, но пропуск только 
-из пробельных символов.Точка означает 
-любую букву. Можно почитать еще о 
-регулярных выражениях в другом месте 
-более подробно.&]
 [s0; &]
-[s0; Параметры командной строки: `"NoLoadINI`" 
-`- если есть такой ключ, то программа 
-не будет загружать состояние из ИНИ`-файла, 
-но будет запоминать его, такое как 
-язык словаря Шрилы Прабхупады. `"Lang`=RU`-RU`" 
-или на выбор значения `- PT`-BR `- португальский, 
-EN`-US `- английский, ES`-ES `- испанский, 
-CS`-CZ `-чешский, RU`-RU `- русский. Кавычки 
-в командной строке писать не надо! 
-Параметр LangGUI отвечает за язік пользовательс
-кого графического интерфейса программы, 
-например , `"LangGUI`=RU`-RU`" .&]
+[s0; ЯндексПереводчик&]
 [s0; &]
-[s0; Если Вам понравилась программа и 
-Вы захотите сделать пожертвование, 
-Вы можете оказать посильную помощь 
-нашей вайшнавской сельскохозяйственной 
-общине Нижняя Навадвипа. Вот наш сайт 
-`- [^http`:`/`/nizhnyaya`-navadvipa`.ru`/^ http://nizhnyaya`-navadvipa.ru/] 
-. Связаться с автором `- navadvipa.chandra.das`@nizhnyaya`-navad
-vipa.ru или navadwip`@rambler.ru, Скайп `- Navadwipa`-Chandra`-das, 
-Вайбер `- `+380713244273 .&]
+[s0; Hare Krišno, všichni! Přijměte prosím mé pokorné poklony! 
+Sláva Shrile Prabhupade! Jaya Shri Guru a Sri Gauranga!&]
+[s0;  Děkujeme Vám za váš zájem o slovníku zakladatele`-ачарьи 
+Mezinárodní společnost pro vědomí Krišny Šrí Šrímad 
+Abhay Charanaravinda Bhaktivedanta Swami Prabhupada, který je 
+sestaven na základě jeho knih, vydaných v různých jazycích 
+planety! Tento kapesní slovník vyšel by na světlo, pokud 
+by mě inspiroval ho, aby se můj přítel Abhinanda Prabhu, 
+ve své době bývalý máme regionálním tajemníkem ISKCON, 
+také chci vyjádřit vděčnost ctitel `- správce webu https://vedabase.io, 
+jehož jméno jsem bohužel si nepamatuji nyní a který několik 
+let za předpokladu, že mi databáze slov Srila Prabhupada s 
+převodem na pět světových jazyků (portugalština, angličtina, 
+španělština, čeština a ruština), jakož i pozoruhodné 
+písmo Gaura Times, který umožnil pracovat s touto databází. 
+Nyní je na webu mnohem více jazyků. Samotná stránka již 
+prošla velkou přestavbou svého `"motoru`" a přesunula se 
+na nový název domény. No tak. Ne všechny najednou. Také 
+chci poděkovat celému týmu projekt Ultimate`+`+ a všechny 
+ty programátory, kteří píší skvělé bezplatných i placených 
+programů, jako jsou překladače C`+`+, линковщики, 
+standardní knihovny C`+`+, operační systémy, bez nichž je 
+nade vší pochybnost tento program viděla bych světlo! Děkuji 
+moc! Hare Krishna!&]
+[s0; Vyhledávání: diakritika při hledání je ignorována, používá 
+se formát `" regulárních výrazů!`"&]
+[s0;  Například, hledat `"kočka`" `- budou vyhledány všechny 
+slova, v nichž narazí na `"kočka`", hledat `"`^cat`$`" `- 
+žádá přísné соответсвие slovo kočka úplně, 
+tak jako v regulárních výrazech `^ znamená začátek řádku 
+a `$ `- konec řádku.&]
+[s0; Dalším příkladem je písmeno z čeho vybírat. Ve čtvercových 
+závorkách uvádíme všechna požadovaná písmena `- `"m`[ua`]n`[ia`]`" 
+a `"muni`" a `"mana`", protože vše, co je ve čtvercových 
+závorkách, je považováno za jedno písmeno `- skybor. V hranatých 
+závorkách můžete uvést nejen dvě písmena, ale i více! 
+Pokud v čtvercových závorkách první znak dát `^, který 
+znamená popření v tomto případě, to znamená, že jakékoliv 
+písmeno kromě těchto, například `"`[`^ao`]`" znamená, že 
+v tomto místě by neměla stát ani `"a`" a ne `"o`".&]
+[s0; Dalším příkladem jsou univerzální opakovače písmen. 
+`* (hvězdička) znamená opakování předchozího písmena 
+nebo symbolu libovolný počet časů, včetně nula krát. `+ 
+(plus) znamená opakování předchozího písmena nebo symbolu 
+libovolný počet, ale minimálně jednou povinné! Například 
+`" `*`" (mezery a hvězdička, uvozovky nejsou nutné psát v 
+hledání), znamená, že zde může být prostor z libovolného 
+počtu znaků bez mezer, a může a nemusí být, `" `+`" (mezerník 
+a znaménko plus) znamená, že prosím alespoň jeden znak mezera 
+tam musí být a to se může opakovat mnohokrát, tuto mezeru.&]
+[s0; Další příklad`-univerzální znaky `-`".`"(tečka) znamená 
+libovolné písmeno nebo i jakýkoli znak, `\s `- пробельный 
+znak (mezera, tabulátor a další), `\S `- непробельный 
+znak (písmeno, číslice, různé znaky), `\. Tyto Univerzální 
+znaky lze použít s `"znaky opakovače`", tedy s hvězdičkou 
+`* a plus`+. Například `".`* `"znamená, že zde může být 
+vložení libovolné délky libovolných znaků.&]
+[s0; Dalším příkladem je symbol logické operace `"nebo`" `- 
+to `| (vertikální hůl). Najdeme zde například krokodýla`|žraloka 
+`- najde se i krokodýl a žralok, ale najde se i Nakula. Takže 
+existuje univerzální symbol `"hranice slova`" `- `\b, ale bohužel 
+funguje pouze se slovy složenými výhradně z latinských písmen. 
+Pro ruská slova se například nehodí. Symbol `"vertikální 
+hůlka`" lze použít několikrát ,například `"krokodýl`|žralok`|velryba`" 
+najde krokodýla a žraloka a velrybu!&]
+[s0; Můžete si přečíst více o regulárních výrazech jinde 
+podrobněji.&]
 [s0; &]
-[s0; Исходные тексты программы `- [^https`:`/`/github`.com`/Navadvipa`-Chandra`-das`/PrabhupadaSlovary^ h
-ttps://github.com/Navadvipa`-Chandra`-das/PrabhupadaSlovary] .&]
+[s0; Chcete`-li vytisknout slova, je třeba je nejprve poznamenat, 
+pak zkopírovat do schránky pomocí příslušného tlačítka 
+a poté jej `"vložit`" do libovolného kancelářského textového 
+dokumentu. Nezapomeňte formátovat výsledek pomocí Gaura Times 
+písma pro správné zobrazení všech písmen! Pokud podržíte 
+stisknutou klávesu Ctrl, můžete současně označit i řádky, 
+které se navzájem nesledují.&]
 [s0; &]
-[s0; Спасибо! Харе Кришна! &]
-[s0; С уважением, Навадвипа Чандра дас.]]
+[s0; Možnosti příkazového řádku: `"NoLoadINI`" `-pokud existuje 
+takový klíč, program nebude stahovat stav z INI souboru, ale 
+bude si ho pamatovat, jako je jazyk slovníku Srila Prabhupada. 
+`"Lang`=CS`" nebo na výběr hodnoty `- PT`-BR `- brazilská 
+portugalština, EN`-US `- angličtina, ES`-ES `- španělština, 
+CS`-CZ `-čeština, CS`-CS `- čeština. Uvozovky na příkazovém 
+řádku psát nemusíte! Parametr LangGUI je zodpovědný za 
+jazyk uživatelského rozhraní programu, například `"LangGUI`=RU`-RU`".&]
+[s0; &]
+[s0; Pokud se vám program líbil a budete chtít darovat, můžete 
+poskytnout pomoc naší vaiṣṇavské zemědělské komunitě 
+v dolní Navadvípě. Zde je náš web `- http://nizhnyaya`-navadvipa.ru/ 
+. Kontakt s autorem `- Navadvipa Chandra das `- mail `- navadvipa.chandra.das`@ni
+zhnyaya`-navadvipa.ru nebo navadwip`@rambler.ru, Skype `- Navadwipa`-Chandra`-das
+, Вайбер `- `+380713244273 . Na stránkách naší komunity 
+`"dolní Navadvip`" jsou také odkazy na naše skupiny sociálních 
+médií!&]
+[s0; &]
+[s0; Původní texty programu `- https://github.com/Navadvipa`-Chandra`-das/Prabhupada
+Slovary ..&]
+[s0; &]
+[s0; Děkuji moc! Hare Krishna! &]
+[s0; &]
+[s0; S pozdravem, Navadvipa Chandra das.]]

@@ -1,91 +1,97 @@
 [ $$0,0#00000000000000000000000000000000:Default]
 [{_}%EN-US 
-[s0; Харе Кришна, всем! Примите, пожалуйста, 
-мои поклоны! Слава Шриле прабхупаде! 
-Джая Шри гуру и Шри Гауранга!&]
-[s0;   Благодарим Вас за интерес к словарю 
-основателя`-ачарьи Международного 
-общества сознания Кришны Шри Шримад 
-Абхая Чаранаравинды Бхактиведанты 
-Свами Прабхупады, который составлен 
-на основе его книг, изданных на разных 
-языках планеты! Этот словарик не вышел 
-бы в свет, если бы меня не вдохновил 
-его сделать мой друг Абхинанда Прабху, 
-в свое время бывший у нас региональным 
-секретарем ИСККОН, также хочу выразить 
-признательность преданному `- администратор
-у сайта https://vedabase.io, имя которого я 
-к сожалению не помню сейчас и который 
-несколько лет назад предоставил мне 
-базу данных слов Шрилы Прабхупады 
-с переводом на пять языков мира (португальск
-ий, английский, испанский, чешский 
-и русский), а также замечательный 
-шрифт Гаура Таймс, который позволял 
-работать с этой базой. Сейчас на сайте 
-намного больше языков. Сам сайт уже 
-пережил крупную перестройку своего 
-`"движка`" и переехал на новое доменное 
-имя. Ну что же. Не всё сразу. Также 
-хочется поблагодарить всю команду 
-проекта Ultimate`+`+ и всех тех программистов, 
-которые пишут замечательные бесплатные 
-программы, такие как компиляторы 
-С`+`+, линковщики, стандартные библиотеки 
-С`+`+, без которых вне всякого сомнения 
-данная программа не увидела бы свет! 
-Большое спасибо! Харе Кришна!&]
-[s0; По поиску: диакритика при поиске игнорируетс
-я, используется формат `"регулярных 
-выражений!`". Например `"`", например, 
-ищем `"кот`" `- ущутся все слова, в которых 
-попадается `"кот`", ищем `"`^кот`$`" `- ищется 
-строгое соответсвие слову кот целиком, 
-так как в регулярных выражениях `^ 
-означает начало строки, а `$ `- конец 
-строки. Другой пример `- `"м`[уа`]н`[иа`]`" 
-найдет и `"муни`" и `"мана`", так как все, 
-что в квадратных скобках считается 
-за одну букву `"навыбор`". .`* (точка 
-и звездочка) означает любой пропуск 
-любых букв, включая пустой, .`+ (точка 
-и плюсик) означает любой пропуск, 
-но минимум в одну букву длиной. `" `*`" 
-и `" `+`" (пробел и звездочка, а также 
-пробел и плюсик) тот же самый пропуск, 
-но пропуск только из пробелов, `"`\s`*`" 
-и `"s`\`+`" тоже самое, но пропуск только 
-из пробельных символов.Точка означает 
-любую букву. Можно почитать еще о 
-регулярных выражениях в другом месте 
-более подробно.&]
+[s0; Hare Krishna, everyone! Please accept my humble obeisances! 
+All glories to Shrila Prabhupada! Jaya Shri guru and Shri Gauranga!&]
+[s0;  Thank you for your interest in the dictionary of the founder`-Acharya 
+of the International society of Krishna consciousness, Shri Shrimad 
+Abhay Charanaravinda Bhaktivedanta Swami Prabhupada, which is 
+based on his books published in different languages of the world! 
+This dictionary would not have been published if I had not been 
+inspired to make it by my friend Abhinanda Prabhu, who at one 
+time was our regional Secretary of ISKCON. I also want to Express 
+my gratitude to the dedicated administrator of the site https://vedabase.io 
+I don`'t remember the name of this person, who provided me with 
+a database of Srila Prabhupada`'s words several years ago, with 
+translations into five languages (Portuguese, English, Spanish, 
+Czech, and Russian), as well as a wonderful Gaura times font 
+that allowed me to work with this database. There are many more 
+languages on the site now. The site itself has already undergone 
+a major overhaul of its `"engine`" and moved to a new domain 
+name. Well. Not all at once. I would also like to thank the entire 
+team of the Ultimate`+`+ project and all those programmers who 
+write great free and paid programs, such As C `+`+ compilers, 
+linkers, standard C`+`+ libraries, and operating systems, without 
+which this program would not have seen the light of day! Thank 
+you very much! Hare Krishna!&]
+[s0; By search: diacritics are ignored when searching, and the `"regular 
+expressions`" format is used!`"&]
+[s0;  For example, searching for `"cat`" finds all words which come 
+across `"cat`", searching for `"`^the cat`$`" `- searched for 
+strict conformance to the word cat as a whole, in regular expressions, 
+`^ means beginning of line and `$ the end of line.&]
+[s0; Another example is a letter of choice. In square brackets, we 
+list all the desired letters `- `" m`[ua`]n`[ia`]`", and `"muni`" 
+and `"mana`", since everything in square brackets is considered 
+to be one letter`-skill. In square brackets, you can list not 
+only two letters, but also more! If the first character in square 
+brackets is `^, which means negation in this case, then it means 
+any letter other than these, for example `"`[`^ao`] `" means, 
+in this place there should be neither `"a`" nor `"o`".&]
+[s0; Another example is the universal repeater letters. `* (asterisk) 
+means repeating the previous letter or symbol any number of times, 
+including zero times. `+ (plus sign) means repeating the previous 
+letter or symbol any number of times, but at least once is required! 
+For example, `" `* `"(space and asterisk, quotes do not need 
+to be written in the search) means that there may be a space 
+from any number of space characters, or it may not be, `" `+ 
+`"(space and plus) means that at least one space character should 
+be here and it can be repeated many times, this space.&]
+[s0; Another example is the universal symbols `- `".`"(dot) means 
+any letter or even any character, `\s`-space character (space, 
+tab, etc.), `\S`-non`-space character (letter, number, various 
+characters),`\. These universal characters can be used with `"repeater 
+characters`", that is, with an asterisk `* and a plus sign `+ 
+. For example `".`* `"means that any length of any character 
+can be inserted here.&]
+[s0; Another example`-the symbol of the logical operation `"or`" 
+is `| (vertical stick). For example, looking for `"crocodile`|shark`"`- 
+will be found and crocodile and shark, but also will be found 
+and Nakula, for example. So, there is a universal symbol `"word 
+border`" `- `\b , but it, unfortunately, only works with words 
+consisting entirely of Latin letters. For Russian words, for 
+example, it does not fit. The `"vertical stick`" symbol can be 
+used several times, for example, `"crocodile`|shark`|whale`" 
+will find both a crocodile and a shark, and a whale!&]
+[s0; You can read more about regular expressions elsewhere in more 
+detail.&]
 [s0; &]
-[s0; Параметры командной строки: `"NoLoadINI`" 
-`- если есть такой ключ, то программа 
-не будет загружать состояние из ИНИ`-файла, 
-но будет запоминать его, такое как 
-язык словаря Шрилы Прабхупады. `"Lang`=RU`-RU`" 
-или на выбор значения `- PT`-BR `- португальский, 
-EN`-US `- английский, ES`-ES `- испанский, 
-CS`-CZ `-чешский, RU`-RU `- русский. Кавычки 
-в командной строке писать не надо! 
-Параметр LangGUI отвечает за язік пользовательс
-кого графического интерфейса программы, 
-например , `"LangGUI`=RU`-RU`" .&]
+[s0; To print words, you must first mark them, then copy them to 
+the clipboard using the appropriate button, and then `"paste`" 
+it in any office text document. Don`'t forget to format the result 
+in Gaura Times font to display all the letters correctly! If 
+you hold down the `"Ctrl`" key, the mouse can simultaneously 
+mark even lines that do not follow each other.&]
 [s0; &]
-[s0; Если Вам понравилась программа и 
-Вы захотите сделать пожертвование, 
-Вы можете оказать посильную помощь 
-нашей вайшнавской сельскохозяйственной 
-общине Нижняя Навадвипа. Вот наш сайт 
-`- [^http`:`/`/nizhnyaya`-navadvipa`.ru`/^ http://nizhnyaya`-navadvipa.ru/] 
-. Связаться с автором `- navadvipa.chandra.das`@nizhnyaya`-navad
-vipa.ru или navadwip`@rambler.ru, Скайп `- Navadwipa`-Chandra`-das, 
-Вайбер `- `+380713244273 .&]
+[s0; Command line parameters: `"NoLoadINI`" `- if there is such a 
+key, the program will not load the state from the INI file, but 
+will remember it, such as the language of Srila Prabhupada`'s 
+dictionary. `"Lang`=RU`-RU`" or choose from the following values: 
+PT`-BR`-Portuguese, EN`-US`-English, ES`-ES`-Spanish, CS`-CZ`-Czech, 
+RU`-RU`-Russian. You don`'t need to write quotes in the command 
+line! The LangGUI parameter is responsible for the language of 
+the program`'s graphical user interface, for example, `"LangGUI`=RU`-RU`".&]
 [s0; &]
-[s0; Исходные тексты программы `- [^https`:`/`/github`.com`/Navadvipa`-Chandra`-das`/PrabhupadaSlovary^ h
-ttps://github.com/Navadvipa`-Chandra`-das/PrabhupadaSlovary] .&]
+[s0; If you like the program and want to make a donation, you can 
+help our Vaishnava agricultural community of Nizhnyaya Navadvipa. 
+Here is our website `- http://nizhnyaya`-navadvipa.ru/ . Contact 
+the author`-Navadvipa Chandra das`-mail `- navadvipa.chandra.das`@nizhnyaya`-nava
+dvipa.ru or navadwip`@rambler.ru, Skype`-Navadwipa`-Chandra`-das, 
+Viber `- `+380713244273 . The site of our community `"lower Navadvipa`" 
+also contains links to our groups in social networks!&]
 [s0; &]
-[s0; Спасибо! Харе Кришна! &]
-[s0; С уважением, Навадвипа Чандра дас.]]
+[s0; The source code of the program `- https://github.com/Navadvipa`-Chandra`-das/Prab
+hupadaSlovary .&]
+[s0; &]
+[s0; Thank you very much! Hare Krishna! &]
+[s0; &]
+[s0; Sincerely, Navadvipa Chandra das.]]
