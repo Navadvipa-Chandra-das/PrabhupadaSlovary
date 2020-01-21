@@ -297,6 +297,8 @@ PrabhupadaTabLetterPanel::PrabhupadaTabLetterPanel()
 
   Upp::String Lang = Upp::GetCurrentLanguageString();
   int L = Lang.Find( ' ' );
+  if ( L == -1 )
+    L = Lang.Find( '.' );
   L = L == -1 ? Lang.GetCount() : L;
   Lang = Lang.Left( L );
   Upp::String F = Upp::ConfigFile( "Text/AboutPrabhupadaSlovary" + Lang + ".qtf" );
