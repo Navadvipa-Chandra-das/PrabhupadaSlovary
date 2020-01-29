@@ -10,7 +10,9 @@
 
 namespace Prabhupada {
 
-/*template <class Condition, class OnRemove>
+PrabhupadaBukvary PrabhupadaString::BukvaryPrabhupada = PrabhupadaBukvary();
+
+template <class Condition, class OnRemove>
 void SanskritVector::RemoveIf( Condition c, const OnRemove& On_Remove )
 {
   int L = GetCount();
@@ -19,7 +21,7 @@ void SanskritVector::RemoveIf( Condition c, const OnRemove& On_Remove )
       On_Remove( i );
       Remove( i );
     }
-}*/
+}
 
 Upp::Value PrabhupadaSlovaryPanel::GetSanskrit(const Upp::Value& V )
 {
@@ -129,7 +131,6 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   SplitterSearch.Horz() << SanskritFilterEdit << PerevodFilterEdit;
   SplitterSearch.SetMin( 0, 1000 );
   SplitterSearch.SetMin( 1, 1000 );
-  EditIndicatorRow.NoWantFocus();
   
   PrepareBukvaryPrabhupada();
 
@@ -166,13 +167,26 @@ void PrabhupadaSlovaryPanel::PrepareBukvaryPrabhupada()
 {
   Upp::FileIn F( Upp::ConfigFile( "PrabhupadaBukvary.txt" ) );
   Upp::WString W;
+  PrabhupadaBukva B;
+  Upp::ConvertInt CV;
+  int V = 0, L;
+
+  Upp::String S;
   while ( true ) {
-    Upp::String S = F.GetLine();
+    S = F.GetLine();
     if ( S.IsVoid() )
       break;
     
     W = S.ToWString();
-    BukvaryPrabhupada[ W[ 0 ] ] = W.GetCount() == 3 ? W[ 2 ] : W[ 0 ];
+    
+    L = W.GetCount();
+
+    if ( L == 3 ) {
+      B.Bukva = W[ 2 ];
+      B.Ves = ++V;
+      PrabhupadaString::BukvaryPrabhupada[ W[ 0 ] ] = B;
+    } else
+      throw "Not correct letter in Bukvary Prabhupada!";
   }
 }
 
@@ -242,21 +256,21 @@ void PrabhupadaSlovaryPanel::PrepareVectorSanskrit()
     RefPairSanskrit.Sanskrit    = IZNACHALYNO;
     RefPairSanskrit.Perevod     = PEREVOD;
     
-    RemoveDiacritics( RefPairSanskrit.SanskritWD, RefPairSanskrit.Sanskrit );
-    RemoveDiacritics( RefPairSanskrit.PerevodWD,  RefPairSanskrit.Perevod );
+    RefPairSanskrit.SanskritWD = RemoveDiacritics( RefPairSanskrit.Sanskrit );
+    RefPairSanskrit.PerevodWD  = RemoveDiacritics( RefPairSanskrit.Perevod );
   }
   sql.Clear();
   SetVectorSanskritFilterGetCount( i );
 }
 
-void PrabhupadaSlovaryPanel::RemoveDiacritics( Upp::String& R, const Upp::String& S )
+Upp::String PrabhupadaSlovaryPanel::RemoveDiacritics( const Upp::String& S )
 {
   Upp::WString W = S.ToWString(), WR;
   
   int L = W.GetCount();
   for ( int i = 0; i < L; ++i )
-    WR.Cat( BukvaryPrabhupada[ W[ i ] ] );
-  R = WR.ToString();
+    WR.Cat( PrabhupadaString::BukvaryPrabhupada[ W[ i ] ].Bukva );
+  return WR.ToString();
 }
 
 int PrabhupadaSlovaryPanel::GetVectorSanskritLastID()
@@ -353,11 +367,23 @@ void PrabhupadaSlovaryPanel::PrabhupadaBukvary()
   Upp::AppendClipboardText( W.ToString() );
 }
 
+PrabhupadaGoToLinePanel::PrabhupadaGoToLinePanel()
+{
+  CtrlLayout( *this );
+  Title( Upp::Ctrl::GetAppName() );
+}
+
+void PrabhupadaSlovaryPanel::PrabhupadaGoToLine()
+{
+  PrabhupadaGoToLinePanel G;
+  G.Execute();
+}
+
 void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
 {
   Upp::Event<> AddSlovo_; // Gate<> для функторов, возвращающих логический тип
   Upp::Function< void( void ) > MarkDeleteSlovo_, Edit_, SmenaYazyka_, SortirovkaUstanovka_, Filter_, RemoveDuplicates_, CopyToClipboard_, DeleteSlova_, AboutPrabhupadaSlovary_,
-                                PrabhupadaBukvary_, GauraFontHeight_;
+                                PrabhupadaBukvary_, GauraFontHeight_, PrabhupadaGoToLine_;
 
   AddSlovo_          =  [&] { AddSlovo(); };
   MarkDeleteSlovo_   << [&] { MarkDeleteSlovo(); };
@@ -368,6 +394,7 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   DeleteSlova_       << [&] { DeleteSlova(); };
   AboutPrabhupadaSlovary_ << [&] { AboutPrabhupadaSlovary(); };
   PrabhupadaBukvary_ =  [&] { PrabhupadaBukvary(); };
+  PrabhupadaGoToLine_ << [&] { PrabhupadaGoToLine(); };
   
   bar.Add( Upp::t_( "Add" ), PrabhupadaSlovaryImg::AddSlovo(), AddSlovo_ ).Key( Upp::K_CTRL_INSERT ).Help( Upp::t_( "Add a new word and translation" ) );
   bar.Add( Upp::t_( "Mark for deletion" ), PrabhupadaSlovaryImg::MarkDeleteSlovo(), MarkDeleteSlovo_ ).Key( Upp::K_CTRL_DELETE ).Help( Upp::t_( "Mark words for deletion" ) );
@@ -377,6 +404,7 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   bar.Add( Upp::t_( "Copy to clipboard" ), PrabhupadaSlovaryImg::CopyToClipboard(), CopyToClipboard_ ).Key( Upp::K_CTRL_C ).Help( Upp::t_( "Copy to clipboard" ) );
   bar.Add( Upp::t_( "Delete marked words" ), PrabhupadaSlovaryImg::DeleteSlova(), DeleteSlova_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_DELETE ).Help( Upp::t_( "Delete marked words" ) );
   bar.Add( Upp::t_( "Collect a set of letters\nto the clipboard" ), PrabhupadaSlovaryImg::PrabhupadaBukvary(), PrabhupadaBukvary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_B ).Help( Upp::t_( "Collect a set of letters to the clipboard" ) );
+  bar.Add( Upp::t_( "Go to the line" ), PrabhupadaSlovaryImg::PrabhupadaGoToLine(), PrabhupadaGoToLine_ ).Key( Upp::K_CTRL_L ).Help( Upp::t_( "Go to the line" ) );
   bar.Add( Upp::t_( "About the program" ), PrabhupadaSlovaryImg::Tilaka(), AboutPrabhupadaSlovary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_A ).Help( Upp::t_( "Sobre o programa \"Dicionário de Shrila Prabhupada\"" ) );
 
   YazykDropList.Tip( Upp::t_( "Language" ) );
@@ -515,6 +543,18 @@ void PrabhupadaSlovaryPanel::ArraySanskritRefresh()
 void PrabhupadaSlovaryPanel::SmenaYazyka()
 {
   SetYazyk( YazykDropList.GetIndex() );
+}
+
+inline bool operator < ( const PrabhupadaString& a, const PrabhupadaString& b )
+{
+  bool B = (Upp::String)a < (Upp::String)b;
+  return B;
+}
+
+inline bool operator > ( const PrabhupadaString& a, const PrabhupadaString& b )
+{
+  bool B = (Upp::String)a > (Upp::String)b;
+  return B;
 }
 
 inline bool operator < ( const SanskritPair& a, const SanskritPair& b )
@@ -719,6 +759,10 @@ void PrabhupadaSlovaryPanel::FilterVectorSanskrit()
 
   Upp::String Sanskrit = ~SanskritFilterEdit,
               Perevod  = ~PerevodFilterEdit;
+
+  Sanskrit = RemoveDiacritics( Sanskrit );
+  Perevod  = RemoveDiacritics( Perevod );
+              
   bool CheckSanskrit = !Sanskrit.IsEmpty(),
        CheckPerevod  = !Perevod.IsEmpty();
 

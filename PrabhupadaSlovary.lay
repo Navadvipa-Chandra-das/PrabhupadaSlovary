@@ -2,7 +2,7 @@ LAYOUT(PrabhupadaSlovaryPanel, 800, 600)
 	ITEM(ArrayCtrl, ArraySanskrit, SetFrame(FieldFrame()).HSizePosZ(0, 0).VSizePosZ(28, 36))
 	ITEM(Splitter, SplitterSearch, HSizePosZ(0, 0).BottomPosZ(0, 36))
 	ITEM(ToolBar, ToolBarSanskrit, HSizePosZ(0, 98).TopPosZ(0, 28))
-	ITEM(EditString, EditIndicatorRow, AlignRight(true).SetEditable(false).Tip(t_("Row / Total")).RightPosZ(4, 93).TopPosZ(4, 19))
+	ITEM(EditString, EditIndicatorRow, AlignRight(true).SetEditable(false).Tip(t_("Row / Total")).WantFocus(false).RightPosZ(4, 93).TopPosZ(4, 19))
 END_LAYOUT
 
 LAYOUT(AboutPrabhupadaSlovary, 700, 800)
@@ -18,5 +18,10 @@ END_LAYOUT
 
 LAYOUT(PrabhupadaTabLetter, 400, 200)
 	ITEM(RichTextView, RichTextAbout, HSizePosZ(8, 8).VSizePosZ(8, 8))
+END_LAYOUT
+
+LAYOUT(PrabhupadaGoToLine, 248, 52)
+	ITEM(Label, GoToLineLabel, SetLabel(t_("Go to the line")).LeftPosZ(16, 104).TopPosZ(16, 19))
+	ITEM(EditIntSpin, dv___1, Min(1).LeftPosZ(128, 104).TopPosZ(16, 19))
 END_LAYOUT
 

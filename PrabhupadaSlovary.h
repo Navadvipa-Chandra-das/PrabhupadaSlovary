@@ -58,12 +58,31 @@ struct FilterSlovary : Upp::Moveable< FilterSlovary > {
   void Clear() { FilterSanskrit.Clear(); FilterPerevod.Clear(); Reset = true; }
 };
 
+struct PrabhupadaBukva {
+  int Bukva;
+  int Ves;
+  Upp::String ToString() const { return Upp::AsString( Bukva ) + " : " + Upp::AsString( Ves ); }
+};
+
+using PrabhupadaBukvary = std::map< int, PrabhupadaBukva >;
+
+struct PrabhupadaString : Upp::String
+{
+  operator Upp::String() const { return static_cast< Upp::String >( *this ); };
+  void Serialize( Upp::Stream& s ) { Serialize( s ); };
+  PrabhupadaString& operator=( const Upp::String& s ) { Assign( s ); return static_cast< PrabhupadaString& >( *this ); };
+  static PrabhupadaBukvary BukvaryPrabhupada;
+};
+
+inline bool operator < ( const PrabhupadaString& a, const PrabhupadaString& b );
+inline bool operator > ( const PrabhupadaString& a, const PrabhupadaString& b );
+
 class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
   int         ID;
   bool        DeleteCandidat = false;
-  Upp::String Sanskrit;
-  Upp::String Perevod;
+  PrabhupadaString Sanskrit;
+  PrabhupadaString Perevod;
   // WD meens itout diakritiks symbhol
   Upp::String SanskritWD;
   Upp::String PerevodWD;
@@ -77,7 +96,6 @@ public:
 };
 
 inline bool operator < ( const SanskritPair& a, const SanskritPair& b );
-
 inline bool operator > ( const SanskritPair& a, const SanskritPair& b );
 
 struct YazykInfo : Upp::Moveable< YazykInfo > {
@@ -96,9 +114,11 @@ class SanskritVector : public Upp::Vector< SanskritPair > {
 public:
   int FilterGetCount = 0;
   int LastID;
-  //template < class Condition, class OnRemove >
-  //void RemoveIf( Condition c, const OnRemove& On_Remove );
+  template < class Condition, class OnRemove >
+  void RemoveIf( Condition c, const OnRemove& On_Remove );
 };
+
+using PrabhupadaGoToLineParent = Upp::WithPrabhupadaGoToLine< Upp::TopWindow >;
 
 using PrabhupadaSlovaryPanelParent = Upp::WithPrabhupadaSlovaryPanel< Upp::ParentCtrl/*TopWindow*/ >;
 using AboutPrabhupadaSlovaryParent = Upp::WithAboutPrabhupadaSlovary< Upp::TopWindow >;
@@ -106,11 +126,17 @@ using AboutPrabhupadaSlovaryParent = Upp::WithAboutPrabhupadaSlovary< Upp::TopWi
 using PrabhupadaTabAboutParent  = Upp::WithPrabhupadaTabAbout< Upp::ParentCtrl >;
 using PrabhupadaTabLetterParent = Upp::WithPrabhupadaTabLetter< Upp::ParentCtrl >;
 
+struct PrabhupadaGoToLinePanel : PrabhupadaGoToLineParent {
+  typedef PrabhupadaGoToLinePanel CLASSNAME;
+  PrabhupadaGoToLinePanel();
+};
+
 struct PrabhupadaTabAboutPanel : PrabhupadaTabAboutParent {
   typedef PrabhupadaTabAboutPanel CLASSNAME;
   PrabhupadaTabAboutPanel();
   virtual void Paint( Upp::Draw& draw );
 };
+
 struct PrabhupadaTabLetterPanel : PrabhupadaTabLetterParent {
   typedef PrabhupadaTabLetterPanel CLASSNAME;
   PrabhupadaTabLetterPanel();
@@ -138,12 +164,12 @@ public:
   PrabhupadaSlovaryPanel();
   Upp::Color ColorInkDelete { Upp::Red() };
   Upp::Color ColorPaperDelete { Upp::White() };
-  std::map< int, int > BukvaryPrabhupada;
   void PrepareBukvaryPrabhupada();
-  void RemoveDiacritics( Upp::String& R, const Upp::String& S );
+  Upp::String RemoveDiacritics( const Upp::String& S );
   void AddSlovo();
   void MarkDeleteSlovo();
   void DeleteSlova();
+  void PrabhupadaGoToLine();
   void Edit();
   void SmenaYazyka();
   void RemoveDuplicatesSanskrit();
