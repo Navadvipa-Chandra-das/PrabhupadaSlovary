@@ -367,16 +367,40 @@ void PrabhupadaSlovaryPanel::PrabhupadaBukvary()
   Upp::AppendClipboardText( W.ToString() );
 }
 
-PrabhupadaGoToLinePanel::PrabhupadaGoToLinePanel()
+PrabhupadaGoToLineDialog::PrabhupadaGoToLineDialog()
 {
   CtrlLayout( *this );
   Title( Upp::Ctrl::GetAppName() );
+
+  Upp::Function< void( void ) > ButtonGoClick_, ButtonCancelClick_;
+
+  ButtonGoClick_     << [&] { ButtonGoClick(); };
+  ButtonCancelClick_ << [&] { ButtonCancelClick(); };
+  
+  ToolBarGoRow.Add( Upp::t_( "Go" ), PrabhupadaSlovaryImg::Ok(), ButtonGoClick_ ).Key( Upp::K_ENTER );
+  ToolBarGoRow.Add( Upp::t_( "Cancel" ), PrabhupadaSlovaryImg::DeleteSlova(), ButtonCancelClick_ ).Key( Upp::K_ESCAPE );
+}
+
+void PrabhupadaGoToLineDialog::ButtonGoClick()
+{
+  RowNum = EditRowNum.GetData();
+  Close();
+}
+
+void PrabhupadaGoToLineDialog::ButtonCancelClick()
+{
+  RowNum = 0;
+  Close();
 }
 
 void PrabhupadaSlovaryPanel::PrabhupadaGoToLine()
 {
-  PrabhupadaGoToLinePanel G;
+  PrabhupadaGoToLineDialog G;
   G.Execute();
+  if ( G.RowNum != 0 ) {
+    ArraySanskrit.SetCursor( G.RowNum - 1 );
+    ArraySanskrit.WhenSel();
+  }
 }
 
 void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
@@ -404,7 +428,7 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   bar.Add( Upp::t_( "Copy to clipboard" ), PrabhupadaSlovaryImg::CopyToClipboard(), CopyToClipboard_ ).Key( Upp::K_CTRL_C ).Help( Upp::t_( "Copy to clipboard" ) );
   bar.Add( Upp::t_( "Delete marked words" ), PrabhupadaSlovaryImg::DeleteSlova(), DeleteSlova_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_DELETE ).Help( Upp::t_( "Delete marked words" ) );
   bar.Add( Upp::t_( "Collect a set of letters\nto the clipboard" ), PrabhupadaSlovaryImg::PrabhupadaBukvary(), PrabhupadaBukvary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_B ).Help( Upp::t_( "Collect a set of letters to the clipboard" ) );
-  bar.Add( Upp::t_( "Go to the line" ), PrabhupadaSlovaryImg::PrabhupadaGoToLine(), PrabhupadaGoToLine_ ).Key( Upp::K_CTRL_L ).Help( Upp::t_( "Go to the line" ) );
+  bar.Add( Upp::t_( "Go to the row of number" ), PrabhupadaSlovaryImg::PrabhupadaGoToLine(), PrabhupadaGoToLine_ ).Key( Upp::K_CTRL_L ).Help( Upp::t_( "Go to the row of number" ) );
   bar.Add( Upp::t_( "About the program" ), PrabhupadaSlovaryImg::Tilaka(), AboutPrabhupadaSlovary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_A ).Help( Upp::t_( "Sobre o programa \"Dicionário de Shrila Prabhupada\"" ) );
 
   YazykDropList.Tip( Upp::t_( "Language" ) );
@@ -545,16 +569,62 @@ void PrabhupadaSlovaryPanel::SmenaYazyka()
   SetYazyk( YazykDropList.GetIndex() );
 }
 
-inline bool operator < ( const PrabhupadaString& a, const PrabhupadaString& b )
+inline bool operator < ( const PrabhupadaString& A, const PrabhupadaString& B )
 {
-  bool B = (Upp::String)a < (Upp::String)b;
-  return B;
+  Upp::WString AW = A.ToWString(),
+               BW = B.ToWString();
+
+  int AWL = AW.GetCount(),
+      BWL = BW.GetCount();
+
+  int L = Upp::min( AWL, BWL );
+  
+  int AWV, BWV;
+  for ( int i = 0; i < L; ++i ) {
+    AWV = PrabhupadaString::BukvaryPrabhupada[ AW[ i ] ].Ves;
+    BWV = PrabhupadaString::BukvaryPrabhupada[ BW[ i ] ].Ves;
+    if ( AWV == BWV ) {
+      continue;
+    } else if ( AWV > BWV ) {
+      return false;
+    } else if ( AWV < BWV ) {
+      return true;
+    }
+  }
+    
+  if ( AWL < BWL )
+    return true;
+  
+  return false;
 }
 
-inline bool operator > ( const PrabhupadaString& a, const PrabhupadaString& b )
+inline bool operator > ( const PrabhupadaString& A, const PrabhupadaString& B )
 {
-  bool B = (Upp::String)a > (Upp::String)b;
-  return B;
+  Upp::WString AW = A.ToWString(),
+               BW = B.ToWString();
+
+  int AWL = AW.GetCount(),
+      BWL = BW.GetCount();
+
+  int L = Upp::min( AWL, BWL );
+  
+  int AWV, BWV;
+  for ( int i = 0; i < L; ++i ) {
+    AWV = PrabhupadaString::BukvaryPrabhupada[ AW[ i ] ].Ves;
+    BWV = PrabhupadaString::BukvaryPrabhupada[ BW[ i ] ].Ves;
+    if ( AWV == BWV ) {
+      continue;
+    } else if ( AWV < BWV ) {
+      return false;
+    } else if ( AWV > BWV ) {
+      return true;
+    }
+  }
+    
+  if ( AWL < BWL )
+    return true;
+
+  return false;
 }
 
 inline bool operator < ( const SanskritPair& a, const SanskritPair& b )
@@ -575,7 +645,7 @@ void PrabhupadaSlovaryPanel::RemoveDuplicatesSanskrit()
   // Сортируем по простому без выкрутасов! Но сортировка обязательна для єтого алгоритма!
   Upp::Sort( VectorSanskrit, std::less< SanskritPair >() );
   bool NeedBigRefresh = false;
-  Upp::RemoveDuplicates< SanskritVector >( VectorSanskrit,
+  Prabhupada::RemoveDuplicates< SanskritVector >( VectorSanskrit,
     [&] ( int i ) {
                     sql.SetParam( 0, VectorSanskrit[ VectorIndex[ i ].Index ].ID );
                     sql.Run();

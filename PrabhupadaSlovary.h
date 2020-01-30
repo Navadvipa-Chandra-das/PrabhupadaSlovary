@@ -74,8 +74,8 @@ struct PrabhupadaString : Upp::String
   static PrabhupadaBukvary BukvaryPrabhupada;
 };
 
-inline bool operator < ( const PrabhupadaString& a, const PrabhupadaString& b );
-inline bool operator > ( const PrabhupadaString& a, const PrabhupadaString& b );
+inline bool operator < ( const PrabhupadaString& A, const PrabhupadaString& B );
+inline bool operator > ( const PrabhupadaString& A, const PrabhupadaString& B );
 
 class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
@@ -126,9 +126,12 @@ using AboutPrabhupadaSlovaryParent = Upp::WithAboutPrabhupadaSlovary< Upp::TopWi
 using PrabhupadaTabAboutParent  = Upp::WithPrabhupadaTabAbout< Upp::ParentCtrl >;
 using PrabhupadaTabLetterParent = Upp::WithPrabhupadaTabLetter< Upp::ParentCtrl >;
 
-struct PrabhupadaGoToLinePanel : PrabhupadaGoToLineParent {
-  typedef PrabhupadaGoToLinePanel CLASSNAME;
-  PrabhupadaGoToLinePanel();
+struct PrabhupadaGoToLineDialog : PrabhupadaGoToLineParent {
+  typedef PrabhupadaGoToLineDialog CLASSNAME;
+  PrabhupadaGoToLineDialog();
+  void ButtonGoClick();
+  void ButtonCancelClick();
+  int RowNum { 0 };
 };
 
 struct PrabhupadaTabAboutPanel : PrabhupadaTabAboutParent {

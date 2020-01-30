@@ -13,15 +13,16 @@ LAYOUT(PrabhupadaTabAbout, 640, 700)
 	ITEM(Label, LabelPrabhupadaSlovary, SetLabel(t_("Shrila Prabhupada's Sanskrit dictionary")).SetFont(StdFontZ(14).Bold()).LeftPosZ(4, 400).TopPosZ(604, 20))
 	ITEM(Label, ShrilaPrabhupada, SetLabel(t_("His Divine Grace Abhay Charanaravinda Bhaktivedanta Swami Prabhupada -\nthe Founder-Acharya of the International Society for Krishna consiousness")).SetFont(StdFontZ(13)).LeftPosZ(4, 624).TopPosZ(555, 44))
 	ITEM(Label, LabelHareKrishna, SetLabel(t_("Chant\nHare Krishna Hare Krishna Krishna Krishna Hare Hare\nHare Rama Hare Rama Rama Rama Hare Hare\nand be happy\nAbhay Charanaravinda Bhaktivedanta Swami Shrila Prabhupada")).LeftPosZ(4, 400).TopPosZ(622, 72))
-	ITEM(Label, LabelVersion, SetLabel(t_("Version 3.0")).SetFont(StdFont().Bold()).LeftPosZ(408, 104).TopPosZ(604, 19))
+	ITEM(Label, LabelVersion, SetLabel(t_("Version 4.0")).SetFont(StdFont().Bold()).LeftPosZ(408, 104).TopPosZ(604, 19))
 END_LAYOUT
 
 LAYOUT(PrabhupadaTabLetter, 400, 200)
 	ITEM(RichTextView, RichTextAbout, HSizePosZ(8, 8).VSizePosZ(8, 8))
 END_LAYOUT
 
-LAYOUT(PrabhupadaGoToLine, 248, 52)
-	ITEM(Label, GoToLineLabel, SetLabel(t_("Go to the line")).LeftPosZ(16, 104).TopPosZ(16, 19))
-	ITEM(EditIntSpin, dv___1, Min(1).LeftPosZ(128, 104).TopPosZ(16, 19))
+LAYOUT(PrabhupadaGoToLine, 288, 84)
+	ITEM(Label, GoToLineLabel, SetLabel(t_("Go to the row of number")).LeftPosZ(8, 168).TopPosZ(16, 19))
+	ITEM(EditIntSpin, EditRowNum, Min(1).LeftPosZ(180, 104).TopPosZ(16, 19))
+	ITEM(ToolBar, ToolBarGoRow, LeftPosZ(4, 264).TopPosZ(44, 28))
 END_LAYOUT
 
