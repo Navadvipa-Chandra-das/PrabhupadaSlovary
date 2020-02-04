@@ -10,7 +10,7 @@
 
 namespace Prabhupada {
 
-PrabhupadaBukvary PrabhupadaString::BukvaryPrabhupada = PrabhupadaBukvary();
+PrabhupadaBukvary BukvaryPrabhupada;
 
 template <class Condition, class OnRemove>
 void SanskritVector::RemoveIf( Condition c, const OnRemove& On_Remove )
@@ -152,12 +152,15 @@ PrabhupadaSlovaryPanel::PrabhupadaSlovaryPanel()
   
   ToolBarSanskrit.ButtonMinSize( Upp::Size( 24, 24 ) );
   PrepareBar( ToolBarSanskrit );
+  PrepareBar( PrabhupadaMenu );
        
   Upp::String db( Upp::ConfigFile( "Sanskrit.db" ) );
   if( !Session.Open( db ) ) {
     Upp::PromptOK( Upp::t_( "Shrila Prabhupada's Sanskrit dictionary database could not be opened!" ) );
   } else {
-    Session.LogErrors( true );
+    #ifdef DEBUG
+      Session.LogErrors( true );
+    #endif
   }
   PrepareVectorYazyk();
   VectorSanskrit.LastID = GetVectorSanskritLastID();
@@ -181,10 +184,10 @@ void PrabhupadaSlovaryPanel::PrepareBukvaryPrabhupada()
     
     L = W.GetCount();
 
-    if ( L == 3 ) {
+    if ( L >= 3 ) {
       B.Bukva = W[ 2 ];
       B.Ves = ++V;
-      PrabhupadaString::BukvaryPrabhupada[ W[ 0 ] ] = B;
+      BukvaryPrabhupada[ W[ 0 ] ] = B;
     } else
       throw "Not correct letter in Bukvary Prabhupada!";
   }
@@ -269,7 +272,7 @@ Upp::String PrabhupadaSlovaryPanel::RemoveDiacritics( const Upp::String& S )
   
   int L = W.GetCount();
   for ( int i = 0; i < L; ++i )
-    WR.Cat( PrabhupadaString::BukvaryPrabhupada[ W[ i ] ].Bukva );
+    WR.Cat( BukvaryPrabhupada[ W[ i ] ].Bukva );
   return WR.ToString();
 }
 
@@ -367,7 +370,19 @@ void PrabhupadaSlovaryPanel::PrabhupadaBukvary()
   Upp::AppendClipboardText( W.ToString() );
 }
 
-PrabhupadaGoToLineDialog::PrabhupadaGoToLineDialog()
+void PrabhupadaGoToLineDialog::Serialize( Upp::Stream& s )
+{
+  Upp::GuiLock __;
+  int version = 0;
+  s / version;
+  s.Magic( 134766 );
+
+  SerializePlacement( s );
+  EditRowNum.Serialize( s );
+}
+
+PrabhupadaGoToLineDialog::PrabhupadaGoToLineDialog( Upp::StringStream& SerialStream_ ) :
+  SerialStream( SerialStream_ )
 {
   CtrlLayout( *this );
   Title( Upp::Ctrl::GetAppName() );
@@ -379,6 +394,23 @@ PrabhupadaGoToLineDialog::PrabhupadaGoToLineDialog()
   
   ToolBarGoRow.Add( Upp::t_( "Go" ), PrabhupadaSlovaryImg::Ok(), ButtonGoClick_ ).Key( Upp::K_ENTER );
   ToolBarGoRow.Add( Upp::t_( "Cancel" ), PrabhupadaSlovaryImg::DeleteSlova(), ButtonCancelClick_ ).Key( Upp::K_ESCAPE );
+  
+  if ( SerialStream.GetSize() > 0 ) {
+    Upp::Function< void( Upp::Stream& ) > Serial;
+    Serial = [&] ( Upp::Stream& S ) { Serialize( S ); };
+    //SerialStream.SetLoading();
+    SerialStream.Seek( 0 );
+    Upp::Load( Serial, SerialStream, 0 );
+  }
+}
+
+PrabhupadaGoToLineDialog::~PrabhupadaGoToLineDialog()
+{
+  //SerialStream.SetStoring();
+  SerialStream.SetSize( 0 );
+  Upp::Function< void( Upp::Stream& ) > Serial;
+  Serial = [&] ( Upp::Stream& S ) { Serialize( S ); };
+  Upp::Store( Serial, SerialStream, 0 );
 }
 
 void PrabhupadaGoToLineDialog::ButtonGoClick()
@@ -395,31 +427,64 @@ void PrabhupadaGoToLineDialog::ButtonCancelClick()
 
 void PrabhupadaSlovaryPanel::PrabhupadaGoToLine()
 {
-  PrabhupadaGoToLineDialog G;
-  G.Execute();
+  PrabhupadaGoToLineDialog G( SerialStream );
+  G.Run();
   if ( G.RowNum != 0 ) {
     ArraySanskrit.SetCursor( G.RowNum - 1 );
     ArraySanskrit.WhenSel();
   }
 }
 
-void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
+void PrabhupadaSlovaryPanel::SetBookmark( int N )
+{
+  BookmarkInfo BI;
+  
+  BI.RowNum     = ArraySanskrit.GetCursor();
+  BI.Filter     = Filter;
+  BI.Sortirovka = Sortirovka;
+  BI.Yazyk      = Yazyk;
+  
+  Bookmark[ N ] = BI;
+}
+
+void PrabhupadaSlovaryPanel::GoToBookmark( int N )
+{
+  BookmarkInfo BI = Bookmark[ N ];
+
+  if ( BI.RowNum != -1 ) {
+    SetYazyk( BI.Yazyk );
+    SetSortirovka( BI.Sortirovka );
+    SetFilter( BI.Filter );
+    
+    ArraySanskrit.SetCursor( BI.RowNum );
+    ArraySanskrit.WhenSel();
+  }
+}
+
+void BookmarkVector::ClearBookmark()
+{
+  int L = GetCount();
+  for ( int i = 0; i < L; ++i )
+    (*this)[ i ].Clear();
+}
+
+void PrabhupadaSlovaryPanel::OperationsAdd( Upp::Bar& bar )
 {
   Upp::Event<> AddSlovo_; // Gate<> для функторов, возвращающих логический тип
-  Upp::Function< void( void ) > MarkDeleteSlovo_, Edit_, SmenaYazyka_, SortirovkaUstanovka_, Filter_, RemoveDuplicates_, CopyToClipboard_, DeleteSlova_, AboutPrabhupadaSlovary_,
-                                PrabhupadaBukvary_, GauraFontHeight_, PrabhupadaGoToLine_;
+  Upp::Function< void( void ) > MarkDeleteSlovo_, Edit_, Filter_, RemoveDuplicates_, CopyToClipboard_, DeleteSlova_,
+                                PrabhupadaBukvary_, PrabhupadaGoToLine_, AboutPrabhupadaSlovary_;
 
-  AddSlovo_          =  [&] { AddSlovo(); };
-  MarkDeleteSlovo_   << [&] { MarkDeleteSlovo(); };
-  Edit_              << [&] { Edit(); };
-  Filter_            << [&] { FilterUstanovka(); };
-  RemoveDuplicates_  << [&] { RemoveDuplicatesSanskrit(); };
-  CopyToClipboard_   << [&] { CopyToClipboard(); };
-  DeleteSlova_       << [&] { DeleteSlova(); };
+  AddSlovo_               =  [&] { AddSlovo(); };
+  MarkDeleteSlovo_        << [&] { MarkDeleteSlovo(); };
+  Edit_                   << [&] { Edit(); };
+  Filter_                 << [&] { FilterUstanovka(); };
+  RemoveDuplicates_       << [&] { RemoveDuplicatesSanskrit(); };
+  CopyToClipboard_        << [&] { CopyToClipboard(); };
+  DeleteSlova_            << [&] { DeleteSlova(); };
+  PrabhupadaBukvary_      =  [&] { PrabhupadaBukvary(); };
+  PrabhupadaGoToLine_     << [&] { PrabhupadaGoToLine(); };
   AboutPrabhupadaSlovary_ << [&] { AboutPrabhupadaSlovary(); };
-  PrabhupadaBukvary_ =  [&] { PrabhupadaBukvary(); };
-  PrabhupadaGoToLine_ << [&] { PrabhupadaGoToLine(); };
-  
+
   bar.Add( Upp::t_( "Add" ), PrabhupadaSlovaryImg::AddSlovo(), AddSlovo_ ).Key( Upp::K_CTRL_INSERT ).Help( Upp::t_( "Add a new word and translation" ) );
   bar.Add( Upp::t_( "Mark for deletion" ), PrabhupadaSlovaryImg::MarkDeleteSlovo(), MarkDeleteSlovo_ ).Key( Upp::K_CTRL_DELETE ).Help( Upp::t_( "Mark words for deletion" ) );
   bar.Add( Upp::t_( "Edit" ), PrabhupadaSlovaryImg::Edit(), Edit_ ).Key( Upp::K_F2 ).Help( Upp::t_( "Edit" ) );
@@ -430,43 +495,117 @@ void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
   bar.Add( Upp::t_( "Collect a set of letters\nto the clipboard" ), PrabhupadaSlovaryImg::PrabhupadaBukvary(), PrabhupadaBukvary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_B ).Help( Upp::t_( "Collect a set of letters to the clipboard" ) );
   bar.Add( Upp::t_( "Go to the row of number" ), PrabhupadaSlovaryImg::PrabhupadaGoToLine(), PrabhupadaGoToLine_ ).Key( Upp::K_CTRL_L ).Help( Upp::t_( "Go to the row of number" ) );
   bar.Add( Upp::t_( "About the program" ), PrabhupadaSlovaryImg::Tilaka(), AboutPrabhupadaSlovary_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_A ).Help( Upp::t_( "Sobre o programa \"Dicionário de Shrila Prabhupada\"" ) );
+}
 
-  YazykDropList.Tip( Upp::t_( "Language" ) );
-  YazykDropList.DropWidthZ( 148 );
-  YazykDropList.NoWantFocus();
+void PrabhupadaSlovaryPanel::SetBookmarkAdd( Upp::Bar& bar )
+{
+  Upp::Function< void() > SetBookmark0_, SetBookmark1_, SetBookmark2_, SetBookmark3_, SetBookmark4_, SetBookmark5_, SetBookmark6_, SetBookmark7_, SetBookmark8_, SetBookmark9_;
+
+  SetBookmark0_ =  [&] { SetBookmark( 0 ); };
+  SetBookmark1_ =  [&] { SetBookmark( 1 ); };
+  SetBookmark2_ =  [&] { SetBookmark( 2 ); };
+  SetBookmark3_ =  [&] { SetBookmark( 3 ); };
+  SetBookmark4_ =  [&] { SetBookmark( 4 ); };
+  SetBookmark5_ =  [&] { SetBookmark( 5 ); };
+  SetBookmark6_ =  [&] { SetBookmark( 6 ); };
+  SetBookmark7_ =  [&] { SetBookmark( 7 ); };
+  SetBookmark8_ =  [&] { SetBookmark( 8 ); };
+  SetBookmark9_ =  [&] { SetBookmark( 9 ); };
+
+  Upp::String SB = Upp::t_( "Set bookmark" ), S;
+
+  S = SB + " &0"; bar.Add( ~S, SetBookmark0_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_0 ).Help( ~S );
+  S = SB + " &1"; bar.Add( ~S, SetBookmark1_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_1 ).Help( ~S );
+  S = SB + " &2"; bar.Add( ~S, SetBookmark2_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_2 ).Help( ~S );
+  S = SB + " &3"; bar.Add( ~S, SetBookmark3_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_3 ).Help( ~S );
+  S = SB + " &4"; bar.Add( ~S, SetBookmark4_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_4 ).Help( ~S );
+  S = SB + " &5"; bar.Add( ~S, SetBookmark5_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_5 ).Help( ~S );
+  S = SB + " &6"; bar.Add( ~S, SetBookmark6_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_6 ).Help( ~S );
+  S = SB + " &7"; bar.Add( ~S, SetBookmark7_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_7 ).Help( ~S );
+  S = SB + " &8"; bar.Add( ~S, SetBookmark8_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_8 ).Help( ~S );
+  S = SB + " &9"; bar.Add( ~S, SetBookmark9_ ).Key( Upp::K_SHIFT | Upp::K_CTRL_9 ).Help( ~S );
+}
+
+void PrabhupadaSlovaryPanel::GoToBookmarkAdd( Upp::Bar& bar )
+{
+  Upp::Function< void() > GoToBookmark0_, GoToBookmark1_, GoToBookmark2_, GoToBookmark3_, GoToBookmark4_, GoToBookmark5_, GoToBookmark6_, GoToBookmark7_, GoToBookmark8_, GoToBookmark9_;
+
+  GoToBookmark0_ =  [&] { GoToBookmark( 0 ); };
+  GoToBookmark1_ =  [&] { GoToBookmark( 1 ); };
+  GoToBookmark2_ =  [&] { GoToBookmark( 2 ); };
+  GoToBookmark3_ =  [&] { GoToBookmark( 3 ); };
+  GoToBookmark4_ =  [&] { GoToBookmark( 4 ); };
+  GoToBookmark5_ =  [&] { GoToBookmark( 5 ); };
+  GoToBookmark6_ =  [&] { GoToBookmark( 6 ); };
+  GoToBookmark7_ =  [&] { GoToBookmark( 7 ); };
+  GoToBookmark8_ =  [&] { GoToBookmark( 8 ); };
+  GoToBookmark9_ =  [&] { GoToBookmark( 9 ); };
+
+  Upp::String GB = Upp::t_( "Go to bookmark" ), S;
+
+  S = GB + " &0"; bar.Add( ~S, GoToBookmark0_ ).Key( Upp::K_CTRL_0 ).Help( ~S );
+  S = GB + " &1"; bar.Add( ~S, GoToBookmark1_ ).Key( Upp::K_CTRL_1 ).Help( ~S );
+  S = GB + " &2"; bar.Add( ~S, GoToBookmark2_ ).Key( Upp::K_CTRL_2 ).Help( ~S );
+  S = GB + " &3"; bar.Add( ~S, GoToBookmark3_ ).Key( Upp::K_CTRL_3 ).Help( ~S );
+  S = GB + " &4"; bar.Add( ~S, GoToBookmark4_ ).Key( Upp::K_CTRL_4 ).Help( ~S );
+  S = GB + " &5"; bar.Add( ~S, GoToBookmark5_ ).Key( Upp::K_CTRL_5 ).Help( ~S );
+  S = GB + " &6"; bar.Add( ~S, GoToBookmark6_ ).Key( Upp::K_CTRL_6 ).Help( ~S );
+  S = GB + " &7"; bar.Add( ~S, GoToBookmark7_ ).Key( Upp::K_CTRL_7 ).Help( ~S );
+  S = GB + " &8"; bar.Add( ~S, GoToBookmark8_ ).Key( Upp::K_CTRL_8 ).Help( ~S );
+  S = GB + " &9"; bar.Add( ~S, GoToBookmark9_ ).Key( Upp::K_CTRL_9 ).Help( ~S );
+}
+
+void PrabhupadaSlovaryPanel::PrepareBar( Upp::Bar& bar )
+{
   
-  SmenaYazyka_          << [&] { SmenaYazyka(); };
-  SortirovkaUstanovka_  << [&] { SortirovkaUstanovka(); };
-  // WhenPush в отличие от WhenAction даёт существенно другое поведение DropList!
-  // Когда WhenPush - похоже на кнопку и событие не возникает при выборе из выпадающего списка
-  // когда WhenAction - на кнопку не похоже, сразу выпадает список и событие возникает при
-  // выборе из списка
-  YazykDropList.WhenAction = SmenaYazyka_;
+  if ( bar.IsToolBar() ) {
+    OperationsAdd( bar );
+  } else {
+    bar.Sub( Upp::t_( "&Operations" ), [=] ( Upp::Bar& bar ) { OperationsAdd( bar ); } );
+    bar.Sub( Upp::t_( "&Set bookmarks" ), [=] ( Upp::Bar& bar ) { SetBookmarkAdd( bar ); } );
+    bar.Sub( Upp::t_( "&Go to bookmarks" ), [=] ( Upp::Bar& bar ) { GoToBookmarkAdd( bar ); } );
+  }
   
-  SortDropList.Add( Upp::t_( "Without sorting" ) );
-  SortDropList.Add( Upp::t_( "Sanskrit ascending" ) );
-  SortDropList.Add( Upp::t_( "Sanskrit descending" ) );
-  SortDropList.Add( Upp::t_( "Translation ascending" ) );
-  SortDropList.Add( Upp::t_( "Translation descending" ) );
-  SortDropList.Tip( Upp::t_( "Sort" ) );
-  SortDropList.DropWidthZ( 200 );
-  SortDropList.NoWantFocus();
-  SortDropList.WhenPush = SortirovkaUstanovka_;
-  
-  bar.Separator();
-  bar.Add( YazykDropList, 138 );
-  bar.Separator();
-  bar.Add( SortDropList, 170 );
-  bar.Separator();
-  
-  GauraFontHeightEdit.MinMax( GauraFontHeightMin, GauraFontHeightMax );
-  GauraFontHeight_ << [&] { SetGauraFontHeight( ~GauraFontHeightEdit ); };
-  GauraFontHeightEdit.WhenAction = GauraFontHeight_;
-  GauraFontHeightEdit.NoWantFocus();
-  GauraFontHeightEdit.SetData( GauraFontHeightMin );
-  GauraFontHeightEdit.WhenAction();
-  GauraFontHeightEdit.Tip( Upp::t_( "Gaura Times font height" ) );
-  bar.Add( GauraFontHeightEdit, 46 );
+  if ( bar.IsToolBar() ) {
+    Upp::Function< void() >  GauraFontHeight_, SortirovkaUstanovka_, SmenaYazyka_;
+    
+    YazykDropList.Tip( Upp::t_( "Language" ) );
+    YazykDropList.DropWidthZ( 148 );
+    YazykDropList.NoWantFocus();
+    
+    SmenaYazyka_          << [&] { SmenaYazyka(); };
+    SortirovkaUstanovka_  << [&] { SortirovkaUstanovka(); };
+    // WhenPush в отличие от WhenAction даёт существенно другое поведение DropList!
+    // Когда WhenPush - похоже на кнопку и событие не возникает при выборе из выпадающего списка
+    // когда WhenAction - на кнопку не похоже, сразу выпадает список и событие возникает при
+    // выборе из списка
+    YazykDropList.WhenAction = SmenaYazyka_;
+    
+    SortDropList.Add( Upp::t_( "Without sorting" ) );
+    SortDropList.Add( Upp::t_( "Sanskrit ascending" ) );
+    SortDropList.Add( Upp::t_( "Sanskrit descending" ) );
+    SortDropList.Add( Upp::t_( "Translation ascending" ) );
+    SortDropList.Add( Upp::t_( "Translation descending" ) );
+    SortDropList.Tip( Upp::t_( "Sort" ) );
+    SortDropList.DropWidthZ( 200 );
+    SortDropList.NoWantFocus();
+    SortDropList.WhenPush = SortirovkaUstanovka_;
+    
+    bar.Separator();
+    bar.Add( YazykDropList, 138 );
+    bar.Separator();
+    bar.Add( SortDropList, 170 );
+    bar.Separator();
+    
+    GauraFontHeightEdit.MinMax( GauraFontHeightMin, GauraFontHeightMax );
+    GauraFontHeight_ << [&] { SetGauraFontHeight( ~GauraFontHeightEdit ); };
+    GauraFontHeightEdit.WhenAction = GauraFontHeight_;
+    GauraFontHeightEdit.NoWantFocus();
+    GauraFontHeightEdit.SetData( GauraFontHeightMin );
+    GauraFontHeightEdit.WhenAction();
+    GauraFontHeightEdit.Tip( Upp::t_( "Gaura Times font height" ) );
+    bar.Add( GauraFontHeightEdit, 46 );
+  }
 }
 
 void PrabhupadaSlovaryPanel::SetGauraFontHeight( int H )
@@ -524,26 +663,26 @@ void PrabhupadaSlovaryPanel::SetSortirovka( VidSortirovka s )
     case VidSortirovka::SanskritVozrastanie :
       Upp::Sort( VectorIndex
                , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.Index ].Sanskrit == VectorSanskrit[ b.Index ].Sanskrit ?
-                                                             VectorSanskrit[ a.Index ].Perevod  <  VectorSanskrit[ b.Index ].Perevod :
-                                                             VectorSanskrit[ a.Index ].Sanskrit <  VectorSanskrit[ b.Index ].Sanskrit; } );
+                                                             PrabhupaComareLess( VectorSanskrit[ a.Index ].Perevod,  VectorSanskrit[ b.Index ].Perevod ) :
+                                                             PrabhupaComareLess( VectorSanskrit[ a.Index ].Sanskrit, VectorSanskrit[ b.Index ].Sanskrit ); } );
       break;
     case VidSortirovka::SanskritUbyvanie :
       Upp::Sort( VectorIndex
                , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.Index ].Sanskrit == VectorSanskrit[ b.Index ].Sanskrit ?
-                                                             VectorSanskrit[ a.Index ].Perevod  >  VectorSanskrit[ b.Index ].Perevod :
-                                                             VectorSanskrit[ a.Index ].Sanskrit >  VectorSanskrit[ b.Index ].Sanskrit; } );
+                                                             PrabhupaComareMore( VectorSanskrit[ a.Index ].Perevod,  VectorSanskrit[ b.Index ].Perevod ) :
+                                                             PrabhupaComareMore( VectorSanskrit[ a.Index ].Sanskrit, VectorSanskrit[ b.Index ].Sanskrit ); } );
       break;
     case VidSortirovka::PerevodVozrastanie :
       Upp::Sort( VectorIndex
                , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.Index ].Perevod  == VectorSanskrit[ b.Index ].Perevod ?
-                                                             VectorSanskrit[ a.Index ].Sanskrit <  VectorSanskrit[ b.Index ].Sanskrit :
-                                                             VectorSanskrit[ a.Index ].Perevod  <  VectorSanskrit[ b.Index ].Perevod; } );
+                                                             PrabhupaComareLess( VectorSanskrit[ a.Index ].Sanskrit, VectorSanskrit[ b.Index ].Sanskrit ) :
+                                                             PrabhupaComareLess( VectorSanskrit[ a.Index ].Perevod,  VectorSanskrit[ b.Index ].Perevod ); } );
       break;
     case VidSortirovka::PerevodUbyvanie :
       Upp::Sort( VectorIndex
                , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.Index ].Perevod  == VectorSanskrit[ b.Index ].Perevod ?
-                                                             VectorSanskrit[ a.Index ].Sanskrit >  VectorSanskrit[ b.Index ].Sanskrit :
-                                                             VectorSanskrit[ a.Index ].Perevod  >  VectorSanskrit[ b.Index ].Perevod; } );
+                                                             PrabhupaComareMore( VectorSanskrit[ a.Index ].Sanskrit, VectorSanskrit[ b.Index ].Sanskrit ) :
+                                                             PrabhupaComareMore( VectorSanskrit[ a.Index ].Perevod,  VectorSanskrit[ b.Index ].Perevod ); } );
       break;
     }
     SortDropList.SetIndex( static_cast< int >( s ) );
@@ -569,7 +708,7 @@ void PrabhupadaSlovaryPanel::SmenaYazyka()
   SetYazyk( YazykDropList.GetIndex() );
 }
 
-inline bool operator < ( const PrabhupadaString& A, const PrabhupadaString& B )
+inline bool PrabhupaComareLess( const Upp::String& A, const Upp::String& B )
 {
   Upp::WString AW = A.ToWString(),
                BW = B.ToWString();
@@ -581,8 +720,8 @@ inline bool operator < ( const PrabhupadaString& A, const PrabhupadaString& B )
   
   int AWV, BWV;
   for ( int i = 0; i < L; ++i ) {
-    AWV = PrabhupadaString::BukvaryPrabhupada[ AW[ i ] ].Ves;
-    BWV = PrabhupadaString::BukvaryPrabhupada[ BW[ i ] ].Ves;
+    AWV = BukvaryPrabhupada[ AW[ i ] ].Ves;
+    BWV = BukvaryPrabhupada[ BW[ i ] ].Ves;
     if ( AWV == BWV ) {
       continue;
     } else if ( AWV > BWV ) {
@@ -598,7 +737,7 @@ inline bool operator < ( const PrabhupadaString& A, const PrabhupadaString& B )
   return false;
 }
 
-inline bool operator > ( const PrabhupadaString& A, const PrabhupadaString& B )
+inline bool PrabhupaComareMore( const Upp::String& A, const Upp::String& B )
 {
   Upp::WString AW = A.ToWString(),
                BW = B.ToWString();
@@ -610,8 +749,8 @@ inline bool operator > ( const PrabhupadaString& A, const PrabhupadaString& B )
   
   int AWV, BWV;
   for ( int i = 0; i < L; ++i ) {
-    AWV = PrabhupadaString::BukvaryPrabhupada[ AW[ i ] ].Ves;
-    BWV = PrabhupadaString::BukvaryPrabhupada[ BW[ i ] ].Ves;
+    AWV = BukvaryPrabhupada[ AW[ i ] ].Ves;
+    BWV = BukvaryPrabhupada[ BW[ i ] ].Ves;
     if ( AWV == BWV ) {
       continue;
     } else if ( AWV < BWV ) {
@@ -720,7 +859,7 @@ PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow( CommandMap& cm )
   Title( Upp::t_( "Shrila Prabhupada's Sanskrit dictionary!" ) ).Sizeable().Zoomable();
 
   int i, &StrongYazyk = PanelPrabhupadaSlovary.StrongYazyk;
-  PrabhupadaSlovaryPanel::VidSortirovka InitSortirovka = PrabhupadaSlovaryPanel::VidSortirovka::Reset;
+  VidSortirovka InitSortirovka = VidSortirovka::Reset;
 
   CommandInfo& ci = cm.GetPut( "Lang" );
   if ( ci.Present ) {
@@ -736,13 +875,13 @@ PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow( CommandMap& cm )
   if ( !LoadINI ) {
     if ( StrongYazyk == -1 )
       StrongYazyk = RussianYazyk;
-    InitSortirovka = PrabhupadaSlovaryPanel::VidSortirovka::SanskritVozrastanie;
+    InitSortirovka = VidSortirovka::SanskritVozrastanie;
   }
 
   if ( StrongYazyk != -1 )
     PanelPrabhupadaSlovary.SetYazyk( StrongYazyk );
 
-  if ( InitSortirovka != PrabhupadaSlovaryPanel::VidSortirovka::Reset )
+  if ( InitSortirovka != VidSortirovka::Reset )
     PanelPrabhupadaSlovary.SetSortirovka( InitSortirovka );
   
   FilterSlovary F = PanelPrabhupadaSlovary.Filter;
@@ -754,7 +893,19 @@ PrabhupadaSlovaryWindow::~PrabhupadaSlovaryWindow()
 {
   Upp::Function< void( Upp::Stream& ) > Serial;
   Serial = [&] ( Upp::Stream& S ) { Serialize( S ); };
-  Upp::StoreToFile(  Serial, Prabhupada::PrabhupadaSlovaryIniFile, 0 );
+  Upp::StoreToFile( Serial, Prabhupada::PrabhupadaSlovaryIniFile, 0 );
+}
+
+void BookmarkInfo::Serialize( Upp::Stream& s )
+{
+  int Sortirovka_;
+  if ( s.IsStoring() )
+    Sortirovka_ = static_cast< int >( Sortirovka );
+
+  s % RowNum % Filter % Sortirovka_ % Yazyk;
+
+  if ( s.IsLoading() )
+    Sortirovka = static_cast< VidSortirovka >( Sortirovka_ );
 }
 
 void PrabhupadaSlovaryWindow::Serialize( Upp::Stream& s )
@@ -773,11 +924,22 @@ void PrabhupadaSlovaryPanel::Serialize( Upp::Stream& s )
   s / version;
   s.Magic( 954756 );
 
+  Upp::String S;
+  
+  if ( s.IsStoring() )
+    S = SerialStream.GetResult();
+ 
+  s % S;
+ 
+  if ( s.IsLoading() )
+     SerialStream.Open( S );
+
   ArraySanskrit.SerializeHeader( s );
   ArraySanskrit.SerializeSettings( s );
   SplitterSearch.Serialize( s );
   Filter.Serialize( s );
-
+  Bookmark.Serialize( s );
+  
   int LastYazyk, LastCursor, LastSortirovka, LastGauraFontHeight;
   if ( s.IsStoring() ) {
     LastCursor          = ArraySanskrit.GetCursor();
@@ -827,8 +989,8 @@ void PrabhupadaSlovaryPanel::FilterVectorSanskrit()
 {
   int ActualIndex = -1, n;
 
-  Upp::String Sanskrit = ~SanskritFilterEdit,
-              Perevod  = ~PerevodFilterEdit;
+  Upp::String Sanskrit = Filter.FilterSanskrit,
+              Perevod  = Filter.FilterPerevod;
 
   Sanskrit = RemoveDiacritics( Sanskrit );
   Perevod  = RemoveDiacritics( Perevod );
@@ -858,7 +1020,10 @@ void PrabhupadaSlovaryPanel::FilterVectorSanskrit()
 void PrabhupadaSlovaryPanel::SetFilter( const FilterSlovary& F )
 {
   if ( Filter != F || Filter.Reset == true  ) {
-    Filter.Reset = false;
+    if ( Filter.Reset ) {
+      VectorIndex.ResetIndex();
+      Filter.Reset = false;
+    }
 
     IfEditOKCancel();
 

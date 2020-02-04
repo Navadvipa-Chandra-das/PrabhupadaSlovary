@@ -66,23 +66,15 @@ struct PrabhupadaBukva {
 
 using PrabhupadaBukvary = std::map< int, PrabhupadaBukva >;
 
-struct PrabhupadaString : Upp::String
-{
-  operator Upp::String() const { return static_cast< Upp::String >( *this ); };
-  void Serialize( Upp::Stream& s ) { Serialize( s ); };
-  PrabhupadaString& operator=( const Upp::String& s ) { Assign( s ); return static_cast< PrabhupadaString& >( *this ); };
-  static PrabhupadaBukvary BukvaryPrabhupada;
-};
-
-inline bool operator < ( const PrabhupadaString& A, const PrabhupadaString& B );
-inline bool operator > ( const PrabhupadaString& A, const PrabhupadaString& B );
+inline bool PrabhupaComareLess( const Upp::String& A, const Upp::String& B );
+inline bool PrabhupaComareMore( const Upp::String& A, const Upp::String& B );
 
 class SanskritPair : Upp::Moveable< SanskritPair > {
 public:
   int         ID;
   bool        DeleteCandidat = false;
-  PrabhupadaString Sanskrit;
-  PrabhupadaString Perevod;
+  Upp::String Sanskrit;
+  Upp::String Perevod;
   // WD meens itout diakritiks symbhol
   Upp::String SanskritWD;
   Upp::String PerevodWD;
@@ -128,10 +120,13 @@ using PrabhupadaTabLetterParent = Upp::WithPrabhupadaTabLetter< Upp::ParentCtrl 
 
 struct PrabhupadaGoToLineDialog : PrabhupadaGoToLineParent {
   typedef PrabhupadaGoToLineDialog CLASSNAME;
-  PrabhupadaGoToLineDialog();
+  Upp::StringStream& SerialStream;
+  PrabhupadaGoToLineDialog( Upp::StringStream& SerialStream_ );
+  virtual ~PrabhupadaGoToLineDialog();
   void ButtonGoClick();
   void ButtonCancelClick();
   int RowNum { 0 };
+  virtual void Serialize( Upp::Stream& s );
 };
 
 struct PrabhupadaTabAboutPanel : PrabhupadaTabAboutParent {
@@ -153,12 +148,37 @@ public:
   PrabhupadaTabLetterPanel PanelPrabhupadaTabLetter;
 };
 
+enum class VidSortirovka : int { Reset = -1, NotSorted = 0, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
+
+struct BookmarkInfo : Upp::Moveable< BookmarkInfo > {
+  int RowNum { -1 };
+  FilterSlovary Filter;
+  VidSortirovka Sortirovka;
+  int Yazyk;
+  Upp::String ToString() const { return Upp::AsString( RowNum ) + " : " + Upp::AsString( Filter ) + " : " + Upp::AsString( static_cast< int >( Sortirovka ) ) +  + " : " + Upp::AsString( Yazyk ); }
+  void Serialize( Upp::Stream& s );
+  void Clear() { RowNum = -1; };
+};
+
+class BookmarkVector : public Upp::Vector< BookmarkInfo > {
+public:
+  void ClearBookmark();
+  BookmarkVector() {
+                     BookmarkInfo BI;
+                     for ( int i = 0; i < 10; ++i )
+                       Add( BI );
+                   };
+};
+
 class PrabhupadaSlovaryPanel : public PrabhupadaSlovaryPanelParent {
 public:
   typedef PrabhupadaSlovaryPanel CLASSNAME;
-  enum class VidSortirovka : int { Reset = -1, NotSorted = 0, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
+  Upp::StringStream SerialStream;
   VidSortirovka Sortirovka = VidSortirovka::Reset;
   void SetSortirovka( VidSortirovka s );
+  BookmarkVector Bookmark;
+  void SetBookmark( int N );
+  void GoToBookmark( int N );
   void BigRefresh();
   Upp::EditString SanskritFilterEdit;
   Upp::EditString PerevodFilterEdit;
@@ -180,6 +200,9 @@ public:
   YazykVector VectorYazyk;
   SanskritVector VectorSanskrit;
   IndexVector VectorIndex;
+  void SetBookmarkAdd( Upp::Bar& bar );
+  void GoToBookmarkAdd( Upp::Bar& bar );
+  void OperationsAdd( Upp::Bar& bar );
   void PrepareBar( Upp::Bar& bar );
   Upp::EditString EditSanskrit;
   Upp::EditString EditPerevod;

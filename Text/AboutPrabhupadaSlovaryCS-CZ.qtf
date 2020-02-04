@@ -79,6 +79,12 @@ písma pro správné zobrazení všech písmen! Pokud podržíte
 stisknutou klávesu Ctrl, můžete současně označit i řádky, 
 které se navzájem nesledují.&]
 [s0; &]
+[s0; Záložky si pamatují jazyk slovníku Shrila Prabhupada, druh 
+třídění, vyhledávací slova sanskrtu a překlad a také 
+číslo řádku! Celkem deset záložek. Například Ctrl `+ 
+Shift `+ 1`-nastavte záložku 1 a Ctrl `+ 1`-Přejděte na záložku 
+1 !&]
+[s0; &]
 [s0; Možnosti příkazového řádku: `"NoLoadINI`" `-pokud existuje 
 takový klíč, program nebude stahovat stav z INI souboru, ale 
 bude si ho pamatovat, jako je jazyk slovníku Srila Prabhupada. 
