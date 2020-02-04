@@ -72,11 +72,6 @@ in Gaura Times font to display all the letters correctly! If
 you hold down the `"Ctrl`" key, the mouse can simultaneously 
 mark even lines that do not follow each other.&]
 [s0; &]
-[s0; Bookmarks remember the language of Shrila Prabhupada`'s dictionary, 
-the type of sorting, the search words of Sanskrit and translation, 
-and also the line number! Only ten bookmarks. For example, Ctrl 
-`+ Shift`+1`-set bookmark 1, and Ctrl`+1`-go to bookmark 1 !&]
-[s0; &]
 [s0; Command line parameters: `"NoLoadINI`" `- if there is such a 
 key, the program will not load the state from the INI file, but 
 will remember it, such as the language of Srila Prabhupada`'s 

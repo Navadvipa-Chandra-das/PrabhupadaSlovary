@@ -5,6 +5,7 @@
 GUI_APP_MAIN
 {
   Upp::StdLogSetup( Upp::LOG_FILE | Upp::LOG_COUT | Upp::LOG_TIMESTAMP );
+
   const Upp::Vector< Upp::String >& cl = Upp::CommandLine();
 
   Prabhupada::CommandMap cm;
