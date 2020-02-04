@@ -2,6 +2,8 @@ description "Словарь санскрита Шрилы Прабхупады\3
 
 charset "UTF-8";
 
+tabsize 2;
+
 uses
 	CtrlLib,
 	plugin/sqlite3,
@@ -15,6 +17,7 @@ file
 	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovary.lay,
 	PrabhupadaSlovary.h,
+	PrabhupadaSlovary.rc,
 	PrabhupadaSlovary.iml,
 	PrabhupadaSlovaryAlgorithm.cpp,
 	PrabhupadaSlovaryAlgorithm.h;

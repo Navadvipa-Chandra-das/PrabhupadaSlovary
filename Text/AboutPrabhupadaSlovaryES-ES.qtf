@@ -78,6 +78,12 @@ letras correctamente! Si mantiene presionada la tecla `"Ctrl`",
 el ratón puede marcar simultáneamente incluso las líneas que 
 no se siguen entre sí.&]
 [s0; &]
+[s0; ¡Los marcadores memorizan el idioma del diccionario, el tipo 
+de clasificación, las palabras de búsqueda en sánscrito y 
+la traducción y también el número de línea! Diez marcadores 
+en total. Por ejemplo, Ctrl `+ Shift `+ 1`-establecer la pestaña 
+1, y Ctrl `+ 1`-ir a la pestaña 1 !&]
+[s0; &]
 [s0; Opciones de línea de comandos: `"NoLoadINI`" `- si hay una clave 
 de este tipo, entonces el programa no cargará el estado desde 
 el archivo INI, sino que lo memorizará, como el idioma del diccionario 

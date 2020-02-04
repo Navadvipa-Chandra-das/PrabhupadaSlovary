@@ -1,8 +1,9 @@
 LAYOUT(PrabhupadaSlovaryPanel, 800, 600)
-	ITEM(ArrayCtrl, ArraySanskrit, SetFrame(FieldFrame()).HSizePosZ(0, 0).VSizePosZ(28, 36))
+	ITEM(ArrayCtrl, ArraySanskrit, SetFrame(FieldFrame()).HSizePosZ(0, 0).VSizePosZ(56, 36))
 	ITEM(Splitter, SplitterSearch, HSizePosZ(0, 0).BottomPosZ(0, 36))
-	ITEM(ToolBar, ToolBarSanskrit, HSizePosZ(0, 98).TopPosZ(0, 28))
-	ITEM(EditString, EditIndicatorRow, AlignRight(true).SetEditable(false).Tip(t_("Row / Total")).WantFocus(false).RightPosZ(4, 93).TopPosZ(4, 19))
+	ITEM(ToolBar, ToolBarSanskrit, HSizePosZ(0, 98).TopPosZ(28, 28))
+	ITEM(MenuBar, PrabhupadaMenu, LeftPosZ(0, 704).TopPosZ(0, 28))
+	ITEM(EditString, EditIndicatorRow, AlignRight(true).SetEditable(false).Tip(t_("Row / Total")).WantFocus(false).RightPosZ(4, 93).TopPosZ(32, 19))
 END_LAYOUT
 
 LAYOUT(AboutPrabhupadaSlovary, 700, 800)
@@ -13,16 +14,16 @@ LAYOUT(PrabhupadaTabAbout, 640, 700)
 	ITEM(Label, LabelPrabhupadaSlovary, SetLabel(t_("Shrila Prabhupada's Sanskrit dictionary")).SetFont(StdFontZ(14).Bold()).LeftPosZ(4, 400).TopPosZ(604, 20))
 	ITEM(Label, ShrilaPrabhupada, SetLabel(t_("His Divine Grace Abhay Charanaravinda Bhaktivedanta Swami Prabhupada -\nthe Founder-Acharya of the International Society for Krishna consiousness")).SetFont(StdFontZ(13)).LeftPosZ(4, 624).TopPosZ(555, 44))
 	ITEM(Label, LabelHareKrishna, SetLabel(t_("Chant\nHare Krishna Hare Krishna Krishna Krishna Hare Hare\nHare Rama Hare Rama Rama Rama Hare Hare\nand be happy\nAbhay Charanaravinda Bhaktivedanta Swami Shrila Prabhupada")).LeftPosZ(4, 400).TopPosZ(622, 72))
-	ITEM(Label, LabelVersion, SetLabel(t_("Version 4.0")).SetFont(StdFont().Bold()).LeftPosZ(408, 104).TopPosZ(604, 19))
+	ITEM(Label, LabelVersion, SetLabel(t_("Version 4.1")).SetFont(StdFont().Bold()).LeftPosZ(408, 104).TopPosZ(604, 19))
 END_LAYOUT
 
 LAYOUT(PrabhupadaTabLetter, 400, 200)
 	ITEM(RichTextView, RichTextAbout, HSizePosZ(8, 8).VSizePosZ(8, 8))
 END_LAYOUT
 
-LAYOUT(PrabhupadaGoToLine, 288, 84)
+LAYOUT(PrabhupadaGoToLine, 356, 52)
 	ITEM(Label, GoToLineLabel, SetLabel(t_("Go to the row of number")).LeftPosZ(8, 168).TopPosZ(16, 19))
-	ITEM(EditIntSpin, EditRowNum, Min(1).LeftPosZ(180, 104).TopPosZ(16, 19))
-	ITEM(ToolBar, ToolBarGoRow, LeftPosZ(4, 264).TopPosZ(44, 28))
+	ITEM(EditInt, EditRowNum, Min(1).LeftPosZ(180, 104).TopPosZ(16, 19))
+	ITEM(ToolBar, ToolBarGoRow, LeftPosZ(292, 56).TopPosZ(16, 24))
 END_LAYOUT
 
