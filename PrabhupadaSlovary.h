@@ -38,7 +38,7 @@ struct IndexVector : Upp::Vector< IndexPair > {
 struct FilterSlovary : Upp::Moveable< FilterSlovary > {
   Upp::String FilterSanskrit;
   Upp::String FilterPerevod;
-  Upp::String ToString() const { return FilterSanskrit + " ; " + FilterPerevod; }
+  Upp::String ToString() const { return FilterSanskrit + " ; " + FilterPerevod +  + " ; " + Upp::AsString( Reset ); }
   bool Reset = false;
   void Serialize( Upp::Stream& s )
   {
@@ -148,13 +148,30 @@ public:
   PrabhupadaTabLetterPanel PanelPrabhupadaTabLetter;
 };
 
-enum class VidSortirovka : int { Reset = -1, NotSorted = 0, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
+enum class VidSortirovka : int { StartNothing = -1, NotSorted, SanskritVozrastanie, SanskritUbyvanie, PerevodVozrastanie, PerevodUbyvanie };
+
+struct StructSortirovka : Upp::Moveable< StructSortirovka > {
+  VidSortirovka Sortirovka { VidSortirovka::StartNothing };
+  bool Reset = false;
+  StructSortirovka() {};
+  StructSortirovka( VidSortirovka Sortirovka_ ) : Sortirovka( Sortirovka_ ) {};
+  Upp::String ToString() const { return Upp::AsString( static_cast< int >( Sortirovka ) ) + " ; " + Upp::AsString( Reset ); }
+  void Serialize( Upp::Stream& s );
+  bool operator == ( const StructSortirovka& S ) {
+    return Sortirovka == S.Sortirovka;
+  };
+  bool operator != ( const StructSortirovka& S ) {
+    return Sortirovka != S.Sortirovka;
+  };
+  operator int() const { return static_cast< int >( Sortirovka ); };
+};
 
 struct BookmarkInfo : Upp::Moveable< BookmarkInfo > {
   int RowNum { -1 };
   FilterSlovary Filter;
-  VidSortirovka Sortirovka;
+  StructSortirovka Sortirovka;
   int Yazyk;
+  BookmarkInfo() {};
   Upp::String ToString() const { return Upp::AsString( RowNum ) + " : " + Upp::AsString( Filter ) + " : " + Upp::AsString( static_cast< int >( Sortirovka ) ) +  + " : " + Upp::AsString( Yazyk ); }
   void Serialize( Upp::Stream& s );
   void Clear() { RowNum = -1; };
@@ -174,8 +191,8 @@ class PrabhupadaSlovaryPanel : public PrabhupadaSlovaryPanelParent {
 public:
   typedef PrabhupadaSlovaryPanel CLASSNAME;
   Upp::StringStream SerialStream;
-  VidSortirovka Sortirovka = VidSortirovka::Reset;
-  void SetSortirovka( VidSortirovka s );
+  StructSortirovka Sortirovka;
+  void SetSortirovka( StructSortirovka s );
   BookmarkVector Bookmark;
   void SetBookmark( int N );
   void GoToBookmark( int N );
@@ -220,7 +237,7 @@ public:
   void SetVectorSanskritFilterGetCount( int d );
   int StrongYazyk = -1;
   FilterSlovary Filter;
-  void SetFilter( const FilterSlovary& F );
+  void SetFilter( FilterSlovary F );
   void CopyToClipboard();
   void FilterUstanovka();
   void FilterVectorSanskrit();

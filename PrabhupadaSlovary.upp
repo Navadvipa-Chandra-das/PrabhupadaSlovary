@@ -11,10 +11,10 @@ uses
 
 file
 	PrabhupadaSlovaryConsts.h,
+	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovary.t charset "UTF-8",
 	PrabhupadaSlovary.icpp,
 	PrabhupadaSlovaryMain.cpp,
-	PrabhupadaSlovary.cpp,
 	PrabhupadaSlovary.lay,
 	PrabhupadaSlovary.h,
 	PrabhupadaSlovary.rc,

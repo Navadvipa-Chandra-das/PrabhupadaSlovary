@@ -398,7 +398,6 @@ PrabhupadaGoToLineDialog::PrabhupadaGoToLineDialog( Upp::StringStream& SerialStr
   if ( SerialStream.GetSize() > 0 ) {
     Upp::Function< void( Upp::Stream& ) > Serial;
     Serial = [&] ( Upp::Stream& S ) { Serialize( S ); };
-    //SerialStream.SetLoading();
     SerialStream.Seek( 0 );
     Upp::Load( Serial, SerialStream, 0 );
   }
@@ -406,7 +405,6 @@ PrabhupadaGoToLineDialog::PrabhupadaGoToLineDialog( Upp::StringStream& SerialStr
 
 PrabhupadaGoToLineDialog::~PrabhupadaGoToLineDialog()
 {
-  //SerialStream.SetStoring();
   SerialStream.SetSize( 0 );
   Upp::Function< void( Upp::Stream& ) > Serial;
   Serial = [&] ( Upp::Stream& S ) { Serialize( S ); };
@@ -638,7 +636,7 @@ void PrabhupadaSlovaryPanel::CopyToClipboard()
     S = S + VectorSanskrit[ VectorIndex[ V[ i ] ].Index ].Sanskrit + "\t" +
             VectorSanskrit[ VectorIndex[ V[ i ] ].Index ].Perevod  + "\n";
   }
-  Upp::AppendClipboardText( S );
+ Upp::AppendClipboardText( S );
 }
 
 void PrabhupadaSlovaryPanel::FilterUstanovka()
@@ -649,51 +647,64 @@ void PrabhupadaSlovaryPanel::FilterUstanovka()
   SetFilter( F );
 }
 
-void PrabhupadaSlovaryPanel::SetSortirovka( VidSortirovka s )
+void PrabhupadaSlovaryPanel::SetSortirovka( StructSortirovka s )
 {
-  if ( Sortirovka != s || Sortirovka == VidSortirovka::Reset ) {
+  if ( Sortirovka != s || s.Reset ) {
+    if ( s.Reset )
+      s.Reset = false;
+
     Sortirovka = s;
 
-    switch ( Sortirovka ) {
-    case VidSortirovka::Reset :
+    switch ( Sortirovka.Sortirovka ) {
+    case VidSortirovka::StartNothing :
       return;
     case VidSortirovka::NotSorted :
       VectorIndex.ResetIndex();
       break;
     case VidSortirovka::SanskritVozrastanie :
       Upp::Sort( VectorIndex
-               , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.Index ].Sanskrit == VectorSanskrit[ b.Index ].Sanskrit ?
-                                                             PrabhupaComareLess( VectorSanskrit[ a.Index ].Perevod,  VectorSanskrit[ b.Index ].Perevod ) :
-                                                             PrabhupaComareLess( VectorSanskrit[ a.Index ].Sanskrit, VectorSanskrit[ b.Index ].Sanskrit ); } );
+               , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.ReservIndex ].Sanskrit == VectorSanskrit[ b.ReservIndex ].Sanskrit ?
+                                                             PrabhupaComareLess( VectorSanskrit[ a.ReservIndex ].Perevod,  VectorSanskrit[ b.ReservIndex ].Perevod ) :
+                                                             PrabhupaComareLess( VectorSanskrit[ a.ReservIndex ].Sanskrit, VectorSanskrit[ b.ReservIndex ].Sanskrit ); } );
       break;
     case VidSortirovka::SanskritUbyvanie :
       Upp::Sort( VectorIndex
-               , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.Index ].Sanskrit == VectorSanskrit[ b.Index ].Sanskrit ?
-                                                             PrabhupaComareMore( VectorSanskrit[ a.Index ].Perevod,  VectorSanskrit[ b.Index ].Perevod ) :
-                                                             PrabhupaComareMore( VectorSanskrit[ a.Index ].Sanskrit, VectorSanskrit[ b.Index ].Sanskrit ); } );
+               , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.ReservIndex ].Sanskrit == VectorSanskrit[ b.ReservIndex ].Sanskrit ?
+                                                             PrabhupaComareMore( VectorSanskrit[ a.ReservIndex ].Perevod,  VectorSanskrit[ b.ReservIndex ].Perevod ) :
+                                                             PrabhupaComareMore( VectorSanskrit[ a.ReservIndex ].Sanskrit, VectorSanskrit[ b.ReservIndex ].Sanskrit ); } );
       break;
     case VidSortirovka::PerevodVozrastanie :
       Upp::Sort( VectorIndex
-               , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.Index ].Perevod  == VectorSanskrit[ b.Index ].Perevod ?
-                                                             PrabhupaComareLess( VectorSanskrit[ a.Index ].Sanskrit, VectorSanskrit[ b.Index ].Sanskrit ) :
-                                                             PrabhupaComareLess( VectorSanskrit[ a.Index ].Perevod,  VectorSanskrit[ b.Index ].Perevod ); } );
+               , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.ReservIndex ].Perevod  == VectorSanskrit[ b.ReservIndex ].Perevod ?
+                                                             PrabhupaComareLess( VectorSanskrit[ a.ReservIndex ].Sanskrit, VectorSanskrit[ b.ReservIndex ].Sanskrit ) :
+                                                             PrabhupaComareLess( VectorSanskrit[ a.ReservIndex ].Perevod,  VectorSanskrit[ b.ReservIndex ].Perevod ); } );
       break;
     case VidSortirovka::PerevodUbyvanie :
       Upp::Sort( VectorIndex
-               , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.Index ].Perevod  == VectorSanskrit[ b.Index ].Perevod ?
-                                                             PrabhupaComareMore( VectorSanskrit[ a.Index ].Sanskrit, VectorSanskrit[ b.Index ].Sanskrit ) :
-                                                             PrabhupaComareMore( VectorSanskrit[ a.Index ].Perevod,  VectorSanskrit[ b.Index ].Perevod ); } );
+               , [&] ( IndexPair& a, IndexPair& b ) { return VectorSanskrit[ a.ReservIndex ].Perevod  == VectorSanskrit[ b.ReservIndex ].Perevod ?
+                                                             PrabhupaComareMore( VectorSanskrit[ a.ReservIndex ].Sanskrit, VectorSanskrit[ b.ReservIndex ].Sanskrit ) :
+                                                             PrabhupaComareMore( VectorSanskrit[ a.ReservIndex ].Perevod,  VectorSanskrit[ b.ReservIndex ].Perevod ); } );
       break;
     }
-    SortDropList.SetIndex( static_cast< int >( s ) );
-    VectorIndex.SaveIndexToReserv();
+
+    SortDropList.SetIndex( Sortirovka );
+
+    if ( Sortirovka.Sortirovka != VidSortirovka::NotSorted )
+      VectorIndex.LoadIndexFromReserv();
+    
+    if ( !Filter.IsEmpty() ) {
+      Filter.Reset = true;
+      SetFilter( Filter );
+    }
+    
     ArraySanskritRefresh();
   }
 }
 
 void PrabhupadaSlovaryPanel::SortirovkaUstanovka()
 {
-  VidSortirovka s = static_cast< VidSortirovka >( SortDropList.GetIndex() );
+  StructSortirovka s;
+  s.Sortirovka = static_cast< VidSortirovka >( SortDropList.GetIndex() );
   SetSortirovka( s );
 }
 
@@ -833,8 +844,8 @@ void PrabhupadaSlovaryPanel::DeleteSlova()
 
 void PrabhupadaSlovaryPanel::BigRefresh()
 {
-  VidSortirovka Sortirovka_ = Sortirovka;
-  Sortirovka = VidSortirovka::Reset;
+  StructSortirovka Sortirovka_ = Sortirovka;
+  Sortirovka.Reset = true;
   Filter.Reset = true;
 
   VectorIndex.ResetIndex();
@@ -858,8 +869,9 @@ PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow( CommandMap& cm )
   Upp::Rect( 0, 0, 600, 600 );
   Title( Upp::t_( "Shrila Prabhupada's Sanskrit dictionary!" ) ).Sizeable().Zoomable();
 
-  int i, &StrongYazyk = PanelPrabhupadaSlovary.StrongYazyk;
-  VidSortirovka InitSortirovka = VidSortirovka::Reset;
+  int i, &StrongYazyk              = PanelPrabhupadaSlovary.StrongYazyk;
+  StructSortirovka& InitSortirovka = PanelPrabhupadaSlovary.Sortirovka;
+  InitSortirovka.Reset = true;
 
   CommandInfo& ci = cm.GetPut( "Lang" );
   if ( ci.Present ) {
@@ -875,18 +887,14 @@ PrabhupadaSlovaryWindow::PrabhupadaSlovaryWindow( CommandMap& cm )
   if ( !LoadINI ) {
     if ( StrongYazyk == -1 )
       StrongYazyk = RussianYazyk;
-    InitSortirovka = VidSortirovka::SanskritVozrastanie;
+    InitSortirovka.Sortirovka = VidSortirovka::SanskritVozrastanie;
   }
 
   if ( StrongYazyk != -1 )
     PanelPrabhupadaSlovary.SetYazyk( StrongYazyk );
 
-  if ( InitSortirovka != VidSortirovka::Reset )
+  if ( !LoadINI )
     PanelPrabhupadaSlovary.SetSortirovka( InitSortirovka );
-  
-  FilterSlovary F = PanelPrabhupadaSlovary.Filter;
-  PanelPrabhupadaSlovary.Filter.Clear();
-  PanelPrabhupadaSlovary.SetFilter( F );
 }
 
 PrabhupadaSlovaryWindow::~PrabhupadaSlovaryWindow()
@@ -896,16 +904,21 @@ PrabhupadaSlovaryWindow::~PrabhupadaSlovaryWindow()
   Upp::StoreToFile( Serial, Prabhupada::PrabhupadaSlovaryIniFile, 0 );
 }
 
-void BookmarkInfo::Serialize( Upp::Stream& s )
+void StructSortirovka::Serialize( Upp::Stream& s )
 {
   int Sortirovka_;
   if ( s.IsStoring() )
     Sortirovka_ = static_cast< int >( Sortirovka );
 
-  s % RowNum % Filter % Sortirovka_ % Yazyk;
+  s % Sortirovka_;
 
   if ( s.IsLoading() )
     Sortirovka = static_cast< VidSortirovka >( Sortirovka_ );
+}
+
+void BookmarkInfo::Serialize( Upp::Stream& s )
+{
+  s % RowNum % Filter % Sortirovka % Yazyk;
 }
 
 void PrabhupadaSlovaryWindow::Serialize( Upp::Stream& s )
@@ -940,14 +953,18 @@ void PrabhupadaSlovaryPanel::Serialize( Upp::Stream& s )
   Filter.Serialize( s );
   Bookmark.Serialize( s );
   
-  int LastYazyk, LastCursor, LastSortirovka, LastGauraFontHeight;
+  int LastYazyk, LastCursor, LastGauraFontHeight;
+  StructSortirovka LastSortirovka;
+
   if ( s.IsStoring() ) {
     LastCursor          = ArraySanskrit.GetCursor();
     LastYazyk           = Yazyk;
-    LastSortirovka      = static_cast< int >( Sortirovka );
+    LastSortirovka      = Sortirovka;
     LastGauraFontHeight = GauraFontHeight;
   }
+
   s % LastCursor % LastYazyk % LastSortirovka % LastGauraFontHeight;
+
   if ( s.IsLoading() ) {
     if ( StrongYazyk != -1 ) {
       if ( StrongYazyk != LastYazyk )
@@ -955,7 +972,7 @@ void PrabhupadaSlovaryPanel::Serialize( Upp::Stream& s )
       LastYazyk = StrongYazyk;
     }
     SetYazyk( LastYazyk );
-    SetSortirovka( static_cast< VidSortirovka >( LastSortirovka ) );
+    SetSortirovka( LastSortirovka );
     ArraySanskrit.SetCursor( LastCursor );
     SetFilter( Filter );
     SetGauraFontHeight( LastGauraFontHeight );
@@ -1017,17 +1034,16 @@ void PrabhupadaSlovaryPanel::FilterVectorSanskrit()
   SetVectorSanskritFilterGetCount( ++ActualIndex );
 }
 
-void PrabhupadaSlovaryPanel::SetFilter( const FilterSlovary& F )
+void PrabhupadaSlovaryPanel::SetFilter( FilterSlovary F )
 {
-  if ( Filter != F || Filter.Reset == true  ) {
-    if ( Filter.Reset ) {
-      VectorIndex.ResetIndex();
-      Filter.Reset = false;
-    }
-
-    IfEditOKCancel();
+  if ( Filter != F || F.Reset == true  ) {
+    if ( F.Reset )
+      F.Reset = false;
 
     Filter = F;
+
+    IfEditOKCancel();
+    
     if ( Filter.IsEmpty() ) {
       VectorIndex.LoadIndexFromReserv();
       SetVectorSanskritFilterGetCount( VectorSanskrit.GetCount() );
@@ -1065,8 +1081,8 @@ void PrabhupadaSlovaryPanel::SetYazyk( int y )
 {
   if ( Yazyk != y ) {
     Filter.Reset = true;
-    VidSortirovka Sortirovka_ = Sortirovka;
-    Sortirovka = VidSortirovka::Reset;
+    StructSortirovka Sortirovka_ = Sortirovka;
+    Sortirovka_.Reset = true;
 
     IfEditOKCancel();
     int c = ArraySanskrit.GetCursor();
