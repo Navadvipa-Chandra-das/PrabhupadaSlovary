@@ -1,5 +1,5 @@
-// мутный файл
 #include "PrabhupadaSlovary.h"
+// иногда нужна комментировать строку #include "PrabhupadaSlovary.cpp" , а иногда и нет
 #include "PrabhupadaSlovary.cpp"
 
 namespace Upp {

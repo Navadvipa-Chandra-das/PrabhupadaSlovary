@@ -46,7 +46,7 @@ ArrayCtrl::Column& ArrayCtrl::Column::SetConvert(const Convert& c) {
 	return *this;
 }
 
-ArrayCtrl::Column& ArrayCtrl::Column::ConvertBy( const Function< Value ( const Value& ) >& cv )
+ArrayCtrl::Column& ArrayCtrl::Column::ConvertBy(Function<Value(const Value&)> cv)
 {
 	convertby = cv;
 	ClearCache();
@@ -438,14 +438,7 @@ void ArrayCtrl::ColEditSetData(int j) {
 	ASSERT(IsCursor());
 	Column& m = column[j];
 	if(m.edit)
-  	if ( m.pos.GetCount() > 0 )
-	  	m.edit->SetData(GetColumn(cursor, j));
-  	else
-	    if ( m.convertby )
-	      m.edit->SetData( m.convertby( cursor ) );
-	    else
-	      if ( m.convert )
-          m.edit->SetData( m.convert->Format( cursor ) );
+		m.edit->SetData(GetColumn(cursor, j));
 }
 
 void ArrayCtrl::CtrlSetData(int j) {
@@ -1278,7 +1271,7 @@ bool ArrayCtrl::UpdateRow() {
 			Value v = m.edit->GetData();
 			int mp = m.pos.GetCount();
 			if( mp == 0 ) {
-        m.Setter( v, cursor );
+              m.Setter( v, cursor );
 			} if( mp == 1) {
 				Value& vv = array.At(cursor).line.At(Pos(m.pos[0]));
 				if(vv != v) {
@@ -1822,7 +1815,7 @@ Image ArrayCtrl::CursorImage(Point p, dword)
 	if(!IsNull(cursor_override))
 		return cursor_override;
 	return header.GetSplit(p.x) < 0 || header.GetMode() == HeaderCtrl::FIXED ? Image::Arrow()
-	                                                                         : CtrlsImg::HorzPos();
+	                                                                         : CtrlImg::HorzPos();
 }
 
 void ArrayCtrl::RightDown(Point p, dword flags) {

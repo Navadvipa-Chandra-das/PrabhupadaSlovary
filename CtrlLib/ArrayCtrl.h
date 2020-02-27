@@ -35,9 +35,9 @@ public:
 	virtual void  ChildGotFocus();
 	virtual void  ChildLostFocus();
 	virtual void  Serialize(Stream& s);
-  bool IfEditPost();
-  bool IfEditCancel();
-  Function< void ( int ) > Inserter;
+    bool IfEditPost();
+    bool IfEditCancel();
+    Function< void ( int ) > Inserter;
 
 public:
 	struct IdInfo {
@@ -60,7 +60,7 @@ public:
 		int                   index;
 		Mitor<int>            pos;
 		const Convert        *convert;
-		Ptr<Ctrl>             edit;
+	    Ptr<Ctrl>             edit;
 		const Display        *display;
 		Event<int, One<Ctrl>&> factory;
 		Event<One<Ctrl>&>     factory1;
@@ -85,18 +85,17 @@ public:
 		friend class ArrayCtrl;
 
 	public:
-		Function< Value( const Value& ) > convertby;
+		Function<Value(const Value&)> convertby;
 		Function< void ( const Value&, int i ) > Setter;
-
 		Column& Add(int _pos)                      { pos.Add(_pos); return *this; }
 		Column& Add(const Id& id)                  { pos.Add(-arrayctrl->AsNdx(id)); return *this; }
 		Column& AddIndex(const Id& id)             { arrayctrl->AddIndex(id); return Add(id); }
 		Column& AddIndex()                         { Add(arrayctrl->GetIndexCount()); arrayctrl->AddIndex(); return *this; }
 
 		Column& SetConvert(const Convert& c);
-		Column& ConvertBy( const Function< Value( const Value& ) >& cv);
+		Column& ConvertBy(Function<Value(const Value&)> cv);
 		Column& SetSetter( const Function< void ( const Value&, int i ) >& st );
-		Column& SetFormat(const char *fmt);
+    	Column& SetFormat(const char *fmt);
 		Column& SetDisplay(const Display& d);
 		Column& NoEdit();
 		Column& Edit(Ctrl& e);
@@ -466,7 +465,7 @@ public:
 	void       ClearSelection(bool raise = true);
 	bool       IsSel(int i) const;
 	Vector<int> GetSelKeys() const;
-  void       GetSelIndexes( Vector< int >& R );
+	void       GetSelIndexes( Vector< int >& R );
 
 	void       EnableLine(int i, bool e);
 	void       DisableLine(int i)                               { EnableLine(i, false); }
