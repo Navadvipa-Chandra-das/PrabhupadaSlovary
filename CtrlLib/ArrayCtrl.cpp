@@ -437,8 +437,14 @@ bool ArrayCtrl::IsModified(const Id& id) const {
 void ArrayCtrl::ColEditSetData(int j) {
 	ASSERT(IsCursor());
 	Column& m = column[j];
-	if(m.edit)
-		m.edit->SetData(GetColumn(cursor, j));
+	if( m.edit ) {
+    if ( m.pos.GetCount() > 0 )
+      m.edit->SetData( GetColumn( cursor, j ) );
+    else if ( m.convertby )
+	    m.edit->SetData( m.convertby( cursor ) );
+    else if ( m.convert )
+      m.edit->SetData( m.convert->Format( cursor ) );
+	}
 }
 
 void ArrayCtrl::CtrlSetData(int j) {
